@@ -31,6 +31,19 @@ public class LecturePart {
     @JoinColumn(name = "lecture_id", nullable = false)
     private Lecture lecture;
 
+    @Column(name = "part_rating")
+    private Double rating;
+
+   // getter و setter
+   public Double getRating() {
+    return rating;
+   }
+
+   public void setRating(Double rating) {
+    this.rating = rating;
+   }
+
+
     // ✅ Getters and Setters
     public Long getId() {
         return id;
