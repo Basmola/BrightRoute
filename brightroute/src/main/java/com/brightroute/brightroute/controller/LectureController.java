@@ -53,8 +53,4 @@ public class LectureController {
         return lectureService.updatePart(lectureId, part);
     }
 
-    @GetMapping("/{lectureId}/average-rating")
-    public Double getAverageRating(@PathVariable Long lectureId) {
-        return lectureService.getAverageRating(lectureId);
-    }
 }
