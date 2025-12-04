@@ -1,60 +1,63 @@
-
 package com.brightroute.brightroute.model;
 
 import jakarta.persistence.*;
-import java.util.List;
 import java.time.LocalDateTime;
 
 @Entity
+@Table(name = "SystemLog", schema = "logs")
 public class SystemLog {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Column(name = "log_id")
+    private Long logId;
 
+    @Column(name = "action", nullable = false, length = 255)
     private String action;
-    private LocalDateTime timestamp;
-    private Long userId;
+
+    @Column(name = "details")
     private String details;
 
-    public Long getId() {
-        return this.id;
-    }
+    @Column(name = "timestamp", insertable = false, updatable = false)
+    private LocalDateTime timestamp;
 
-    public void setId(Long id) {
-        this.id = id;
+    // @ManyToOne
+    // @JoinColumn(name = "user_id")
+    // private User user;
+
+    // Getters and Setters
+    public Long getLogId() {
+        return logId;
+    }
+    public void setLogId(Long logId) {
+        this.logId = logId;
     }
 
     public String getAction() {
-        return this.action;
+        return action;
     }
-
     public void setAction(String action) {
         this.action = action;
     }
 
-    public LocalDateTime getTimestamp() {
-        return this.timestamp;
-    }
-
-    public void setTimestamp(LocalDateTime timestamp) {
-        this.timestamp = timestamp;
-    }
-
-    public Long getUserId() {
-        return this.userId;
-    }
-
-    public void setUserId(Long userId) {
-        this.userId = userId;
-    }
-
     public String getDetails() {
-        return this.details;
+        return details;
     }
-
     public void setDetails(String details) {
         this.details = details;
     }
 
-    // Getters and Setters
+    public LocalDateTime getTimestamp() {
+        return timestamp;
+    }
+    public void setTimestamp(LocalDateTime timestamp) {
+        this.timestamp = timestamp;
+    }
+
+    // public User getUser() {
+    //     return user;
+    // }
+    // public void setUser(User user) {
+    //     this.user = user;
+    // }
 }
