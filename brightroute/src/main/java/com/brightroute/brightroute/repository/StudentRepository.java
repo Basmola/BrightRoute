@@ -1,10 +1,8 @@
 package com.brightroute.brightroute.repository;
 
-public class StudentRepository {
+import com.brightroute.brightroute.model.Student;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-    public Object findById(Long studentId) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'findById'");
-    }
-
+public interface StudentRepository extends JpaRepository<Student, Long> {
+   boolean existsByNationalId(String nationalId); 
 }

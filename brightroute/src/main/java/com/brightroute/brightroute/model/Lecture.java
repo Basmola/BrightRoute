@@ -31,7 +31,7 @@ public class Lecture {
 
     @ManyToOne
     @JoinColumn(name = "course_id", nullable = false)
-    private Course course;
+    private CourseController course;
 
     @OneToMany(mappedBy = "lecture", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<LecturePart> parts;
@@ -55,8 +55,8 @@ public class Lecture {
     public LocalDateTime getLectureCreatedAt() { return lectureCreatedAt; }
     public void setLectureCreatedAt(LocalDateTime lectureCreatedAt) { this.lectureCreatedAt = lectureCreatedAt; }
 
-    public Course getCourse() { return course; }
-    public void setCourse(Course course) { this.course = course; }
+    public CourseController getCourse() { return course; }
+    public void setCourse(CourseController course) { this.course = course; }
 
     public List<LecturePart> getParts() { return parts; }
     public void setParts(List<LecturePart> parts) { this.parts = parts; }
