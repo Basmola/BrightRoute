@@ -1,54 +1,61 @@
 package com.brightroute.brightroute.model;
 
 import jakarta.persistence.*;
-import java.time.LocalDate;
+import java.time.LocalDateTime; // Use LocalDateTime for DATETIME SQL type
 
 @Entity
-@Table(name = "enrollment")
+// CORRECTION: Specify the schema and table name
+@Table(name = "Enrollment", schema = "access")
 public class Enrollment {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int enrollmentId;
+    @Column(name = "enrollment_id")
+    private Integer enrollmentId; // CORRECTION: Changed from int to Integer
 
-    private LocalDate dateEnrolled;
+    // CORRECTION: Field name must match SQL column name. Use LocalDateTime.
+    @Column(name = "date_enrolled", updatable = false)
+    private LocalDateTime dateEnrolled = LocalDateTime.now(); 
 
+    // Field name must match SQL column name.
+    @Column(name = "status", nullable = false)
     @Enumerated(EnumType.STRING)
-    private EnrollmentStatus status;
+    private EnrollmentStatus status = EnrollmentStatus.ACTIVE; // Use the enum
 
-    private boolean complete;
+    // Removed the 'complete' field as it does not exist in the SQL table.
 
     // Many enrollments → one lecture
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "lecture_id", nullable = false)
     private Lecture lecture;
 
-    // Many enrollments → one student
-    @ManyToOne
-    @JoinColumn(name = "student_id", nullable = false)
-    private Student student;
+    // CORRECTION: Many enrollments → one USER (FK is user_id in SQL)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false) // SQL FK column is 'user_id'
+    private User user; // Should link to the User entity
 
     public Enrollment() {}
 
-    public Enrollment(Lecture lecture, Student student) {
+    // Convenience constructor updated for corrected types and field names
+    public Enrollment(Lecture lecture, User user) {
         this.lecture = lecture;
-        this.student = student;
-        this.dateEnrolled = LocalDate.now();
+        this.user = user;
+        this.dateEnrolled = LocalDateTime.now();
         this.status = EnrollmentStatus.ACTIVE;
-        this.complete = false;
     }
 
     // ------------------ Getters & Setters ------------------
 
-    public int getEnrollmentId() {
+    public Integer getEnrollmentId() {
         return enrollmentId;
     }
+    // No setter for ID required if it's generated
 
-    public LocalDate getDateEnrolled() {
+    public LocalDateTime getDateEnrolled() {
         return dateEnrolled;
     }
 
-    public void setDateEnrolled(LocalDate dateEnrolled) {
+    public void setDateEnrolled(LocalDateTime dateEnrolled) {
         this.dateEnrolled = dateEnrolled;
     }
 
@@ -60,14 +67,6 @@ public class Enrollment {
         this.status = status;
     }
 
-    public boolean isComplete() {
-        return complete;
-    }
-
-    public void setComplete(boolean complete) {
-        this.complete = complete;
-    }
-
     public Lecture getLecture() {
         return lecture;
     }
@@ -76,11 +75,12 @@ public class Enrollment {
         this.lecture = lecture;
     }
 
-    public Student getStudent() {
-        return student;
+    // Getter/Setter for User entity (renamed from getStudent/setStudent)
+    public User getUser() {
+        return user;
     }
 
-    public void setStudent(Student student) {
-        this.student = student;
+    public void setUser(User user) {
+        this.user = user;
     }
 }

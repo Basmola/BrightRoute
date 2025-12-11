@@ -4,48 +4,52 @@ import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "course_subscription")
+// CORRECTION: Added schema and correct table name (using schema.Table format)
+@Table(name = "CourseSubscription", schema = "courses")
 public class CourseSubscription {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id; // CORRECTION: Changed from Long to Integer
 
-    @ManyToOne
-    @JoinColumn(name = "student_id", nullable = false)
-    private Student student;
+    // CORRECTION: Link to the User entity via the correct column name (user_id)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user; // Links to User, not Student
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "course_id", nullable = false)
     private Course course;
 
-    @Column(name = "subscribed_at", nullable = false, updatable = false)
+    // CORRECTION: Correct column name is subscription_subscribed_at
+    @Column(name = "subscription_subscribed_at", nullable = false, updatable = false)
     private LocalDateTime subscribedAt;
 
     // Constructors
     public CourseSubscription() {}
 
-    public CourseSubscription(Student student, Course course) {
-        this.student = student;
+    // Constructor updated to use User instead of Student
+    public CourseSubscription(User user, Course course) {
+        this.user = user;
         this.course = course;
         this.subscribedAt = LocalDateTime.now();
     }
 
     // Getters and Setters
-    public Long getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
-    public Student getStudent() {
-        return student;
+    public User getUser() { // CORRECTION: Renamed getStudent to getUser
+        return user;
     }
 
-    public void setStudent(Student student) {
-        this.student = student;
+    public void setUser(User user) { // CORRECTION: Renamed setStudent to setUser
+        this.user = user;
     }
 
     public Course getCourse() {

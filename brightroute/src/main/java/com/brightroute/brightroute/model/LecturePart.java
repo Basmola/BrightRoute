@@ -9,7 +9,7 @@ public class LecturePart {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "part_id")
-    private Long id;
+    private Integer id; // CORRECTION: Changed from Long to Integer
 
     @Column(name = "part_type", nullable = false)
     private String partType; // 'QUIZ','VIDEO','PDF','TEXT'
@@ -23,13 +23,21 @@ public class LecturePart {
     @Column(name = "part_order_number", nullable = false)
     private Integer partOrderNumber;
 
-    @ManyToOne
+    // Many LectureParts belong to One Lecture (Owning side)
+    @ManyToOne(fetch = FetchType.LAZY) // ENHANCEMENT: Added fetch type
     @JoinColumn(name = "lecture_id", nullable = false)
     private Lecture lecture;
+    
+    // One LecturePart has One Quiz (Inverse side of the One-to-One relationship)
+    @OneToOne(mappedBy = "lecturePart", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private Quiz quiz; // ADDED: Inverse mapping to Quiz
 
-    // ✅ Getters & Setters
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
+    // Constructors
+    public LecturePart() {}
+
+    // ===== Getters & Setters =====
+    public Integer getId() { return id; } // CORRECTION: Integer
+    public void setId(Integer id) { this.id = id; } // CORRECTION: Integer
 
     public String getPartType() { return partType; }
     public void setPartType(String partType) { this.partType = partType; }
@@ -45,4 +53,7 @@ public class LecturePart {
 
     public Lecture getLecture() { return lecture; }
     public void setLecture(Lecture lecture) { this.lecture = lecture; }
+    
+    public Quiz getQuiz() { return quiz; } // Getter for Quiz
+    public void setQuiz(Quiz quiz) { this.quiz = quiz; } // Setter for Quiz
 }

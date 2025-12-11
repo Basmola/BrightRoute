@@ -5,4 +5,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface LectureRepository extends JpaRepository<Lecture, Long> {}
+// CORRECTION: Changed the Primary Key type from Long to Integer
+public interface LectureRepository extends JpaRepository<Lecture, Integer> {}

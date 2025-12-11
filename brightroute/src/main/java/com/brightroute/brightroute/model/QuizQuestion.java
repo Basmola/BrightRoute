@@ -1,6 +1,7 @@
 package com.brightroute.brightroute.model;
 
 import jakarta.persistence.*;
+import java.util.List;
 
 @Entity
 @Table(name = "QuizQuestion", schema = "quiz")
@@ -9,13 +10,16 @@ public class QuizQuestion {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "question_id")
-    private Integer questionId;
+    private Integer questionId; // Matches SQL INT type
 
-    // This field links to the lectures.LecturePart table's part_id
-    // For simplicity, we use an Integer for the FK, assuming LecturePart entity is not strictly needed here.
-    @Column(name = "part_id", nullable = false)
-    private Integer partId;
-
+    // CORRECTION: This links to the parent entity Quiz, not LecturePart ID directly.
+    // Many QuizQuestions belong to One Quiz
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "quiz_id", nullable = false) // FK column name in SQL is 'quiz_id'
+    private Quiz quiz; 
+    
+    // The original partId field is removed as the quiz ID is derived from the 'quiz' entity above.
+    
     @Lob
     @Column(name = "question_text")
     private String questionText;
@@ -24,11 +28,15 @@ public class QuizQuestion {
     @Column(name = "question_image")
     private byte[] questionImage;
 
-    // Constructors, Getters, and Setters (omitted for brevity)
+    // ADDED: One QuizQuestion has Many Choices (Renamed QuestionsChoice in SQL)
+    @OneToMany(mappedBy = "question", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<QuestionsChoice> choices;
 
+
+    // Constructors
     public QuizQuestion() {}
 
-    // Getters and Setters for all fields
+    // ===== Getters and Setters =====
     public Integer getQuestionId() {
         return questionId;
     }
@@ -37,12 +45,13 @@ public class QuizQuestion {
         this.questionId = questionId;
     }
 
-    public Integer getPartId() {
-        return partId;
+    // New getter/setter for the Quiz entity relationship
+    public Quiz getQuiz() {
+        return quiz;
     }
 
-    public void setPartId(Integer partId) {
-        this.partId = partId;
+    public void setQuiz(Quiz quiz) {
+        this.quiz = quiz;
     }
 
     public String getQuestionText() {
@@ -59,5 +68,14 @@ public class QuizQuestion {
 
     public void setQuestionImage(byte[] questionImage) {
         this.questionImage = questionImage;
+    }
+
+    // New getter/setter for the choices list
+    public List<QuestionsChoice> getChoices() {
+        return choices;
+    }
+
+    public void setChoices(List<QuestionsChoice> choices) {
+        this.choices = choices;
     }
 }

@@ -1,9 +1,8 @@
-// File: src/main/java/com/brightroute/brightroute/model/Course.java
-
 package com.brightroute.brightroute.model;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "Course", schema = "courses")
@@ -29,74 +28,74 @@ public class Course {
     private String courseInstructor;
 
     @Column(name = "course_number_of_lectures", nullable = false)
-    private Integer courseNumberOfLectures;
+    private Integer courseNumberOfLectures = 0; // Default matches SQL
 
-    @Column(name = "course_created_at")
-    private LocalDateTime courseCreatedAt;
+    // ADDED: Missing field from SQL schema
+    @Column(name = "level_id")
+    private Integer levelId;
 
-    // Constructors, Getters, and Setters (omitted for brevity)
-    // You should generate these, typically using Lombok or an IDE.
+    // ENHANCEMENT: Added updatable=false to respect DB default
+    @Column(name = "course_created_at", updatable = false)
+    private LocalDateTime courseCreatedAt = LocalDateTime.now();
 
-    // Example of a minimal constructor
+
+    // ----------------------------
+    // RELATIONSHIPS (INVERSE SIDE)
+    // ----------------------------
+    
+    // One Course has Many Lectures
+    @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<Lecture> lectures;
+
+    // One Course has Many Subscriptions
+    @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<CourseSubscription> subscriptions;
+
+    // One Course can have Many Access Codes generated for it
+    @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<AccessCode> accessCodes;
+
+
+    // Constructors
     public Course() {
+        // Initializes fields with default values
         this.courseNumberOfLectures = 0;
         this.courseCreatedAt = LocalDateTime.now();
     }
+    
+    // ===== Getters and Setters =====
+    public Integer getCourseId() { return courseId; }
+    public void setCourseId(Integer courseId) { this.courseId = courseId; }
 
-    // Getters and Setters for all fields
-    public Integer getCourseId() {
-        return courseId;
-    }
+    public String getCourseTitle() { return courseTitle; }
+    public void setCourseTitle(String courseTitle) { this.courseTitle = courseTitle; }
 
-    public void setCourseId(Integer courseId) {
-        this.courseId = courseId;
-    }
+    public String getCourseDescription() { return courseDescription; }
+    public void setCourseDescription(String courseDescription) { this.courseDescription = courseDescription; }
 
-    public String getCourseTitle() {
-        return courseTitle;
-    }
+    public byte[] getCourseImageCover() { return courseImageCover; }
+    public void setCourseImageCover(byte[] courseImageCover) { this.courseImageCover = courseImageCover; }
 
-    public void setCourseTitle(String courseTitle) {
-        this.courseTitle = courseTitle;
-    }
+    public String getCourseInstructor() { return courseInstructor; }
+    public void setCourseInstructor(String courseInstructor) { this.courseInstructor = courseInstructor; }
 
-    public String getCourseDescription() {
-        return courseDescription;
-    }
+    public Integer getCourseNumberOfLectures() { return courseNumberOfLectures; }
+    public void setCourseNumberOfLectures(Integer courseNumberOfLectures) { this.courseNumberOfLectures = courseNumberOfLectures; }
 
-    public void setCourseDescription(String courseDescription) {
-        this.courseDescription = courseDescription;
-    }
+    // Getter/Setter for levelId
+    public Integer getLevelId() { return levelId; }
+    public void setLevelId(Integer levelId) { this.levelId = levelId; }
 
-    public byte[] getCourseImageCover() {
-        return courseImageCover;
-    }
+    public LocalDateTime getCourseCreatedAt() { return courseCreatedAt; }
+    public void setCourseCreatedAt(LocalDateTime courseCreatedAt) { this.courseCreatedAt = courseCreatedAt; }
+    
+    // Getters/Setters for new relationship lists
+    public List<Lecture> getLectures() { return lectures; }
+    public void setLectures(List<Lecture> lectures) { this.lectures = lectures; }
 
-    public void setCourseImageCover(byte[] courseImageCover) {
-        this.courseImageCover = courseImageCover;
-    }
+    public List<CourseSubscription> getSubscriptions() { return subscriptions; }
+    public void setSubscriptions(List<CourseSubscription> subscriptions) { this.subscriptions = subscriptions; }
 
-    public String getCourseInstructor() {
-        return courseInstructor;
-    }
-
-    public void setCourseInstructor(String courseInstructor) {
-        this.courseInstructor = courseInstructor;
-    }
-
-    public Integer getCourseNumberOfLectures() {
-        return courseNumberOfLectures;
-    }
-
-    public void setCourseNumberOfLectures(Integer courseNumberOfLectures) {
-        this.courseNumberOfLectures = courseNumberOfLectures;
-    }
-
-    public LocalDateTime getCourseCreatedAt() {
-        return courseCreatedAt;
-    }
-
-    public void setCourseCreatedAt(LocalDateTime courseCreatedAt) {
-        this.courseCreatedAt = courseCreatedAt;
-    }
+    public List<AccessCode> getAccessCodes() { return accessCodes; }
+    public void setAccessCodes(List<AccessCode> accessCodes) { this.accessCodes = accessCodes; }
 }

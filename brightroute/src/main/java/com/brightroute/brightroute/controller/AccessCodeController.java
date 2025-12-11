@@ -16,9 +16,10 @@ public class AccessCodeController {
     // إنشاء كود جديد مربوط بكورس + محاضرة + يوزر
     @PostMapping
     public ResponseEntity<AccessCode> create(
-            @RequestParam Long courseId,
-            @RequestParam(required = false) Long lectureId,
-            @RequestParam(required = false) Long userId,
+            // CORRECT: Changed all Long IDs to Integer
+            @RequestParam Integer courseId,
+            @RequestParam(required = false) Integer lectureId,
+            @RequestParam(required = false) Integer userId,
             @RequestParam(required = false) String codeValue
     ) 
     {
@@ -35,7 +36,7 @@ public class AccessCodeController {
 
     // إلغاء/حذف الكود
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> revoke(@PathVariable Long id) {
+    public ResponseEntity<Void> revoke(@PathVariable Integer id) { // CORRECT: ID is Integer
         accessCodeService.revokeAccessCode(id);
         return ResponseEntity.noContent().build();
     }

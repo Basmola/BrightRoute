@@ -14,14 +14,14 @@ public class LecturePartService {
     }
 
     // ===== Get content =====
-    public Object getContent(Long partId) {
+    public Object getContent(Integer partId) {
         LecturePart part = lecturePartRepository.findById(partId)
                 .orElseThrow(() -> new RuntimeException("LecturePart not found"));
         return part.getPartContentUrl(); // رجعنا URL بس لأنه ده اللي موجود
     }
 
     // ===== Update content =====
-    public void updateContent(Long partId, String newContentUrl) {
+    public void updateContent(Integer partId, String newContentUrl) {
         LecturePart part = lecturePartRepository.findById(partId)
                 .orElseThrow(() -> new RuntimeException("LecturePart not found"));
         part.setPartContentUrl(newContentUrl);

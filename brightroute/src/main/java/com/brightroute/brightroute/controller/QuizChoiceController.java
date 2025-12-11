@@ -1,5 +1,6 @@
 package com.brightroute.brightroute.controller;
 
+import com.brightroute.brightroute.model.QuestionsChoice;
 import com.brightroute.brightroute.model.QuizChoice;
 import com.brightroute.brightroute.service.QuizChoiceService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,19 +21,19 @@ public class QuizChoiceController {
     }
 
     @GetMapping
-    public List<QuizChoice> getAllChoices() {
+    public List<QuestionsChoice> getAllChoices() {
         return quizChoiceService.findAllChoices();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<QuizChoice> getChoiceById(@PathVariable Integer id) {
+    public ResponseEntity<QuestionsChoice> getChoiceById(@PathVariable Integer id) {
         return quizChoiceService.findChoiceById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @PostMapping
-    public QuizChoice createChoice(@RequestBody QuizChoice choice) {
+    public QuizChoice createChoice(@RequestBody QuestionsChoice choice) {
         return quizChoiceService.saveChoice(choice);
     }
 

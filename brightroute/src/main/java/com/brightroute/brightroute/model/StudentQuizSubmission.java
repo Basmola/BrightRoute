@@ -1,9 +1,10 @@
 package com.brightroute.brightroute.model;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.util.List;
+// Removed validation imports (validation should be done on DTOs/Service layer)
+
 @Entity
 @Table(name = "StudentQuizSubmission", schema = "quiz")
 public class StudentQuizSubmission {
@@ -11,43 +12,47 @@ public class StudentQuizSubmission {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "submission_id")
-    private Long id;
+    private Integer id; // CORRECTION: Changed from Long to Integer
 
-    @NotNull(message = "User ID is required")
-    @Column(name = "user_id")
-    private Long userId;
+    // CORRECTION: Many Submissions belong to One User
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
-    @NotNull(message = "Part ID is required")
-    @Column(name = "part_id")
-    private Long partId;
+    // CORRECTION: Many Submissions belong to One Quiz (not LecturePart)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "quiz_id", nullable = false) // SQL FK is 'quiz_id'
+    private Quiz quiz;
 
     @Column(name = "submission_score")
-    private Integer score;
+    private Integer submissionScore; // Renamed for better convention
 
     @Column(name = "submission_is_passed")
     private Boolean isPassed;
 
-    @Column(name = "submission_submitted_at")
-    private LocalDateTime submittedAt;
+    @Column(name = "submission_submitted_at", updatable = false) // ENHANCEMENT: Added updatable=false
+    private LocalDateTime submittedAt = LocalDateTime.now();
 
-    // --------------------------
-    // ⭐ Add this here
-    // --------------------------
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "submission_id")
+    // One Submission has Many Answers
+    // Mapped via the 'submission' field in the StudentQuestionsAnswer entity (preferred JPA style)
+    @OneToMany(mappedBy = "submission", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<StudentQuestionsAnswer> answers;
 
-    // Getters & Setters
-    public Long getId() { return id; }
+    // Constructors
+    public StudentQuizSubmission() {}
 
-    public Long getUserId() { return userId; }
-    public void setUserId(Long userId) { this.userId = userId; }
+    // ===== Getters & Setters =====
+    
+    public Integer getId() { return id; }
 
-    public Long getPartId() { return partId; }
-    public void setPartId(Long partId) { this.partId = partId; }
+    public User getUser() { return user; }
+    public void setUser(User user) { this.user = user; }
 
-    public Integer getScore() { return score; }
-    public void setScore(Integer score) { this.score = score; }
+    public Quiz getQuiz() { return quiz; }
+    public void setQuiz(Quiz quiz) { this.quiz = quiz; }
+
+    public Integer getSubmissionScore() { return submissionScore; }
+    public void setSubmissionScore(Integer submissionScore) { this.submissionScore = submissionScore; }
 
     public Boolean getIsPassed() { return isPassed; }
     public void setIsPassed(Boolean isPassed) { this.isPassed = isPassed; }
@@ -58,8 +63,6 @@ public class StudentQuizSubmission {
     public List<StudentQuestionsAnswer> getAnswers() { return answers; }
     public void setAnswers(List<StudentQuestionsAnswer> answers) { this.answers = answers; }
 }
-
-
 
 
 // package com.brightroute.brightroute.model;

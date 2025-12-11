@@ -1,7 +1,7 @@
 package com.brightroute.brightroute.controller;
 
 import com.brightroute.brightroute.model.Course;
-import com.brightroute.brightroute.service.impl.CourseService;
+import com.brightroute.brightroute.service.CourseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

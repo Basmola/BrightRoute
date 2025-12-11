@@ -3,17 +3,20 @@ package com.brightroute.brightroute.model;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "QuizChoice", schema = "quiz")
-public class QuizChoice {
+// CORRECTION: Updated table name to match the SQL rename
+@Table(name = "QuestionsChoice", schema = "quiz")
+// CORRECTION: Updated class name to reflect the SQL rename (Optional but highly recommended)
+public class QuestionsChoice {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "choice_id")
     private Integer choiceId;
 
-    // This field links to the quiz.QuizQuestion table's question_id
-    @Column(name = "question_id", nullable = false)
-    private Integer questionId;
+    // CORRECTION: Modeling the FK as a Many-to-One relationship to the QuizQuestion entity
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "question_id", nullable = false)
+    private QuizQuestion question;
 
     @Lob
     @Column(name = "choice_text", nullable = false)
@@ -34,11 +37,10 @@ public class QuizChoice {
     @Column(name = "choice_explanation_image")
     private byte[] choiceExplanationImage;
 
-    // Constructors, Getters, and Setters (omitted for brevity)
+    // Constructors
+    public QuestionsChoice() {}
 
-    public QuizChoice() {}
-
-    // Getters and Setters for all fields
+    // ===== Getters and Setters (Updated for 'question' entity) =====
     public Integer getChoiceId() {
         return choiceId;
     }
@@ -47,12 +49,13 @@ public class QuizChoice {
         this.choiceId = choiceId;
     }
 
-    public Integer getQuestionId() {
-        return questionId;
+    // Updated getter/setter for the QuizQuestion entity relationship
+    public QuizQuestion getQuestion() {
+        return question;
     }
 
-    public void setQuestionId(Integer questionId) {
-        this.questionId = questionId;
+    public void setQuestion(QuizQuestion question) {
+        this.question = question;
     }
 
     public String getChoiceText() {

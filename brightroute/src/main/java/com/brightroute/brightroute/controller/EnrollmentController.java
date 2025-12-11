@@ -2,30 +2,32 @@ package com.brightroute.brightroute.controller;
 
 import com.brightroute.brightroute.model.Enrollment;
 import com.brightroute.brightroute.model.EnrollmentStatus;
-import com.brightroute.brightroute.service.EnrollmentService;
+import com.brightroute.brightroute.service.IEnrollmentService; // Use the interface
 import org.springframework.web.bind.annotation.*;
+import org.springframework.beans.factory.annotation.Autowired;
 
 @RestController
 @RequestMapping("/api/enrollment")
 public class EnrollmentController {
 
-    private final EnrollmentService enrollmentService;
+    private final IEnrollmentService enrollmentService; // Use the interface
 
-    public EnrollmentController(EnrollmentService enrollmentService) {
+    @Autowired
+    public EnrollmentController(IEnrollmentService enrollmentService) {
         this.enrollmentService = enrollmentService;
     }
 
     @PostMapping("/enroll")
     public Enrollment enroll(
-            @RequestParam int lectureId,
-            @RequestParam int studentId
+            @RequestParam Integer lectureId, // Consistency: Use Integer
+            @RequestParam Integer userId     // CORRECTION: Use userId instead of studentId
     ) {
-        return enrollmentService.enroll(lectureId, studentId);
+        return enrollmentService.enroll(lectureId, userId);
     }
 
     @PutMapping("/{id}/status")
     public Enrollment updateStatus(
-            @PathVariable int id,
+            @PathVariable Integer id, // Consistency: Use Integer
             @RequestParam EnrollmentStatus status
     ) {
         return enrollmentService.updateStatus(id, status);

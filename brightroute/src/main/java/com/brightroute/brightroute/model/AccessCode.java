@@ -10,42 +10,52 @@ public class AccessCode {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "code_id")
-    private Long codeId;
+    private Integer codeId; // CORRECTION: Changed from Long to Integer
 
     @Column(name = "code_value", nullable = false, unique = true, length = 200)
     private String codeValue;
 
+    // CORRECTION: Mapped to the exact SQL column name
     @Column(name = "code_is_used", nullable = false)
-    private boolean isUsed = false;
+    private Boolean codeIsUsed = false; // Using Boolean for better null handling/mapping with BIT
 
+    // CORRECTION: Mapped to the exact SQL column name
     @Column(name = "code_used_at")
-    private LocalDateTime usedAt;
+    private LocalDateTime codeUsedAt;
 
-    @Column(name = "code_created_at", nullable = false, updatable = false, insertable = false)
-    private LocalDateTime createdAt;
+    // CORRECTION: Use updatable=false and LocalDateTime.now() for application-side default.
+    // Removed insertable=false to allow JPA to insert the field (relying on DB default is also an option).
+    @Column(name = "code_created_at", nullable = false, updatable = false)
+    private LocalDateTime codeCreatedAt = LocalDateTime.now();
 
-    // لو محتاج تستخدمه بعدين
-    // @Column(name = "code_expires_at")
-    // private LocalDateTime expiryDate;
+    @Column(name = "code_expires_at")
+    private LocalDateTime codeExpiresAt; // ADDED: Uncommented and made a proper field
 
-    // Relations
-    @ManyToOne
+    // Relations (All should use FetchType.LAZY for performance)
+    
+    // Links to the Course for which the code was generated
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "course_id", nullable = false)
     private Course course;
 
-    // @ManyToOne
-    // @JoinColumn(name = "used_by")
-    // private User usedBy;
+    // ADDED: Links to the User who consumed the code (used_by FK in SQL)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "used_by") // Field used_by is in the SQL table
+    private User usedBy;
 
-    @ManyToOne
+    // Links to the specific Lecture (if code grants access to a single lecture)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "used_for_lecture")
     private Lecture lecture;
 
-    // Getters and Setters
-    public Long getCodeId() {
+    public AccessCode() {}
+
+    // ===== Getters and Setters =====
+    
+    public Integer getCodeId() {
         return codeId;
     }
-    public void setCodeId(Long codeId) {
+    public void setCodeId(Integer codeId) {
         this.codeId = codeId;
     }
 
@@ -56,25 +66,35 @@ public class AccessCode {
         this.codeValue = codeValue;
     }
 
-    public boolean isUsed() {
-        return isUsed;
+    // CORRECTION: Renamed getter/setter to match field name
+    public Boolean getCodeIsUsed() {
+        return codeIsUsed;
     }
-    public void setUsed(boolean isUsed) {
-        this.isUsed = isUsed;
-    }
-
-    public LocalDateTime getUsedAt() {
-        return usedAt;
-    }
-    public void setUsedAt(LocalDateTime usedAt) {
-        this.usedAt = usedAt;
+    public void setCodeIsUsed(Boolean codeIsUsed) {
+        this.codeIsUsed = codeIsUsed;
     }
 
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
+    // CORRECTION: Renamed getter/setter to match field name
+    public LocalDateTime getCodeUsedAt() {
+        return codeUsedAt;
     }
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
+    public void setCodeUsedAt(LocalDateTime codeUsedAt) {
+        this.codeUsedAt = codeUsedAt;
+    }
+
+    // CORRECTION: Renamed getter/setter to match field name
+    public LocalDateTime getCodeCreatedAt() {
+        return codeCreatedAt;
+    }
+    public void setCodeCreatedAt(LocalDateTime codeCreatedAt) {
+        this.codeCreatedAt = codeCreatedAt;
+    }
+
+    public LocalDateTime getCodeExpiresAt() {
+        return codeExpiresAt;
+    }
+    public void setCodeExpiresAt(LocalDateTime codeExpiresAt) {
+        this.codeExpiresAt = codeExpiresAt;
     }
 
     public Course getCourse() {
@@ -84,12 +104,13 @@ public class AccessCode {
         this.course = course;
     }
 
-    // public User getUsedBy() {
-    //     return usedBy;
-    // }
-    // public void setUsedBy(User usedBy) {
-    //     this.usedBy = usedBy;
-    // }
+    // ADDED: Getter/Setter for usedBy User
+    public User getUsedBy() {
+        return usedBy;
+    }
+    public void setUsedBy(User usedBy) {
+        this.usedBy = usedBy;
+    }
 
     public Lecture getLecture() {
         return lecture;

@@ -2,14 +2,20 @@ package com.brightroute.brightroute.repository;
 
 import com.brightroute.brightroute.model.CourseSubscription;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
-public interface CourseSubscriptionRepository extends JpaRepository<CourseSubscription, Long> {
+@Repository
+public interface CourseSubscriptionRepository extends JpaRepository<CourseSubscription, Integer> { 
+    // CORRECTION: PK type is Integer
     
-    Optional<CourseSubscription> findByStudentIdAndCourseId(Long studentId, Long courseId);
+    // CORRECTION: Changed StudentId to UserId
+    Optional<CourseSubscription> findByUserIdAndCourseCourseId(Integer userId, Integer courseId);
     
-    boolean existsByStudentIdAndCourseId(Long studentId, Long courseId);
+    // CORRECTION: Changed StudentId to UserId
+    boolean existsByUserIdAndCourseCourseId(Integer userId, Integer courseId);
     
-    void deleteByStudentIdAndCourseId(Long studentId, Long courseId);
+    // CORRECTION: Changed StudentId to UserId
+    void deleteByUserIdAndCourseCourseId(Integer userId, Integer courseId);
 }
