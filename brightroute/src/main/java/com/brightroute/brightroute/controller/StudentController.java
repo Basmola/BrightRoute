@@ -16,27 +16,27 @@ public class StudentController {
 
     @PostMapping("/create/{userId}")
     public ResponseEntity<Student> create(
-            @PathVariable Long userId,
+            @PathVariable Integer userId, // CORRECTION: Integer
             @RequestBody Student profile
     ) {
         return ResponseEntity.ok(studentService.createStudentProfile(userId, profile));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Student> get(@PathVariable Long id) {
+    public ResponseEntity<Student> get(@PathVariable Integer id) { // CORRECTION: Integer
         return ResponseEntity.ok(studentService.viewStudent(id));
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<Student> update(
-            @PathVariable Long id,
+            @PathVariable Integer id, // CORRECTION: Integer
             @RequestBody Student updated
     ) {
         return ResponseEntity.ok(studentService.updateStudent(id, updated));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
+    public ResponseEntity<Void> delete(@PathVariable Integer id) { // CORRECTION: Integer
         studentService.deleteStudent(id);
         return ResponseEntity.noContent().build();
     }

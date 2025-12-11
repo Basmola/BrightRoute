@@ -1,5 +1,6 @@
 package com.brightroute.brightroute.service;
 
+import com.brightroute.brightroute.enums.Role;
 import com.brightroute.brightroute.model.Student;
 import com.brightroute.brightroute.model.User;
 import com.brightroute.brightroute.repository.StudentRepository;
@@ -7,6 +8,7 @@ import com.brightroute.brightroute.repository.UserRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional; // Added for best practice
 
 @Service
 public class StudentService {
@@ -18,30 +20,32 @@ public class StudentService {
     private UserRepository userRepository;
 
     // CREATE STUDENT PROFILE
-    public Student createStudentProfile(Long userId, Student profile) {
+    @Transactional // Ensures both user update and profile save are atomic
+    public Student createStudentProfile(Integer userId, Student profile) { // ID type is correct (Integer)
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found."));
 
-        // Assign 1-1 relationship
+        // Assign 1-1 relationship and shared primary key
         profile.setUser(user);
         profile.setId(userId);
 
-        // Ensure role is STUDENT
-        user.setRole("STUDENT");
+        // Enforce role consistency (change base user role to STUDENT)
+        user.setRole(Role.STUDENT);
         userRepository.save(user);
 
         return studentRepository.save(profile);
     }
 
     // VIEW STUDENT PROFILE
-    public Student viewStudent(Long id) {
+    public Student viewStudent(Integer id) { // ID type is correct (Integer)
         return studentRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Student not found."));
     }
 
     // UPDATE
-    public Student updateStudent(Long id, Student updated) {
+    @Transactional
+    public Student updateStudent(Integer id, Student updated) { // ID type is correct (Integer)
 
         Student s = studentRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Student not found."));
@@ -57,7 +61,10 @@ public class StudentService {
     }
 
     // DELETE PROFILE
-    public void deleteStudent(Long id) {
+    public void deleteStudent(Integer id) { // ID type is correct (Integer)
+        // Deleting the Student entity will cascade via ON DELETE CASCADE in SQL,
+        // but typically you delete the base User to cascade deletion of all profile data.
+        // For simplicity, we stick to deleting the profile here.
         studentRepository.deleteById(id);
     }
 }
