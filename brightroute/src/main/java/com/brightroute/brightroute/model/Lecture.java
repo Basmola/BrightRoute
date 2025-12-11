@@ -2,6 +2,9 @@ package com.brightroute.brightroute.model;
 
 import jakarta.persistence.*;
 import java.util.List;
+
+import com.brightroute.brightroute.controller.CourseController;
+
 import java.time.LocalDateTime;
 
 @Entity

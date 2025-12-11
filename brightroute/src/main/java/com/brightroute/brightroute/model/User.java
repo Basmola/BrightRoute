@@ -52,8 +52,8 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<CourseSubscription> subscriptions;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private List<LectureAccess> lectureAccess;
+    // @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    // private List<LectureAccess> lectureAccess;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<StudentQuizSubmission> quizSubmissions;
