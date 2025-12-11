@@ -1,8 +1,8 @@
-package com.brightroute.brightroute.service.impl;
+package com.brightroute.brightroute.service;
 
 import com.brightroute.brightroute.model.*;
 import com.brightroute.brightroute.repository.*;
-import com.brightroute.brightroute.service.EnrollmentService;
+
 import org.springframework.stereotype.Service;
 
 @Service

@@ -1,4 +1,4 @@
-package com.brightroute.brightroute.service.impl;
+package com.brightroute.brightroute.service;
 
 import com.brightroute.brightroute.model.Course;
 import com.brightroute.brightroute.model.CourseSubscription;
@@ -6,7 +6,7 @@ import com.brightroute.brightroute.model.Student;
 import com.brightroute.brightroute.repository.CourseRepository;
 import com.brightroute.brightroute.repository.CourseSubscriptionRepository;
 import com.brightroute.brightroute.repository.StudentRepository;
-import com.brightroute.brightroute.service.CourseSubscriptionService;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
