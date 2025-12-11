@@ -1,6 +1,6 @@
 package com.brightroute.brightroute.repository;
 
-
+// Import statements
 import com.brightroute.brightroute.model.Course;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
