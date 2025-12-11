@@ -1,5 +1,3 @@
-// File: src/main/java/com/brightroute/brightroute/model/Course.java
-
 package com.brightroute.brightroute.model;
 
 import jakarta.persistence.*;
