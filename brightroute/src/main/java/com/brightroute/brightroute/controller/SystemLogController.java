@@ -3,31 +3,40 @@ package com.brightroute.brightroute.controller;
 import com.brightroute.brightroute.model.SystemLog;
 import com.brightroute.brightroute.service.SystemLogService;
 
-import org.springframework.beans.factory.annotation.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.*;
-import jakarta.persistence.*;@RestController
+import java.util.List;
+
+@RestController
 @RequestMapping("/api/system-logs")
 public class SystemLogController {
+
     @Autowired
     private SystemLogService systemLogService;
 
+    // تسجيل عملية جديدة
     @PostMapping
-    public void log(@RequestParam String action,
-                    @RequestParam Long userId,
-                    @RequestParam String details) {
-        systemLogService.logAction(action, userId, details);
+    public ResponseEntity<SystemLog> log(@RequestParam String action,
+                                         @RequestParam(required = false) Long userId,
+                                         @RequestParam(required = false) String details) {
+        SystemLog log = systemLogService.logAction(action, userId, details);
+        return ResponseEntity.ok(log);
     }
 
+    // جلب كل الـ logs
     @GetMapping
-    public List<SystemLog> getAll() {
-        return systemLogService.getAllLogs();
+    public ResponseEntity<List<SystemLog>> getAll() {
+        List<SystemLog> logs = systemLogService.getAllLogs();
+        return ResponseEntity.ok(logs);
     }
 
-    @GetMapping("/user/{userId}")
-    public List<SystemLog> getByUser(@PathVariable Long userId) {
-        return systemLogService.getLogsByUser(userId);
-    }
+    // جلب الـ logs الخاصة بـ User معين
+
+    // @GetMapping("/user/{userId}")
+    // public ResponseEntity<List<SystemLog>> getByUser(@PathVariable Long userId) {
+    //     List<SystemLog> logs = systemLogService.getLogsByUser(userId);
+    //     return ResponseEntity.ok(logs);
+    // }
 }
-
