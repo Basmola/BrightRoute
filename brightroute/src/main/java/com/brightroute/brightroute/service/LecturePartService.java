@@ -17,25 +17,15 @@ public class LecturePartService {
     public Object getContent(Long partId) {
         LecturePart part = lecturePartRepository.findById(partId)
                 .orElseThrow(() -> new RuntimeException("LecturePart not found"));
-        // ممكن ترجع content byte[] أو text حسب نوعه
-        if (part.getPartContent() != null) return part.getPartContent();
-        return part.getPartContentText(); // fallback لو content null
+        return part.getPartContentUrl(); // رجعنا URL بس لأنه ده اللي موجود
     }
 
     // ===== Update content =====
-    public LecturePart updateContent(Long partId, Object newContent) {
+    public void updateContent(Long partId, String newContentUrl) {
         LecturePart part = lecturePartRepository.findById(partId)
                 .orElseThrow(() -> new RuntimeException("LecturePart not found"));
-
-        if (newContent instanceof byte[]) {
-            part.setPartContent((byte[]) newContent);
-        } else if (newContent instanceof String) {
-            part.setPartContentText((String) newContent);
-        } else {
-            throw new IllegalArgumentException("Unsupported content type");
-        }
-
-        return lecturePartRepository.save(part);
+        part.setPartContentUrl(newContentUrl);
+        lecturePartRepository.save(part);
     }
 }
 

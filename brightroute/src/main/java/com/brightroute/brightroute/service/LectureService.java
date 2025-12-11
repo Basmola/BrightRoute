@@ -63,12 +63,6 @@ public class LectureService {
         return lectureRepository.save(lecture);
     }
 
-    public Double getAverageRating(Long lectureId) {
-        Lecture lecture = getLectureById(lectureId);
-        return lecture.getParts().stream()
-                .filter(p -> p.getRating() != null)
-                .mapToDouble(LecturePart::getRating)
-                .average()
-                .orElse(0.0);
-    }
+    
 }
+

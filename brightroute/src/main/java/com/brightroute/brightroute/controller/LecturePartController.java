@@ -1,6 +1,5 @@
 package com.brightroute.brightroute.controller;
 
-import com.brightroute.brightroute.model.LecturePart;
 import com.brightroute.brightroute.service.LecturePartService;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,8 +21,8 @@ public class LecturePartController {
 
     // ===== Update content =====
     @PutMapping("/{partId}/content")
-    public LecturePart updateContent(@PathVariable Long partId, @RequestBody Object newContent) {
-        return lecturePartService.updateContent(partId, newContent);
+    public void updateContent(@PathVariable Long partId, @RequestBody String newContentUrl) {
+        lecturePartService.updateContent(partId, newContentUrl);
     }
 }
 
