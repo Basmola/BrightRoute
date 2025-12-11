@@ -15,8 +15,6 @@ public class User {
     @Column(name = "user_id")
     private Integer id; 
 
-    
-    
     @Column(name = "user_first_name", nullable = false)
     private String firstName;
 
@@ -25,6 +23,8 @@ public class User {
 
     @Column(name = "user_email", unique = true, nullable = false)
     private String email;
+    
+    // ... (Other fields remain the same) ...
 
     @Column(name = "user_phone_number", nullable = false)
     private String phoneNumber; 
@@ -48,7 +48,7 @@ public class User {
     private LocalDateTime createdAt = LocalDateTime.now();
 
     // ----------------------------
-    // RELATIONSHIPS (LectureAccess REMOVED)
+    // RELATIONSHIPS
     // ----------------------------
 
     // 1. One-to-One: Inverse side of the Student profile
@@ -58,8 +58,6 @@ public class User {
     // 2. One-to-Many: Subscriptions
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<CourseSubscription> subscriptions;
-
-    // *** REMOVED: List<LectureAccess> lectureAccesses; ***
 
     // 3. One-to-Many: Quiz Submissions
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
@@ -80,24 +78,36 @@ public class User {
 
     public User() {}
 
-    // ===== Getters & Setters (The lectureAccesses getter/setter were also removed) =====
+    // ===== Getters & Setters (FIXED: Added missing core methods) =====
     
     public Integer getId() { return id; }
     public void setId(Integer id) { this.id = id; }
     
-    // ... (rest of the getters/setters) ...
+    // --- ADDED MISSING ---
+    public String getFirstName() { return firstName; }
+    public void setFirstName(String firstName) { this.firstName = firstName; }
+    
+    public String getLastName() { return lastName; }
+    public void setLastName(String lastName) { this.lastName = lastName; }
+    
+    public String getEmail() { return email; }
+    public void setEmail(String email) { this.email = email; }
+    
+    public String getPasswordHash() { return passwordHash; }
+    public void setPasswordHash(String passwordHash) { this.passwordHash = passwordHash; }
+    // --- END ADDED MISSING ---
     
     public String getPhoneNumber() { return phoneNumber; }
     public void setPhoneNumber(String phoneNumber) { this.phoneNumber = phoneNumber; }
     
-    public Role getRole() { return role; }
-    public void setRole(Role role) { this.role = role; }
-    
+    public Role getRole() { return role; } 
+    public void setRole(Role role) { this.role = role; } 
+
     public AccountStatus getAccountStatus() { return accountStatus; }
-    public void setAccountStatus(AccountStatus accountStatus) { this.accountStatus = accountStatus; }
+    public void setAccountStatus(AccountStatus accountStatus) { this.accountStatus = accountStatus; } 
 
     public LocalDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
-
-    // ... (Relation Getters/Setters remain, excluding lectureAccesses) ...
+    
+    // ... (Relation Getters/Setters remain)
 }

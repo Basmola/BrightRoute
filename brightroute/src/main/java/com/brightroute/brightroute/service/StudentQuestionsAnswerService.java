@@ -24,11 +24,11 @@ public class StudentQuestionsAnswerService {
         return answerRepository.findAll();
     }
 
-    public Optional<StudentQuestionsAnswer> getAnswerById(Long id) {
+    public Optional<StudentQuestionsAnswer> getAnswerById(Integer id) { // CORRECTION: Integer
         return answerRepository.findById(id);
     }
 
-    public void deleteAnswer(Long id) {
+    public void deleteAnswer(Integer id) { // CORRECTION: Integer
         answerRepository.deleteById(id);
     }
 }

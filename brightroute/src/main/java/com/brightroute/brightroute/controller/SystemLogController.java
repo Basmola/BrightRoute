@@ -19,7 +19,7 @@ public class SystemLogController {
     // تسجيل عملية جديدة
     @PostMapping
     public ResponseEntity<SystemLog> log(@RequestParam String action,
-                                         @RequestParam(required = false) Long userId,
+                                         @RequestParam(required = false) Integer userId, // CORRECTION: Integer
                                          @RequestParam(required = false) String details) {
         SystemLog log = systemLogService.logAction(action, userId, details);
         return ResponseEntity.ok(log);
@@ -33,10 +33,10 @@ public class SystemLogController {
     }
 
     // جلب الـ logs الخاصة بـ User معين
-
-    // @GetMapping("/user/{userId}")
-    // public ResponseEntity<List<SystemLog>> getByUser(@PathVariable Long userId) {
-    //     List<SystemLog> logs = systemLogService.getLogsByUser(userId);
-    //     return ResponseEntity.ok(logs);
-    // }
+    // This method is ready to be uncommented once the service method is fixed.
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<List<SystemLog>> getByUser(@PathVariable Integer userId) { // CORRECTION: Integer
+        List<SystemLog> logs = systemLogService.getLogsByUser(userId);
+        return ResponseEntity.ok(logs);
+    }
 }

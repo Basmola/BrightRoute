@@ -1,74 +1,97 @@
 package com.brightroute.brightroute.service;
 import com.brightroute.brightroute.repository.UserRepository;
+
+import com.brightroute.brightroute.enums.AccountStatus;
+import com.brightroute.brightroute.enums.Role;
 import com.brightroute.brightroute.model.User;
 import org.springframework.beans.factory.annotation.*;
 import org.springframework.stereotype.Service;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder; 
 import java.time.LocalDateTime;
 import java.util.Optional;
+import org.springframework.transaction.annotation.Transactional;
+
 @Service
 public class UserService {
+    
+    private final UserRepository userRepository;
+    private final BCryptPasswordEncoder passwordEncoder; 
+
     @Autowired
-    private  UserRepository UserRepo;
-    private BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+    public UserService(UserRepository userRepository, BCryptPasswordEncoder passwordEncoder) {
+        this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
+    }
 
+    @Transactional
     public User register(User user){
-    user.setCreatedAt(LocalDateTime.now());  
-    if(user.getAccountStatus()==null){
-        user.setAccountStatus("Active");
-    }
-    if(user.getRole()==null){
-        user.setRole("Student");
-    }
-    return  UserRepo.save(user);
+        // 1. Hash the password before saving
+        String hashedPassword = passwordEncoder.encode(user.getPasswordHash());
+        user.setPasswordHash(hashedPassword);
+
+        // 2. Set defaults using Enums
+        if(user.getCreatedAt() == null) {
+            user.setCreatedAt(LocalDateTime.now());
+        }
+        if(user.getAccountStatus() == null){
+            user.setAccountStatus(AccountStatus.ACTIVE); // Uses Enum
+        }
+        if(user.getRole() == null){
+            user.setRole(Role.STUDENT); // Uses Enum
+        }
+        return userRepository.save(user);
     }
 
-    User login(String email, String password){
-    User user=UserRepo.findByEmail(email).orElseThrow(()->new RuntimeException("User not found"));
-    if(user.getPasswordHash().equals(password)){
-        return user;    
-    }
-    else{
-        throw new RuntimeException("Invalid credentials");
-    }
+    public User login(String email, String rawPassword){
+        User user = userRepository.findByEmail(email)
+                      .orElseThrow(()->new RuntimeException("Invalid credentials or User not found"));
+        
+        // Check hashed password
+        if(passwordEncoder.matches(rawPassword, user.getPasswordHash())){
+            return user;      
+        }
+        else{
+            throw new RuntimeException("Invalid credentials or User not found");
+        }
     }
 
-    public User updateProfile(Long id, User updatedUser){
-        User user=viewUser(id);
-        if(updatedUser.getFirstName()!=null){
+    @Transactional
+    public User updateProfile(Integer id, User updatedUser){
+        User user = viewUser(id);
+        
+        if(updatedUser.getFirstName() != null){
             user.setFirstName(updatedUser.getFirstName());
         }
         if (updatedUser.getLastName() != null){
-        user.setLastName(updatedUser.getLastName());
+            user.setLastName(updatedUser.getLastName());
         } 
         if (updatedUser.getPhoneNumber() != null){
-            user.setPhoneNumber(updatedUser.getPhoneNumber());
+            user.setPhoneNumber(updatedUser.getPhoneNumber()); 
         }
-
         if (updatedUser.getAccountStatus() != null){
-            user.setAccountStatus(updatedUser.getAccountStatus());
+            user.setAccountStatus(updatedUser.getAccountStatus()); 
         }
-        return UserRepo.save(user);
+        return userRepository.save(user);
     }
 
-    public boolean verifyIdentity(Long userId, String firstName, String lastName, String password){
-        Optional<User> optionalUser = UserRepo.findById(userId);
+    public boolean verifyIdentity(Integer userId, String firstName, String lastName, String rawPassword){
+        Optional<User> optionalUser = userRepository.findById(userId);
         if(optionalUser.isEmpty()) return false;
+        
         User user = optionalUser.get();
         return user.getFirstName().equals(firstName) &&
-                user.getLastName().equals(lastName) &&
-                passwordEncoder.matches(password, user.getPasswordHash());
+               user.getLastName().equals(lastName) &&
+               passwordEncoder.matches(rawPassword, user.getPasswordHash());
     }
-    public User viewUser(Long id){
-        return UserRepo.findById(id).orElseThrow(()->new RuntimeException("User not found"));
+    
+    public User viewUser(Integer id){ 
+        return userRepository.findById(id).orElseThrow(()->new RuntimeException("User not found"));
     }
-      public void logout(Long userId) {
-        // If you store session tokens or JWT blacklists, invalidate them here.
-        // With stateless JWT you typically don't store server-side sessions; this is a placeholder.
-        Optional<User> u = UserRepo.findById(userId);
-        if (u.isEmpty()) throw new RuntimeException("User not found.");
-        // Example: set an "last_logout_at" if you had a column. For now nothing persisted.
-        // user.setLastLogoutAt(LocalDateTime.now()); userRepository.save(user);
+    
+    public void logout(Integer userId) {
+        if (!userRepository.existsById(userId)) {
+             throw new RuntimeException("User not found.");
+        }
+        // Additional logout logic (e.g., JWT invalidation) goes here.
     }
-    }
-
+}
