@@ -49,7 +49,7 @@ services:
   brightroute-app:
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile  # Use Dockerfile.simple if multi-stage build has network issues
     container_name: brightroute-app
     ports:
       - "8080:8080"

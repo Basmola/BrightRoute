@@ -1,15 +1,8 @@
-# Stage 1: Build with Maven and JDK 17
-FROM maven:3.9-eclipse-temurin-17 AS builder
+# Single-stage Dockerfile for pre-built JAR
+# Use this if the multi-stage build has network/SSL issues
+# Build the JAR first: mvn clean package -DskipTests
+# Then build Docker image: docker build -f Dockerfile.simple -t brightroute-app .
 
-WORKDIR /app
-
-# Copy all project files
-COPY . .
-
-# Build the application
-RUN mvn clean package -DskipTests
-
-# Stage 2: Runtime with JRE Alpine
 FROM eclipse-temurin:17-jre-alpine
 
 # Create non-root user for security
@@ -17,8 +10,8 @@ RUN addgroup -S spring && adduser -S spring -G spring
 
 WORKDIR /app
 
-# Copy the built JAR from builder stage
-COPY --from=builder /app/target/brightroute-0.0.1-SNAPSHOT.jar app.jar
+# Copy the pre-built JAR
+COPY target/brightroute-0.0.1-SNAPSHOT.jar app.jar
 
 # Change ownership to non-root user
 RUN chown -R spring:spring /app
