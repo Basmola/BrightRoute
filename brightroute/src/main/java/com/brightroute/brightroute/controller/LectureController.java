@@ -4,12 +4,12 @@ import com.brightroute.brightroute.model.Lecture;
 import com.brightroute.brightroute.model.LecturePart;
 import com.brightroute.brightroute.service.LectureService;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.List;
+
 @RestController
-@RequestMapping("/api/lectures") // Renamed to include /api prefix for consistency
+@RequestMapping("/api/lectures") 
 public class LectureController {
 
     private final LectureService lectureService;
@@ -30,28 +30,28 @@ public class LectureController {
     }
 
     @GetMapping("/{id}")
-    public Lecture getLecture(@PathVariable Integer id) { // CORRECTION: Integer
+    public Lecture getLecture(@PathVariable Integer id) {
         return lectureService.getLectureById(id);
     }
 
     @DeleteMapping("/{id}")
-    public void deleteLecture(@PathVariable Integer id) { // CORRECTION: Integer
+    public void deleteLecture(@PathVariable Integer id) {
         lectureService.deleteLecture(id);
     }
 
     // ===== LecturePart endpoints =====
     @PostMapping("/{lectureId}/parts")
-    public Lecture addPart(@PathVariable Integer lectureId, @RequestBody LecturePart part) { // CORRECTION: Integer
+    public Lecture addPart(@PathVariable Integer lectureId, @RequestBody LecturePart part) { 
         return lectureService.addPart(lectureId, part);
     }
 
     @DeleteMapping("/{lectureId}/parts/{partId}")
-    public Lecture deletePart(@PathVariable Integer lectureId, @PathVariable Integer partId) { // CORRECTION: Integer
+    public Lecture deletePart(@PathVariable Integer lectureId, @PathVariable Integer partId) { 
         return lectureService.deletePart(lectureId, partId);
     }
 
     @PutMapping("/{lectureId}/parts")
-    public Lecture updatePart(@PathVariable Integer lectureId, @RequestBody LecturePart part) { // CORRECTION: Integer
+    public Lecture updatePart(@PathVariable Integer lectureId, @RequestBody LecturePart part) { 
         return lectureService.updatePart(lectureId, part);
     }
 }
