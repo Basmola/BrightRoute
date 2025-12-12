@@ -1,0 +1,78 @@
+version: '3.8'
+
+services:
+  # Microsoft SQL Server 2022 Express
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: brightroute-sqlserver
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=YourStrong@Passw0rd
+      - MSSQL_PID=Express
+    ports:
+      - "1433:1433"
+    volumes:
+      - sqlserver_data:/var/opt/mssql
+    networks:
+      - brightroute-network
+    healthcheck:
+      test: ["CMD-SHELL", "/opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P YourStrong@Passw0rd -Q 'SELECT 1' || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+
+  # Database Initialization Container
+  sqlserver-init:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: brightroute-sqlserver-init
+    depends_on:
+      sqlserver:
+        condition: service_healthy
+    volumes:
+      - ./init-db:/init-db
+    networks:
+      - brightroute-network
+    environment:
+      - ACCEPT_EULA=Y
+    command: >
+      /bin/bash -c "
+      echo 'Waiting for SQL Server to be ready...';
+      sleep 10;
+      echo 'Initializing database...';
+      /opt/mssql-tools/bin/sqlcmd -S sqlserver -U sa -P YourStrong@Passw0rd -i /init-db/init.sql;
+      echo 'Database initialization completed.';
+      "
+    restart: "no"
+
+  # BrightRoute Spring Boot Application
+  brightroute-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: brightroute-app
+    depends_on:
+      sqlserver-init:
+        condition: service_completed_successfully
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - JAVA_OPTS=-Xmx512m -Xms256m
+    networks:
+      - brightroute-network
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 90s
+    restart: unless-stopped
+
+networks:
+  brightroute-network:
+    driver: bridge
+
+volumes:
+  sqlserver_data:
+    driver: local
