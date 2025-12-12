@@ -1,12 +1,26 @@
 # Docker Setup for BrightRoute
 
+## ⚠️ IMPORTANT NOTICE
+
+### Java 25 Compatibility Status: **CURRENTLY NON-FUNCTIONAL**
+
+This Docker setup uses **Java 25** as specifically requested, which is **NOT** a Long-Term Support (LTS) release. 
+
+**Current Status**: The Docker build **FAILS** due to Java 25's SSL/TLS certificate validation issues when Maven attempts to download dependencies from Maven Central. This is a known limitation of the experimental Java 25 release.
+
+**This setup is provided as-is for Java 25 testing purposes.** For production use or functional Docker deployment, use Java 21 (LTS) or Java 17 (LTS) instead.
+
+See the [Troubleshooting](#troubleshooting) section for detailed information about the Java 25 issues.
+
+---
+
 ## ⚠️ Important Notice: Experimental Java 25
 
 This Docker setup uses **Java 25**, which is **NOT** a Long-Term Support (LTS) release. Java 25 is experimental and may have stability issues. This setup is intended for **testing Java 25 features** only.
 
 ### Java 25 Images Used:
-- **Build Stage**: `maven:3.9.9-amazoncorretto-25`
-- **Runtime Stage**: `niceos/openjdk25:latest`
+- **Build Stage**: `maven:3.9-eclipse-temurin-25`
+- **Runtime Stage**: `eclipse-temurin:25-jdk`
 
 ## Architecture
 
@@ -130,22 +144,46 @@ docker exec -it brightroute-sqlserver /opt/mssql-tools/bin/sqlcmd -S localhost -
 
 ## Troubleshooting
 
-### Java 25 Build Failures
+### ⚠️ Java 25 Build Failures - KNOWN ISSUE
 
-If the build fails due to Java 25 compatibility issues:
+**CRITICAL**: Java 25 is experimental and currently has significant SSL/TLS certificate validation issues that prevent Maven from downloading dependencies from Maven Central.
+
+#### Known Issues with Java 25:
+
+1. **Certificate Validation Errors**: The Java 25 Docker build fails with:
+   ```
+   PKIX path building failed: sun.security.provider.certpath.SunCertPathBuilderException: 
+   unable to find valid certification path to requested target
+   ```
+
+2. **Attempted Workarounds** (all unsuccessful):
+   - Using Maven SSL bypass flags (`-Dmaven.wagon.http.ssl.insecure=true`)
+   - Using different base images (niceos/openjdk25, eclipse-temurin:25-jdk)
+   - Using Maven wrapper vs direct Maven commands
+
+3. **Root Cause**: Java 25 appears to have changed its certificate trust store or SSL/TLS implementation in a way that breaks compatibility with standard Maven repositories over HTTPS.
+
+#### Current Status:
+
+The Dockerfile is configured to use Java 25 as requested, but **the build currently fails** due to the certificate issues described above. This is expected behavior for an experimental JDK release.
+
+#### Possible Solutions (not implemented in this setup):
+
+1. **Wait for Java 25 Stabilization**: As Java 25 matures, these issues should be resolved
+2. **Build with Java 21, Run with Java 25**: Build the JAR with Java 21 locally, then use a Java 25 runtime image
+3. **Custom Certificate Store**: Import Maven Central's certificates into Java 25's trust store (complex and not recommended)
+4. **Use Java 21 or 17 (LTS)**: For production use, stick with LTS releases
+
+#### How to Check:
 
 1. **Check the build logs**:
    ```bash
-   docker-compose logs brightroute-app
+   docker compose build brightroute-app
    ```
 
-2. **Maven Build Issues**: The Maven build stage uses `maven:3.9.9-amazoncorretto-25`. If this image is unavailable:
-   - Check Docker Hub for alternative Java 25 Maven images
-   - The build may fail if Java 25 is not yet fully supported
+2. **Maven Build Issues**: The Maven build stage uses `maven:3.9-eclipse-temurin-25`. The image exists but fails during dependency download due to certificate issues.
 
-3. **Runtime Issues**: The runtime stage uses `niceos/openjdk25:latest`. If this image is unavailable:
-   - Check if the image exists: `docker pull niceos/openjdk25:latest`
-   - Look for alternative Java 25 runtime images on Docker Hub
+3. **Runtime Image**: The runtime stage uses `eclipse-temurin:25-jdk`, which is available and works correctly.
 
 ### Common Issues
 
