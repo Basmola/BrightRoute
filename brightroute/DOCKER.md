@@ -2,6 +2,13 @@
 
 This document explains how to run the BrightRoute application using Docker.
 
+## Important Note on Java Version
+
+The project requires Java 25 in `pom.xml` as per project requirements. However:
+- Docker images use Java 21 (latest LTS) for stability and compatibility
+- Java 25 is not yet stable/released, so Java 21 is used in Docker runtime
+- To build locally with Java 25, ensure you have JDK 25 installed
+
 ## Prerequisites
 
 - Docker Engine (version 20.10 or higher)

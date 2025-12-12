@@ -2,8 +2,9 @@
 # Use this if the multi-stage build has network/SSL issues
 # Build the JAR first: mvn clean package -DskipTests
 # Then build Docker image: docker build -f Dockerfile.simple -t brightroute-app .
+# Note: Using Java 21 (LTS) for Docker runtime stability, though project targets Java 25
 
-FROM eclipse-temurin:17-jre-alpine
+FROM eclipse-temurin:21-jre-alpine
 
 # Install wget for health checks
 RUN apk add --no-cache wget

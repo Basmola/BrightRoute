@@ -1,5 +1,6 @@
-# Stage 1: Build with Maven and JDK 17
-FROM maven:3.9-eclipse-temurin-17 AS builder
+# Stage 1: Build with Maven and JDK 21
+# Note: Using Java 21 (LTS) for Docker stability, though project targets Java 25
+FROM maven:3.9-eclipse-temurin-21 AS builder
 
 WORKDIR /app
 
@@ -10,7 +11,8 @@ COPY . .
 RUN mvn clean package -DskipTests
 
 # Stage 2: Runtime with JRE Alpine
-FROM eclipse-temurin:17-jre-alpine
+# Using Java 21 (LTS) for runtime stability
+FROM eclipse-temurin:21-jre-alpine
 
 # Install wget for health checks
 RUN apk add --no-cache wget
