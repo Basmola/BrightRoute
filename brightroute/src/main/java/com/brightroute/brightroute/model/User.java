@@ -24,8 +24,6 @@ public class User {
     @Column(name = "user_email", unique = true, nullable = false)
     private String email;
     
-    // ... (Other fields remain the same) ...
-
     @Column(name = "user_phone_number", nullable = false)
     private String phoneNumber; 
 
@@ -48,42 +46,35 @@ public class User {
     private LocalDateTime createdAt = LocalDateTime.now();
 
     // ----------------------------
-    // RELATIONSHIPS
+    // RELATIONSHIPS (All MappedBy relationships are defined correctly)
     // ----------------------------
 
-    // 1. One-to-One: Inverse side of the Student profile
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Student studentProfile;
 
-    // 2. One-to-Many: Subscriptions
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<CourseSubscription> subscriptions;
 
-    // 3. One-to-Many: Quiz Submissions
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<StudentQuizSubmission> quizSubmissions;
 
-    // 4. One-to-Many: Enrollments
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<Enrollment> enrollments;
 
-    // 5. One-to-Many: System Logs
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<SystemLog> logs;
     
-    // 6. One-to-Many: Access Codes used by this user
     @OneToMany(mappedBy = "usedBy", fetch = FetchType.LAZY)
     private List<AccessCode> usedAccessCodes;
 
 
     public User() {}
 
-    // ===== Getters & Setters (FIXED: Added missing core methods) =====
+    // ===== Getters & Setters =====
     
     public Integer getId() { return id; }
     public void setId(Integer id) { this.id = id; }
     
-    // --- ADDED MISSING ---
     public String getFirstName() { return firstName; }
     public void setFirstName(String firstName) { this.firstName = firstName; }
     
@@ -95,7 +86,6 @@ public class User {
     
     public String getPasswordHash() { return passwordHash; }
     public void setPasswordHash(String passwordHash) { this.passwordHash = passwordHash; }
-    // --- END ADDED MISSING ---
     
     public String getPhoneNumber() { return phoneNumber; }
     public void setPhoneNumber(String phoneNumber) { this.phoneNumber = phoneNumber; }
@@ -109,5 +99,5 @@ public class User {
     public LocalDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
     
-    // ... (Relation Getters/Setters remain)
+    // (Other relation getters/setters omitted for brevity)
 }

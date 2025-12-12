@@ -12,8 +12,7 @@ public class AccessCodeController {
 
     @Autowired
     private AccessCodeService accessCodeService;
-
-    // إنشاء كود جديد مربوط بكورس + محاضرة + يوزر
+    // إنشاء كود وصول جديد  
     @PostMapping
     public ResponseEntity<AccessCode> create(
             // CORRECT: Changed all Long IDs to Integer

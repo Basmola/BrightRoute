@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserService {
     
     private final UserRepository userRepository;
+    // This field now receives the bean from SecurityConfig
     private final BCryptPasswordEncoder passwordEncoder; 
 
     @Autowired
@@ -23,6 +24,8 @@ public class UserService {
         this.passwordEncoder = passwordEncoder;
     }
 
+    // ... (All other methods in UserService remain the same)
+    
     @Transactional
     public User register(User user){
         // 1. Hash the password before saving
@@ -44,7 +47,7 @@ public class UserService {
 
     public User login(String email, String rawPassword){
         User user = userRepository.findByEmail(email)
-                      .orElseThrow(()->new RuntimeException("Invalid credentials or User not found"));
+                             .orElseThrow(()->new RuntimeException("Invalid credentials or User not found"));
         
         // Check hashed password
         if(passwordEncoder.matches(rawPassword, user.getPasswordHash())){
@@ -54,7 +57,9 @@ public class UserService {
             throw new RuntimeException("Invalid credentials or User not found");
         }
     }
-
+    
+    // ... (updateProfile, verifyIdentity, viewUser, logout methods omitted for brevity)
+    
     @Transactional
     public User updateProfile(Integer id, User updatedUser){
         User user = viewUser(id);
@@ -90,7 +95,7 @@ public class UserService {
     
     public void logout(Integer userId) {
         if (!userRepository.existsById(userId)) {
-             throw new RuntimeException("User not found.");
+              throw new RuntimeException("User not found.");
         }
         // Additional logout logic (e.g., JWT invalidation) goes here.
     }
