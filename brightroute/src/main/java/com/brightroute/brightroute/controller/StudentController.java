@@ -16,7 +16,7 @@ public class StudentController {
 
     @PostMapping("/create/{userId}")
     public ResponseEntity<Student> create(
-            @PathVariable Long userId,
+            @PathVariable Integer userId,
             @RequestBody Student profile
     ) {
         return ResponseEntity.ok(studentService.createStudentProfile(userId, profile));

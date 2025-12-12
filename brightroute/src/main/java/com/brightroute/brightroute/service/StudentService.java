@@ -1,5 +1,6 @@
 package com.brightroute.brightroute.service;
 
+import com.brightroute.brightroute.enums.Role;
 import com.brightroute.brightroute.model.Student;
 import com.brightroute.brightroute.model.User;
 import com.brightroute.brightroute.repository.StudentRepository;
@@ -18,7 +19,7 @@ public class StudentService {
     private UserRepository userRepository;
 
     // CREATE STUDENT PROFILE
-    public Student createStudentProfile(Long userId, Student profile) {
+    public Student createStudentProfile(Integer userId, Student profile) {
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found."));
@@ -28,7 +29,7 @@ public class StudentService {
         profile.setId(userId);
 
         // Ensure role is STUDENT
-        user.setRole("STUDENT");
+        user.setRole(Role.STUDENT);
         userRepository.save(user);
 
         return studentRepository.save(profile);
