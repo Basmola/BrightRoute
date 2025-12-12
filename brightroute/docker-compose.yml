@@ -1,0 +1,81 @@
+version: '3.8'
+
+services:
+  # SQL Server Database
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: brightroute-sqlserver
+    environment:
+      - ACCEPT_EULA=Y
+      - MSSQL_SA_PASSWORD=YourStrong@Passw0rd
+      - MSSQL_PID=Express
+    ports:
+      - "1433:1433"
+    volumes:
+      - sqlserver_data:/var/opt/mssql
+    networks:
+      - brightroute-network
+    healthcheck:
+      test: ["CMD-SHELL", "/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P YourStrong@Passw0rd -C -Q 'SELECT 1' || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  # Database Initialization (One-time)
+  sqlserver-init:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: brightroute-sqlserver-init
+    environment:
+      - ACCEPT_EULA=Y
+    volumes:
+      - ./init-db:/init-db
+    networks:
+      - brightroute-network
+    depends_on:
+      sqlserver:
+        condition: service_healthy
+    command: >
+      bash -c "
+      echo 'Waiting for SQL Server to be ready...' &&
+      sleep 10 &&
+      echo 'Running database initialization script...' &&
+      /opt/mssql-tools18/bin/sqlcmd -S sqlserver -U sa -P YourStrong@Passw0rd -C -i /init-db/init.sql &&
+      echo 'Database initialization completed!'
+      "
+    restart: "no"
+
+  # Spring Boot Application
+  brightroute-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: brightroute-app
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_DATASOURCE_URL=jdbc:sqlserver://sqlserver:1433;databaseName=SCM;encrypt=false;trustServerCertificate=true
+      - SPRING_DATASOURCE_USERNAME=sa
+      - SPRING_DATASOURCE_PASSWORD=YourStrong@Passw0rd
+    networks:
+      - brightroute-network
+    depends_on:
+      sqlserver:
+        condition: service_healthy
+      sqlserver-init:
+        condition: service_completed_successfully
+    healthcheck:
+      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:8080/actuator/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+networks:
+  brightroute-network:
+    driver: bridge
+
+volumes:
+  sqlserver_data:
+    driver: local

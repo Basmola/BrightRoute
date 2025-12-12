@@ -17,7 +17,7 @@
     <description>BrightRoute Spring Boot project</description>
 
     <properties>
-        <java.version>25</java.version>
+        <java.version>17</java.version>
     </properties>
 
     <dependencies>
@@ -44,6 +44,12 @@
             <groupId>com.microsoft.sqlserver</groupId>
             <artifactId>mssql-jdbc</artifactId>
             <scope>runtime</scope>
+        </dependency>
+
+        <!-- Spring Boot Actuator -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
 
         <!-- Test -->
