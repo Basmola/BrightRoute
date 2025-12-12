@@ -20,20 +20,14 @@ public class LecturePartController {
     }
 
     // ----------------------------------------------------
-    // Core CRUD Operations (for the LecturePart entity itself)
+    // Core CRUD Operations
     // ----------------------------------------------------
 
-    /**
-     * Retrieves all LectureParts (useful for debugging/admin views).
-     */
     @GetMapping
     public List<LecturePart> getAllParts() {
         return lecturePartService.getAllParts();
     }
     
-    /**
-     * Retrieves a single LecturePart by ID.
-     */
     @GetMapping("/{partId}")
     public ResponseEntity<LecturePart> getPartById(@PathVariable Integer partId) {
         return lecturePartService.findPartById(partId)
@@ -41,10 +35,6 @@ public class LecturePartController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    /**
-     * Updates an existing LecturePart (excluding its content URL).
-     * NOTE: Creation and Deletion are often handled via the LectureController.
-     */
     @PutMapping("/{partId}")
     public ResponseEntity<LecturePart> updatePart(
             @PathVariable Integer partId,
@@ -54,10 +44,13 @@ public class LecturePartController {
                 .map(existingPart -> {
                     updatedPart.setId(partId); // Ensure the ID from the path is used
                     
-                    // You would typically copy fields from updatedPart to existingPart here
-                    // to prevent overwriting managed fields (like Lecture/Quiz relations).
+                    // CRITICAL FIX: Ensure the Lecture relationship is maintained if not provided in the payload.
+                    // This prevents setting the required 'lecture_id' foreign key to null.
+                    if (updatedPart.getLecture() == null && existingPart.getLecture() != null) {
+                        updatedPart.setLecture(existingPart.getLecture());
+                    }
                     
-                    // For simplicity, we delegate the update logic to the service's save/merge.
+                    // In a DTO approach, you'd manually copy fields to existingPart here.
                     LecturePart savedPart = lecturePartService.savePart(updatedPart);
                     return ResponseEntity.ok(savedPart);
                 })
@@ -65,21 +58,15 @@ public class LecturePartController {
     }
     
     // ----------------------------------------------------
-    // Content Management Endpoints (as defined by you)
+    // Content Management Endpoints
     // ----------------------------------------------------
 
-    /**
-     * Retrieves the content (URL, Quiz object, etc.) for a specific lecture part.
-     */
     @GetMapping("/{partId}/content")
     public Object getContent(@PathVariable Integer partId) {
         return lecturePartService.getContent(partId);
     }
 
-    /**
-     * Updates the content URL for a specific lecture part (e.g., changing a video link).
-     */
-    @PutMapping("/{partId}/content-url") // Renamed endpoint for clarity
+    @PutMapping("/{partId}/content-url") 
     public ResponseEntity<Void> updateContentUrl(@PathVariable Integer partId, @RequestBody String newContentUrl) {
         lecturePartService.updateContent(partId, newContentUrl);
         return ResponseEntity.noContent().build();
