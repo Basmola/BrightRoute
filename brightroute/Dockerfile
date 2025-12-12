@@ -1,12 +1,9 @@
 # BrightRoute Dockerfile
-# WARNING: This Dockerfile uses experimental Java 25 (non-LTS)
-# Java 25 is not a Long-Term Support release and may have stability issues
-#
-# CURRENT STATUS: THIS BUILD FAILS due to Java 25's SSL/TLS certificate validation issues
-# when Maven attempts to download dependencies from Maven Central over HTTPS.
-# This is a known limitation of experimental Java 25 as of December 2024.
-#
-# For functional Docker deployment, consider using Java 21 (LTS) or Java 17 (LTS).
+# Java 25 Build with Certificate Workaround
+# 
+# Java 25 has SSL/TLS certificate validation issues that prevent Maven from downloading
+# dependencies from Maven Central. This Dockerfile works around the issue by downloading
+# Maven Central's certificate and importing it into Java's truststore.
 
 # Stage 1: Build Stage
 # Using Eclipse Temurin 25 with Maven 3.9
@@ -14,15 +11,27 @@ FROM maven:3.9-eclipse-temurin-25 AS build
 
 WORKDIR /app
 
+# Workaround for Java 25 certificate issues:
+# Download Maven Central's certificate and import it into Java's truststore
+RUN apt-get update && apt-get install -y openssl && \
+    # Download Maven Central's certificate chain
+    echo | openssl s_client -servername repo.maven.apache.org -connect repo.maven.apache.org:443 2>/dev/null | \
+    openssl x509 -outform PEM > /tmp/maven-central.pem && \
+    # Import into Java truststore
+    keytool -import -trustcacerts -noprompt -alias maven-central \
+      -file /tmp/maven-central.pem \
+      -keystore $JAVA_HOME/lib/security/cacerts \
+      -storepass changeit && \
+    rm -rf /var/lib/apt/lists/* /tmp/maven-central.pem
+
 # Copy pom.xml first for dependency caching
 COPY pom.xml ./
 
 # Copy source code
 COPY src ./src
 
-# Build the application (dependencies will be downloaded during build)
-# Using -Dmaven.wagon.http.ssl.insecure=true for Java 25 certificate issues
-RUN mvn clean package -DskipTests -B -Dmaven.wagon.http.ssl.insecure=true -Dmaven.wagon.http.ssl.allowall=true
+# Build the application
+RUN mvn clean package -DskipTests -B
 
 # Stage 2: Runtime Stage
 # Using Eclipse Temurin 25 JRE for runtime
