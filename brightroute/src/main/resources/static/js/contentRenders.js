@@ -46,10 +46,7 @@ function showAddCourseModal(courseDataToEdit = null) {
     const defaultLevel = isEditing ? courseDataToEdit.levelTag : '';
     const defaultDescription = isEditing ? courseDataToEdit.courseDescription || '' : ''; // حقل الوصف الجديد
 
-    // 1. إخفاء الـ Modal أولاً (لإعادة تهيئته)
-    // if (typeof hideModal !== 'undefined') hideModal();
 
-    // 2. تحديد العنوان
     titleElement.textContent = isEditing ? `Edit Course: ${defaultTitle}` : 'Create New Course';
     
     // 3. بناء محتوى الـ Modal (بدون حقول Lectures المعقدة)
