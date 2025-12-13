@@ -1,6 +1,41 @@
 document.addEventListener('DOMContentLoaded', () => {
+    checkAdminAuth();
     fetchDashboardData();
 });
+
+function checkAdminAuth() {
+    const userJson = localStorage.getItem('currentUser');
+    if (!userJson) {
+        window.location.href = 'Login&Register.html';
+        return;
+    }
+
+    const user = JSON.parse(userJson);
+    // Case-insensitive role check
+    if (user.role.toUpperCase() !== 'ADMIN') {
+        window.location.href = 'index.html'; // Redirect non-admins to student portal
+        return;
+    }
+
+    // Update UI with user info
+    updateUserProfile(user);
+}
+
+function updateUserProfile(user) {
+    const fullName = `${user.firstName} ${user.lastName}`;
+
+    const nameElement = document.getElementById('user-full-name');
+    if (nameElement) nameElement.textContent = fullName;
+
+    const greetingElement = document.getElementById('nav-greeting-text');
+    if (greetingElement) greetingElement.textContent = `Hello, ${user.firstName}!`;
+
+    const initialsElement = document.getElementById('user-initials');
+    if (initialsElement) {
+        const initials = (user.firstName.charAt(0) + user.lastName.charAt(0)).toUpperCase();
+        initialsElement.textContent = initials;
+    }
+}
 
 async function fetchDashboardData() {
     try {

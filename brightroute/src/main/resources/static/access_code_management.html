@@ -289,9 +289,7 @@
         function handleLogout() {
             localStorage.removeItem('currentUser');
             localStorage.removeItem('currentView');
-            // هنا المفروض ترجع لصفحة index.html أو صفحة تسجيل الدخول
-            alert('Logged out successfully. Redirecting to login page (Note: You need to implement the actual redirect to the login page).');
-            // window.location.href = 'index.html'; 
+            window.location.href = 'Login&Register.html';
         }
 
         /* ========================================================= */
@@ -362,8 +360,8 @@
                 sidebar.classList.add('-translate-x-full');
             }
 
-            document.getElementById('user-full-name').textContent = 'Admin Demo';
-            document.getElementById('nav-greeting-text').textContent = 'Hello, Admin Demo!';
+
+
         };
     </script>
     <script src="js/ui.js"></script>

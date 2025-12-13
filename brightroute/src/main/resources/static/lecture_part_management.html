@@ -115,6 +115,18 @@
                     User Management
                 </a>
 
+                <a href="access_code_management.html"
+                    class="nav-link flex items-center p-3 rounded-xl transition duration-150 text-gray-300 hover:bg-gray-700">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                        xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11.536 16.464a2.5 2.5 0 11-3.536-3.536l1.72-1.72A6 6 0 0119 9zM6.5 7a2.5 2.5 0 100-5 2.5 2.5 0 000 5z">
+                        </path>
+                    </svg>
+                    Access Code Management
+                </a>
+
+
                 <a href="#"
                     class="nav-link flex items-center p-3 rounded-xl transition duration-150 text-gray-300 hover:bg-gray-700 mt-2"
                     onclick="handleLogout()">
@@ -341,9 +353,7 @@
         function handleLogout() {
             localStorage.removeItem('currentUser');
             localStorage.removeItem('currentView');
-            // هنا المفروض ترجع لصفحة index.html أو صفحة تسجيل الدخول
-            alert('Logged out successfully. Redirecting to login page (Note: You need to implement the actual redirect to the login page).');
-            // window.location.href = 'index.html'; 
+            window.location.href = 'Login&Register.html';
         }
 
         /* ========================================================= */
@@ -414,8 +424,8 @@
                 sidebar.classList.add('-translate-x-full');
             }
 
-            document.getElementById('user-full-name').textContent = 'Admin Demo';
-            document.getElementById('nav-greeting-text').textContent = 'Hello, Admin Demo!';
+
+
         };
     </script>
     <script src="js/ui.js"></script>
@@ -424,3 +434,4 @@
 </body>
 
 </html>
+

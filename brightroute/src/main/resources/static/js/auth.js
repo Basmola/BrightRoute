@@ -127,7 +127,7 @@ async function handleLogin(e) {
         localStorage.setItem('currentUser', JSON.stringify(user));
 
         // REDIRECT based on role
-        if (user.role === 'admin') {
+        if (user.role && user.role.toUpperCase() === 'ADMIN') {
             window.location.href = 'admin_dashboard.html';
         } else {
             window.location.href = 'index.html'; // Assuming index.html is the student portal
