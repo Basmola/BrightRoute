@@ -12,6 +12,7 @@ public class UserStudentRegistrationDto {
     private String phoneNumber;
     private String password; // Raw password
     
+    private byte[] userImage; 
     // Default values for new registrations
     private Role role = Role.STUDENT; 
     private AccountStatus accountStatus = AccountStatus.ACTIVE;
@@ -40,6 +41,9 @@ public class UserStudentRegistrationDto {
 
     public String getPassword() { return password; }
     public void setPassword(String password) { this.password = password; }
+    
+    public byte[] getUserImage() { return userImage; }
+    public void setUserImage(byte[] userImage) { this.userImage = userImage; }
 
     public Role getRole() { return role; }
     public void setRole(Role role) { this.role = role; }
