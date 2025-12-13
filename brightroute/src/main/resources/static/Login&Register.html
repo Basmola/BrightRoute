@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BrightRoute - Access</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <link rel="stylesheet" href="css/styles.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: { 900: '#111827', 800: '#1f2937', 50: '#f9fafb' },
+                        accent: { DEFAULT: '#3b82f6', hover: '#2563eb' }
+                    },
+                    fontFamily: { sans: ['Inter', 'sans-serif'] }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-brand-50 h-screen flex flex-col justify-center items-center p-4 auth-bg-pattern overflow-y-auto">
+
+    <div class="w-full max-w-md bg-white p-8 rounded-2xl shadow-xl border border-gray-100 my-8">
+        <div class="text-center mb-8">
+            <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-blue-50 mb-4 text-brand-900">
+                <i class="ph-fill ph-graduation-cap text-3xl text-accent-DEFAULT"></i>
+            </div>
+            <h2 class="text-2xl font-bold text-gray-900">BrightRoute</h2>
+            <p class="text-gray-500 mt-2">Learning Management System</p>
+        </div>
+
+        <!-- LOGIN VIEW (Hidden by default now) -->
+        <div id="login-view" class="hidden">
+            <form onsubmit="handleLogin(event)" class="space-y-5">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400">
+                            <i class="ph ph-envelope"></i>
+                        </span>
+                        <input type="email" id="login-email" required 
+                            class="w-full pl-10 pr-4 py-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-accent-DEFAULT focus:border-accent-DEFAULT transition-shadow"
+                            placeholder="student@br.com">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400">
+                            <i class="ph ph-lock"></i>
+                        </span>
+                        <input type="password" id="login-password" required 
+                            class="w-full pl-10 pr-4 py-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-accent-DEFAULT focus:border-accent-DEFAULT transition-shadow"
+                            placeholder="••••••">
+                    </div>
+                </div>
+
+                <button type="submit" 
+                    class="w-full py-3 bg-brand-900 text-white font-semibold rounded-lg hover:bg-brand-800 transition-colors shadow-lg shadow-brand-900/20">
+                    Sign In
+                </button>
+            </form>
+
+            <div class="mt-6 text-center text-sm text-gray-500">
+                Don't have an account? <button onclick="toggleAuthMode('register')" class="text-accent-DEFAULT font-medium hover:underline">Register now</button>
+            </div>
+        </div>
+
+        <!-- REGISTER VIEW (Visible by default) -->
+        <div id="register-view">
+            <form onsubmit="handleRegister(event)" class="space-y-4">
+                
+                <!-- Name Fields -->
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">First Name</label>
+                        <input type="text" id="reg-firstname" required class="w-full px-3 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-accent-DEFAULT">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Last Name</label>
+                        <input type="text" id="reg-lastname" required class="w-full px-3 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-accent-DEFAULT">
+                    </div>
+                </div>
+
+                <!-- Contact Fields -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                    <input type="email" id="reg-email" required class="w-full px-3 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-accent-DEFAULT">
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Phone</label>
+                        <input type="tel" id="reg-phone" required class="w-full px-3 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-accent-DEFAULT">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Parent Phone</label>
+                        <input type="tel" id="reg-parent-phone" required class="w-full px-3 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-accent-DEFAULT">
+                    </div>
+                </div>
+
+                <!-- Profile Picture -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Profile Picture (Optional)</label>
+                    <input type="file" id="reg-image-input" accept="image/*" onchange="handleImagePreview(event)"
+                        class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-accent-DEFAULT hover:file:bg-blue-100">
+                    <input type="hidden" id="reg-image-url">
+                    <div id="image-preview" class="w-16 h-16 rounded-full bg-gray-200 mt-2 flex items-center justify-center text-xs text-gray-500 overflow-hidden mx-auto">
+                        Preview
+                    </div>
+                </div>
+
+                <!-- National ID Section -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">National ID (14 Digits)</label>
+                    <input type="text" id="reg-national-id" required class="w-full px-3 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-accent-DEFAULT">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Identification Type</label>
+                    <select id="reg-id-type" required onchange="toggleIdTypeFields(this.value)" class="w-full px-3 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-accent-DEFAULT bg-white">
+                        <option value="">Select ID Document Type...</option>
+                        <option value="NATIONAL_ID">National ID Card</option>
+                        <option value="BIRTH_CERTIFICATE">Birth Certificate</option>
+                    </select>
+                </div>
+
+                <!-- Conditional Uploads -->
+                <div id="national-id-front-group" class="hidden space-y-2 border p-3 rounded-lg bg-gray-50">
+                    <label class="block text-sm font-medium text-gray-700">Upload National ID Front</label>
+                    <input type="file" id="nationalIdFrontInput" accept="image/*" class="w-full text-sm text-gray-500">
+                </div>
+
+                <div id="birth-certificate-group" class="hidden space-y-2 border p-3 rounded-lg bg-gray-50">
+                    <label class="block text-sm font-medium text-gray-700">Upload Birth Certificate</label>
+                    <input type="file" id="birthCertificateInput" accept="image/*" class="w-full text-sm text-gray-500">
+                </div>
+
+                <!-- Academic Info -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Level</label>
+                    <select id="reg-level" required class="w-full px-3 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-accent-DEFAULT bg-white">
+                        <option value="">Select Level...</option>
+                        <option value="level 1">Level 1</option>
+                        <option value="level 2">Level 2</option>
+                        <option value="level 3">Level 3</option>
+                    </select>
+                </div>
+
+                <!-- Security & Role -->
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+                        <input type="password" id="reg-password" required minlength="6" class="w-full px-3 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-accent-DEFAULT">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Confirm</label>
+                        <input type="password" id="reg-confirm-password" required minlength="6" class="w-full px-3 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-accent-DEFAULT">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Role</label>
+                    <select id="reg-role" required class="w-full px-3 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-accent-DEFAULT bg-white">
+                        <option value="">Select Role...</option>
+                        <option value="student">Student</option>
+                        <option value="admin">Instructor / Admin</option>
+                    </select>
+                </div>
+
+                <button type="submit" 
+                    class="w-full py-3 bg-brand-900 text-white font-semibold rounded-lg hover:bg-brand-800 transition-colors shadow-lg">
+                    Register Account
+                </button>
+            </form>
+
+            <div class="mt-6 text-center text-sm text-gray-500">
+                Already have an account? <button onclick="toggleAuthMode('login')" class="text-accent-DEFAULT font-medium hover:underline">Log in</button>
+            </div>
+        </div>
+
+    </div>
+
+    <script src="js/DataStore.js"></script>
+    <script src="js/auth.js"></script>
+</body>
+</html>

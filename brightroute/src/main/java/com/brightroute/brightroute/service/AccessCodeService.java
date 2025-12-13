@@ -114,9 +114,21 @@ public class AccessCodeService {
                     .orElseThrow(() -> new AccessCodeNotFoundException("Lecture not found for ID: " + lectureId));
         }
 
+        // 4. تطبيق التغييرات (إلغاء الصلاحية بعد الاستخدام)
+        code.setCodeIsUsed(true);
+        code.setCodeUsedAt(LocalDateTime.now());
 
+        // 5. ربط المستخدم والمحاضرة (UsedBy و Lecture)
+        code.setUsedBy(user);
+        if (lecture != null) {
+            code.setLecture(lecture);
+        }
+
+        AccessCode redeemedCode = accessCodeRepository.save(code);
+
+        // 🚀 حل مشكلة 500/LazyInitializationException:
         if (redeemedCode.getCourse() != null) {
-            redeemedCode.getCourse().getCourseId(); // جلب Course
+            redeemedCode.getCourse().getCourseTitle(); // Force initialization of Course proxy
         }
 
         return redeemedCode;

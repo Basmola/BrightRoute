@@ -43,6 +43,8 @@ public class LectureService {
     }
 
     public void deleteLecture(Integer id) {
+        if (id == null)
+            throw new IllegalArgumentException("ID cannot be null");
         lectureRepository.deleteById(id);
     }
 

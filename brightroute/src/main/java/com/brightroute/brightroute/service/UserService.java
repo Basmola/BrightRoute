@@ -96,6 +96,8 @@ public class UserService {
 
     @Transactional
     public User updateProfile(Integer id, User updatedUser) {
+        if (id == null)
+            throw new IllegalArgumentException("ID cannot be null");
         User existingUser = userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("User not found for ID: " + id));
 
@@ -114,11 +116,15 @@ public class UserService {
     }
 
     public User viewUser(Integer id) {
+        if (id == null)
+            throw new IllegalArgumentException("ID cannot be null");
         return userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("User not found for ID: " + id));
     }
 
     public Boolean verifyIdentity(Integer userId, String firstName, String lastName, String rawPassword) {
+        if (userId == null)
+            throw new IllegalArgumentException("User ID cannot be null");
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found."));
 
@@ -134,6 +140,8 @@ public class UserService {
 
     @Transactional
     public void deleteUser(Integer id) {
+        if (id == null)
+            throw new IllegalArgumentException("ID cannot be null");
         // Check if user exists
         if (!userRepository.existsById(id)) {
             throw new RuntimeException("User not found for ID: " + id);
