@@ -9,13 +9,20 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 // Simple DTO for login request to avoid incomplete User entity
 class LoginRequest {
     public String email;
     public String password;
 
-    public String getEmail() { return email; }
-    public String getPassword() { return password; }
+    public String getEmail() {
+        return email;
+    }
+
+    public String getPassword() {
+        return password;
+    }
 }
 
 @RestController
@@ -50,14 +57,14 @@ public class UserController {
     }
 
     /**
-     * Handles updating the user's editable profile fields (first name, last name, phone number).
+     * Handles updating the user's editable profile fields (first name, last name,
+     * phone number).
      * Maps to: PUT /api/users/{id}
      */
     @PutMapping("/{id}")
     public ResponseEntity<User> updateProfile(
             @PathVariable Integer id,
-            @RequestBody User updatedUser
-    ) {
+            @RequestBody User updatedUser) {
         return ResponseEntity.ok(userService.updateProfile(id, updatedUser));
     }
 
@@ -79,20 +86,32 @@ public class UserController {
             @RequestParam Integer userId,
             @RequestParam String firstName,
             @RequestParam String lastName,
-            @RequestParam String password
-    ) {
+            @RequestParam String password) {
         return ResponseEntity.ok(
-                userService.verifyIdentity(userId, firstName, lastName, password)
-        );
+                userService.verifyIdentity(userId, firstName, lastName, password));
     }
-    
+
     /**
-     * Handles user logout (primarily for server-side session cleanup if applicable).
+     * Handles user logout (primarily for server-side session cleanup if
+     * applicable).
      * Maps to: POST /api/users/logout
      */
     @PostMapping("/logout")
     public ResponseEntity<Void> logout(@RequestParam Integer userId) {
         userService.logout(userId);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build(); // Returns 204 No Content
+    }
+
+    // NEW ENDPOINTS
+
+    @GetMapping
+    public List<User> getAllUsers() {
+        return userService.getAllUsers();
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteUser(@PathVariable Integer id) {
+        userService.deleteUser(id);
+        return ResponseEntity.ok().build();
     }
 }

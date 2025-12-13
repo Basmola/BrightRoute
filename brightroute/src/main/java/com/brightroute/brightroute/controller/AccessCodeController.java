@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/access-codes")
 public class AccessCodeController {
@@ -19,9 +21,7 @@ public class AccessCodeController {
             @RequestParam Integer courseId,
             @RequestParam(required = false) Integer lectureId,
             @RequestParam(required = false) Integer userId,
-            @RequestParam(required = false) String codeValue
-    )
-    {
+            @RequestParam(required = false) String codeValue) {
         AccessCode accessCode = accessCodeService.createAccessCode(courseId, lectureId, userId, codeValue);
         return ResponseEntity.ok(accessCode);
     }
@@ -40,8 +40,7 @@ public class AccessCodeController {
             @RequestParam String codeValue,
             @RequestParam Integer userId, // المستخدم الذي يقوم بالاسترداد (إلزامي)
             @RequestParam(required = false) Integer lectureId // المحاضرة التي يستخدم فيها الكود (اختياري)
-    )
-    {
+    ) {
         AccessCode redeemedCode = accessCodeService.redeemAccessCode(codeValue, userId, lectureId);
         return ResponseEntity.ok(redeemedCode);
     }
@@ -51,5 +50,11 @@ public class AccessCodeController {
     public ResponseEntity<Void> revoke(@PathVariable Integer id) {
         accessCodeService.revokeAccessCode(id);
         return ResponseEntity.noContent().build();
+    }
+
+    // 5. Get All Access Codes
+    @GetMapping
+    public ResponseEntity<List<AccessCode>> getAll() {
+        return ResponseEntity.ok(accessCodeService.getAllAccessCodes());
     }
 }

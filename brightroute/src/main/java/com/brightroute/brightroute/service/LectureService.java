@@ -16,7 +16,7 @@ public class LectureService {
     private final LecturePartRepository lecturePartRepository;
 
     public LectureService(LectureRepository lectureRepository,
-                          LecturePartRepository lecturePartRepository) {
+            LecturePartRepository lecturePartRepository) {
         this.lectureRepository = lectureRepository;
         this.lecturePartRepository = lecturePartRepository;
     }
@@ -27,7 +27,7 @@ public class LectureService {
         // CRITICAL: Ensure all child parts link back to the parent lecture
         if (lecture.getParts() != null) {
             for (LecturePart part : lecture.getParts()) {
-                part.setLecture(lecture); 
+                part.setLecture(lecture);
             }
         }
         return lectureRepository.save(lecture);
@@ -47,26 +47,26 @@ public class LectureService {
     }
 
     // ===== LecturePart operations =====
-    
+
     @Transactional
     public Lecture addPart(Integer lectureId, LecturePart part) {
         Lecture lecture = getLectureById(lectureId);
         part.setLecture(lecture);
         lecture.getParts().add(part);
-        return lectureRepository.save(lecture); 
+        return lectureRepository.save(lecture);
     }
 
     @Transactional
     public Lecture deletePart(Integer lectureId, Integer partId) {
         Lecture lecture = getLectureById(lectureId);
-        
+
         LecturePart partToDelete = lecturePartRepository.findById(partId)
                 .orElseThrow(() -> new RuntimeException("LecturePart not found for ID: " + partId));
-        
+
         if (!partToDelete.getLecture().getId().equals(lectureId)) {
             throw new RuntimeException("Part ID " + partId + " does not belong to Lecture ID " + lectureId);
         }
-        
+
         lecture.getParts().remove(partToDelete);
         return lectureRepository.save(lecture);
     }
@@ -74,14 +74,14 @@ public class LectureService {
     @Transactional
     public Lecture updatePart(Integer lectureId, LecturePart updatedPart) {
         Lecture lecture = getLectureById(lectureId);
-        
+
         if (updatedPart.getId() == null) {
             throw new IllegalArgumentException("Updated part must contain an ID.");
         }
-        
+
         updatedPart.setLecture(lecture);
         lecturePartRepository.save(updatedPart);
-        
-        return getLectureById(lectureId); 
+
+        return getLectureById(lectureId);
     }
 }

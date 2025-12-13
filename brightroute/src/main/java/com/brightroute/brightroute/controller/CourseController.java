@@ -42,7 +42,8 @@ public class CourseController {
                 .map(course -> {
                     course.setCourseTitle(courseDetails.getCourseTitle());
                     course.setCourseDescription(courseDetails.getCourseDescription());
-                    // ... set other fields
+                    course.setCourseInstructor(courseDetails.getCourseInstructor());
+                    course.setLevelId(courseDetails.getLevelId());
                     Course updatedCourse = courseService.saveCourse(course);
                     return ResponseEntity.ok(updatedCourse);
                 })
