@@ -1,6 +1,6 @@
 package com.brightroute.brightroute.controller;
 
-import com.brightroute.brightroute.model.CourseSubscription;
+import com.brightroute.brightroute.dto.CourseSubscriptionDTO; // New import
 import com.brightroute.brightroute.service.CourseSubscriptionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -16,18 +16,18 @@ public class CourseSubscriptionController {
         this.courseSubscriptionService = courseSubscriptionService;
     }
 
+    // CORRECTION: Change return type to CourseSubscriptionDTO
     @PostMapping("/subscribe")
-    public CourseSubscription subscribe(
-            // CORRECTION: Changed type to Integer, renamed parameter to userId
+    public CourseSubscriptionDTO subscribe( 
             @RequestParam Integer userId,
             @RequestParam Integer courseId
     ) {
+        // The service now returns the DTO directly
         return courseSubscriptionService.subscribe(userId, courseId);
     }
 
     @DeleteMapping("/unsubscribe")
     public void unsubscribe(
-            // CORRECTION: Changed type to Integer, renamed parameter to userId
             @RequestParam Integer userId,
             @RequestParam Integer courseId
     ) {

@@ -71,4 +71,18 @@ public class LecturePartController {
         lecturePartService.updateContent(partId, newContentUrl);
         return ResponseEntity.noContent().build();
     }
+
+
+    @DeleteMapping("/{partId}")
+    public ResponseEntity<Void> deletePart(@PathVariable Integer partId) {
+        boolean isDeleted = lecturePartService.deletePartById(partId);
+
+        if (isDeleted) {
+            // 204 No Content is the standard response for a successful DELETE.
+            return ResponseEntity.noContent().build();
+        } else {
+            // 404 Not Found if the part doesn't exist.
+            return ResponseEntity.notFound().build();
+        }
+    }
 }

@@ -47,15 +47,6 @@ public class Course {
     @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<Lecture> lectures;
 
-    // One Course has Many Subscriptions
-    @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    private List<CourseSubscription> subscriptions;
-
-    // One Course can have Many Access Codes generated for it
-    @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    private List<AccessCode> accessCodes;
-
-
     // Constructors
     public Course() {
         // Initializes fields with default values
@@ -93,9 +84,4 @@ public class Course {
     public List<Lecture> getLectures() { return lectures; }
     public void setLectures(List<Lecture> lectures) { this.lectures = lectures; }
 
-    public List<CourseSubscription> getSubscriptions() { return subscriptions; }
-    public void setSubscriptions(List<CourseSubscription> subscriptions) { this.subscriptions = subscriptions; }
-
-    public List<AccessCode> getAccessCodes() { return accessCodes; }
-    public void setAccessCodes(List<AccessCode> accessCodes) { this.accessCodes = accessCodes; }
 }

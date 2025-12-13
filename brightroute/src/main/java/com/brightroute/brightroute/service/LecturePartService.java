@@ -62,5 +62,15 @@ public class LecturePartService {
         
         part.setPartContentUrl(newContentUrl);
         lecturePartRepository.save(part);
+ 
+    }
+
+    @Transactional
+    public boolean deletePartById(Integer partId) {
+        if (lecturePartRepository.existsById(partId)) {
+            lecturePartRepository.deleteById(partId);
+            return true;
+        }
+        return false;
     }
 }

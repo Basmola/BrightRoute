@@ -67,7 +67,7 @@ public class User {
     @OneToMany(mappedBy = "usedBy", fetch = FetchType.LAZY)
     private List<AccessCode> usedAccessCodes;
 
-
+    
     public User() {}
 
     // ===== Getters & Setters =====
@@ -98,6 +98,7 @@ public class User {
 
     public LocalDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
+
+    public void setStudentProfile(Student studentProfile) { this.studentProfile = studentProfile; }
     
-    // (Other relation getters/setters omitted for brevity)
 }
