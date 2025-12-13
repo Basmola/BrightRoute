@@ -1,141 +1,141 @@
-        /* Custom scrollbar for better aesthetics */
-        .custom-scrollbar::-webkit-scrollbar {
-            width: 8px;
-        }
+/* styles.css */
+:root {
+    --primary-color: #2563eb; /* Bright Route Blue */
+    --primary-hover: #1d4ed8;
+    --bg-color: #f3f4f6;
+    --card-bg: #ffffff;
+    --text-color: #1f2937;
+    --text-muted: #6b7280;
+    --border-color: #d1d5db;
+    --error-color: #ef4444;
+}
 
-        .custom-scrollbar::-webkit-scrollbar-track {
-            background: #f1f5f9;
-        }
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
 
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-            background: #9ca3af;
-            border-radius: 10px;
-        }
+body {
+    background-color: var(--bg-color);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px;
+}
 
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-            background: #6b7280;
-        }
+.container {
+    background-color: var(--card-bg);
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    width: 100%;
+    max-width: 500px; /* Wider for registration */
+}
 
-        /* Responsive font size */
-        html {
-            font-size: 16px;
-        }
+h2 {
+    color: var(--text-color);
+    text-align: center;
+    margin-bottom: 1.5rem;
+    font-size: 1.8rem;
+}
 
-        @media (max-width: 768px) {
-            html {
-                font-size: 14px;
-            }
-        }
+.form-group {
+    margin-bottom: 1rem;
+}
 
-        /* Custom Modal Transition */
-        .modal-content {
-            transition: all 0.3s ease-in-out;
-        }
+.form-row {
+    display: flex;
+    gap: 1rem;
+}
 
-        .hidden+.modal-content {
-            transform: scale(0.95);
-            opacity: 0;
-        }
+.form-row .form-group {
+    flex: 1;
+}
 
-        .modal-visible .modal-content {
-            transform: scale(1);
-            opacity: 1;
-        }
+label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: var(--text-color);
+    font-weight: 500;
+}
 
-        /* Enhanced Sidebar Style and universal Collapse Logic */
-        #portal-sidebar {
-            transition: transform 0.3s ease-in-out, width 0.3s ease-in-out;
-            transform: translateX(-100%);
-            z-index: 40;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 16rem;
-        }
+input, select {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    font-size: 1rem;
+    transition: border-color 0.2s;
+}
 
-        #portal-main{
-                padding-left: 78px;
-                padding-right: 78px;
-        }
+input:focus, select:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
 
-        @media (min-width: 1024px) {
-            #portal-sidebar {
-                transform: translateX(0);
-                position: fixed;
-                height: 100vh;
-            }
+button {
+    width: 100%;
+    padding: 0.85rem;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    margin-top: 1rem;
+}
 
-            #portal-sidebar.sidebar-closed-desktop {
-                width: 0;
-                transform: translateX(-16rem);
-            }
-        }
+button:hover {
+    background-color: var(--primary-hover);
+}
 
-        #portal-sidebar.sidebar-open {
-            transform: translateX(0);
-        }
+button:disabled {
+    background-color: var(--text-muted);
+    cursor: not-allowed;
+}
 
-        #sidebar-backdrop {
-            z-index: 39;
-            transition: opacity 0.3s ease-in-out;
-        }
+.switch-page {
+    text-align: center;
+    margin-top: 1.5rem;
+    color: var(--text-muted);
+}
 
-        /* Custom Hover Effect for Cards */
-        .card-hover-effect {
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
+.switch-page a {
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: 600;
+}
 
-        .card-hover-effect:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-        }
+.switch-page a:hover {
+    text-decoration: underline;
+}
 
-        /* STICKY FOOTER CONTAINER LOGIC */
-        .main-content-wrapper {
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-            width: 100%;
-            transition: padding-left 0.3s ease-in-out;
-        }
+.hidden {
+    display: none;
+}
 
-        #portal-main {
-            flex-grow: 1;
-            padding-left: 5rem;
-            padding-right: 5rem;
-        }
+/* File Input Styling */
+.file-upload-wrapper {
+    position: relative;
+    border: 2px dashed var(--border-color);
+    border-radius: 6px;
+    padding: 1rem;
+    text-align: center;
+    background: #fafafa;
+}
 
-        @media (min-width: 1024px) {
-            .main-content-wrapper {
-                padding-left: 0rem;
-            }
+.file-upload-wrapper:hover {
+    border-color: var(--primary-color);
+}
 
-            .main-content-wrapper.sidebar-closed-desktop {
-                padding-left: 0rem;
-            }
-        }
-
-        .portal-footer {
-            flex-shrink: 0;
-            border-top: 1px solid #e5e7eb;
-        }
-
-        .level-card-grid>div {
-            min-height: 360px;
-            padding: 0.9rem;
-        }
-
-        .card-content-paddings {
-            padding-left: 1.25rem;
-            padding-right: 1.25rem;
-        }
-
-        .nav-profile-img {
-            background-size: cover;
-            background-position: center;
-        }
-
-        .hero-gradient {
-            background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
-            border-bottom: 4px solid #111827;
-        }
+.file-note {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-top: 0.25rem;
+}

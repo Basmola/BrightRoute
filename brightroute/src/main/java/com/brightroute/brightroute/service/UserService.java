@@ -62,7 +62,6 @@ public class UserService {
         
         // B. Link User to Student (Required for CascadeType.ALL on User)
         // NOTE: This requires the setStudentProfile() method in the User entity!
-        user.setStudentProfile(studentProfile);
         
         // 🚨 CRITICAL FIXES IMPLEMENTED:
         // 1. Removed studentProfile.setId(savedUser.getId())

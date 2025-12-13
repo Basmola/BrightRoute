@@ -46,12 +46,12 @@ public class User {
     private LocalDateTime createdAt = LocalDateTime.now();
 
     // ----------------------------
-    // RELATIONSHIPS (All MappedBy relationships are defined correctly)
+    // RELATIONSHIPS
+    // CascadeType.ALL is CRITICAL for saving the Student automatically during registration
     // ----------------------------
 
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private Student studentProfile;
-
+   
+    // Other MappedBy relationships
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<CourseSubscription> subscriptions;
 
@@ -95,10 +95,13 @@ public class User {
 
     public AccountStatus getAccountStatus() { return accountStatus; }
     public void setAccountStatus(AccountStatus accountStatus) { this.accountStatus = accountStatus; } 
+    
+    // Add Getter/Setter for userImage if needed
+    public byte[] getUserImage() { return userImage; }
+    public void setUserImage(byte[] userImage) { this.userImage = userImage; }
 
     public LocalDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
-
-    public void setStudentProfile(Student studentProfile) { this.studentProfile = studentProfile; }
     
+
 }
