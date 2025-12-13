@@ -128,26 +128,85 @@
         }
         window.showLecturePart = showLecturePart;
 
-        function submitQuiz() {
-            const quizSubmitBtn = document.getElementById('quiz-submit-btn');
 
-            quizSubmitBtn.disabled = true;
-            quizSubmitBtn.textContent = 'Quiz Completed!';
-            quizSubmitBtn.classList.remove('bg-secondary');
-            quizSubmitBtn.classList.add('bg-gray-500', 'cursor-not-allowed');
+        // =======================================================
+// وظيفة فتح المحتوى (UNLOCKING CONTENT)
+// =======================================================
+function unlockLectureContent() {
+    // 1. إلغاء قفل أزرار التنقل في القائمة الجانبية للمحاضرة
+    const lockedButtons = document.querySelectorAll('.lecture-part-locked');
+    lockedButtons.forEach(btn => {
+        btn.disabled = false;
+        btn.classList.remove('opacity-50', 'cursor-not-allowed', 'lecture-part-locked');
+        btn.classList.add('hover:bg-gray-700');
+    });
 
-            document.querySelectorAll('.lecture-part-locked').forEach(btn => {
-                btn.classList.remove('opacity-50', 'cursor-not-allowed');
-                btn.removeAttribute('disabled');
-                btn.classList.remove('text-gray-300');
-                btn.classList.add('text-white');
-            });
+    // 2. تعطيل زر إرسال الاختبار لمنع الإرسال مرة أخرى
+    const quizSubmitBtn = document.getElementById('quiz-submit-btn');
+    if (quizSubmitBtn) {
+        quizSubmitBtn.disabled = true;
+        quizSubmitBtn.textContent = 'Quiz Completed';
+        quizSubmitBtn.classList.remove('bg-secondary', 'hover:bg-gray-600');
+        quizSubmitBtn.classList.add('bg-gray-500', 'cursor-not-allowed');
+    }
+}
+window.unlockLectureContent = unlockLectureContent;
+// =======================================================
+// وظيفة submitQuiz المُعدَّلة لفرض الإجابة على جميع الأسئلة
+//// =======================================================
+// وظيفة submitQuiz المُعدَّلة
+// =======================================================
 
-            showMessage('Quiz Submitted!', 'Congratulations! You passed the quiz. Lecture content is now unlocked in the sidebar.');
+function submitQuiz() {
+    const quizContainer = document.getElementById('quiz-questions-container');
+    if (!quizContainer) {
+        if (typeof showMessage !== 'undefined') showMessage('Error', 'Quiz questions were not loaded.');
+        return;
+    }
 
-            showLecturePart('part1-content');
+    // 1. جمع وتجميع أسماء الأسئلة (بدون تغيير)
+    const radioInputs = quizContainer.querySelectorAll('input[type="radio"]');
+    const uniqueQuestionNames = new Set();
+    radioInputs.forEach(input => {
+        if (input.name) {
+            uniqueQuestionNames.add(input.name);
         }
-        window.submitQuiz = submitQuiz;
-        // =======================================================
-        // 7. LECTURE & QUIZ LOGIC (Conceptual: lecture_parts.js) - END
-        // =======================================================
+    });
+
+    // 2. التحقق من الإجابة على كل سؤال (بدون تغيير)
+    let allAnswered = true;
+    for (const name of uniqueQuestionNames) {
+        const answered = quizContainer.querySelector(`input[name="${name}"]:checked`);
+        if (!answered) {
+            allAnswered = false;
+            break;
+        }
+    }
+
+    // 3. تنفيذ الشرط (إظهار خطأ إذا لم يتم الإجابة على كل شيء)
+    if (!allAnswered) {
+        if (typeof showMessage !== 'undefined') {
+            showMessage('Quiz Submission Failed', 'You must answer all questions before submitting the quiz.');
+        }
+        return;
+    }
+
+    // 4. في حالة نجاح التحقق (جميع الأسئلة مجاب عليها):
+    
+    // أ. إلغاء قفل المحتوى (فتح أزرار القائمة الجانبية للمحاضرة)
+    if (typeof unlockLectureContent !== 'undefined') {
+        unlockLectureContent(); 
+    }
+    
+    // ب. نقل المستخدم إلى الجزء الأول من المحتوى (Part 1: Core Concepts Video)
+    if (typeof showLecturePart !== 'undefined') {
+        showLecturePart('part1-content');
+    }
+    
+    // ج. عرض رسالة النجاح
+    if (typeof showMessage !== 'undefined') {
+        showMessage('Quiz Submitted', 'Quiz passed successfully! The lecture content is now unlocked.');
+    }
+}
+
+window.submitQuiz = submitQuiz;

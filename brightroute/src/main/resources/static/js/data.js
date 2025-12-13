@@ -1,7 +1,7 @@
 // =======================================================
 // 1. DATA AND STATE (Conceptual: data.js) - START
 // =======================================================
-function setLogLevel() {}
+function setLogLevel() { }
 setLogLevel('Debug');
 
 const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
@@ -21,11 +21,37 @@ let registeredUsers = [];
 registeredUsers.push({ id: 1, email: 'student@br.com', password: '123', role: 'student', firstName: 'Basmala', lastName: 'Ali', imageUrl: null, phoneNumber: '0100100100' });
 registeredUsers.push({ id: 2, email: 'admin12@gmail.com', password: 'admin123', role: 'admin', firstName: 'Admin', lastName: 'Manager', imageUrl: null, phoneNumber: '0100100101' });
 registeredUsers.push({ id: 3, email: 'test@user.com', password: '123', role: 'student', firstName: 'Test', lastName: 'User', imageUrl: null, phoneNumber: '0123456789' });
-
 const mockCourses = [
-    { id: 'C1', title: 'Advanced Web Development with React', instructor: 'Fatma Ali', lectures: 15, status: 'Published', tag: 'primary', imageText: 'DEV' },
-    { id: 'C2', title: 'Database Design and SQL Mastery', instructor: 'Dr. Ahmed Hassan', lectures: 10, status: 'Draft', tag: 'secondary', imageText: 'SQL' },
-    { id: 'C3', title: 'Python for Data Science', instructor: 'Mr. Waleed', lectures: 22, status: 'Published', tag: 'accent', imageText: 'PY' },
+    {
+        id: 'C1',
+        title: 'Advanced Web Development with React',
+        instructor: 'Fatma Ali',
+        lectures: 15,
+        status: 'Published',
+        tag: 'primary',
+        imageText: 'DEV',
+        levelTag: 'primary' // تحديد مستوى التعليم هنا
+    },
+    {
+        id: 'C2',
+        title: 'Database Design and SQL Mastery',
+        instructor: 'Dr. Ahmed Hassan',
+        lectures: 10,
+        status: 'Draft',
+        tag: 'secondary',
+        imageText: 'SQL',
+        levelTag: 'secondary' // تحديد مستوى التعليم هنا
+    },
+    {
+        id: 'C3',
+        title: 'Python for Data Science',
+        instructor: 'Mr. Waleed',
+        lectures: 22,
+        status: 'Published',
+        tag: 'accent',
+        imageText: 'PY',
+        levelTag: 'highschool' // تحديد مستوى التعليم هنا
+    },
 ];
 
 // NEW: Mock data for dynamic Level Cards
@@ -48,7 +74,6 @@ const mockQuizQuestions = [
     { questionNumber: 7, question: "How do you correctly link an external CSS file named 'styles.css' to an HTML document?", answerOptions: [{ text: "<style src='styles.css'>", rationale: "The 'style' tag is for internal CSS and uses the 'type' attribute, not 'src'.", isCorrect: false }, { text: "<link href='styles.css' rel='stylesheet'>", rationale: "The 'link' tag with 'href' and 'rel=stylesheet' is the correct method for external CSS files.", isCorrect: true }, { text: "<stylesheet>styles.css</stylesheet>", rationale: "This is not a standard HTML element.", isCorrect: false }, { text: "<import style='styles.css'>", rationale: "The '@import' rule is used within CSS itself, not directly in HTML.", isCorrect: false }] },
     { questionNumber: 8, question: "Which operator is used for strictly checking both value and type in JavaScript?", answerOptions: [{ text: "==", rationale: "'==' checks only the value, allowing type coercion.", isCorrect: false }, { text: "!==", rationale: "'!==' is the strict not equal operator.", isCorrect: false }, { text: "===", rationale: "'===' is the strict equality operator, checking both value and data type.", isCorrect: true }, { text: "!= ", rationale: "'!=' checks only the value (non-strict not equal).", isCorrect: false }] },
     { questionNumber: 9, question: "To apply CSS styles to only one specific HTML element, which selector should you use?", answerOptions: [{ text: "Class selector", rationale: "Class selectors can target multiple elements.", isCorrect: false }, { text: "Tag selector", rationale: "Tag selectors target all elements of a given tag name.", isCorrect: false }, { text: "ID selector", rationale: "The ID selector targets one unique element per page, making it ideal for specific styling.", isCorrect: true }, { text: "Universal selector", rationale: "The universal selector targets all elements.", isCorrect: false }] },
-    { questionNumber: 10, question: "What is the purpose of the 'defer' attribute in a <script> tag?", answerOptions: [{ text: "To execute the script immediately before the page loads.", rationale: "Scripts without attributes or with 'async' often execute sooner, potentially blocking parsing.", isCorrect: false }, { text: "To load the script asynchronously, executing it as soon as it's downloaded.", rationale: "The 'async' attribute is used for asynchronous loading and immediate execution.", isCorrect: false }, { text: "To delay the script download until after the entire page has loaded.", rationale: "The 'defer' attribute loads the script in parallel but delays execution until the document has been fully parsed.", isCorrect: true }, { text: "To cache the script locally for offline access.", rationale: "This is managed via service workers or other caching mechanisms, not the 'defer' attribute.", isCorrect: false }] },
 ];
 
 // ===============================
@@ -59,7 +84,7 @@ function findUserByEmail(email) {
 }
 
 function registerUser(user) {
-    if(findUserByEmail(user.email)) {
+    if (findUserByEmail(user.email)) {
         return { success: false, message: "Email already registered" };
     }
     user.id = registeredUsers.length + 1;
@@ -69,8 +94,8 @@ function registerUser(user) {
 
 function loginUser(email, password) {
     const user = findUserByEmail(email);
-    if(!user) return { success: false, message: "User not found" };
-    if(user.password !== password) return { success: false, message: "Incorrect password" };
+    if (!user) return { success: false, message: "User not found" };
+    if (user.password !== password) return { success: false, message: "Incorrect password" };
     return { success: true, message: "Login successful", user };
 }
 // =======================================================

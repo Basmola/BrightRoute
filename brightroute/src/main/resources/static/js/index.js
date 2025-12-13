@@ -44,6 +44,10 @@
                 if (portalFlow) portalFlow.classList.add('hidden');
                 switchAuthView('register-view');
             }
+
+            if (typeof populateCourseDropdowns !== 'undefined') {
+        populateCourseDropdowns();
+    }
         });
         // =======================================================
         // 8. INITIALIZATION (Conceptual: main.js) - END

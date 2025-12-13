@@ -17,7 +17,7 @@
             updateProfileIcon({ firstName: userName, imageUrl: imageUrl });
 
             if (currentPortalHeader) {
-                currentPortalHeader.textContent = newRole === 'admin' ? 'Admin Dashboard' : `Student Dashboard`;
+                currentPortalHeader.textContent = newRole === 'admin' ? 'Admin Dashboard' : 'Student Dashboard';
             }
 
             if (currentUserRoleBadge) {
@@ -74,10 +74,13 @@
             const lastName = document.getElementById('register-last-name').value.trim();
             const email = document.getElementById('register-email').value.toLowerCase().trim();
             const phoneNumber = document.getElementById('register-phone-number').value.trim();
+            const parentPhoneNumber = document.getElementById('register-parent-phone-number').value.trim();
             const password = document.getElementById('register-password').value;
             const confirmPassword = document.getElementById('confirm-password').value;
             const roleSelect = document.getElementById('register-role');
             const role = roleSelect.value;
+            const levelSelect = document.getElementById('register-level');
+            const level= levelSelect.value;
             const imageUrl = document.getElementById('register-image-url').value;
 
             if (password !== confirmPassword) {
@@ -86,6 +89,11 @@
             }
             if (!role) {
                 showMessage('Registration Failed', 'Please select a role.');
+                return;
+            }
+
+            if (!level) {
+                showMessage('Registration Failed', 'Please select a level.');
                 return;
             }
 
@@ -100,8 +108,10 @@
                 lastName: lastName,
                 email: email,
                 phoneNumber: phoneNumber,
+                parentPhoneNumber: parentPhoneNumber,
                 password: password,
                 role: role,
+                level:level,
                 imageUrl: imageUrl
             });
 

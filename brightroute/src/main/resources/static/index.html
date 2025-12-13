@@ -29,7 +29,7 @@
         }
     </script>
 
-    
+
 </head>
 
 <body class="bg-gray-50 text-inter min-h-screen flex antialiased">
@@ -92,6 +92,14 @@
                     </div>
 
                     <div>
+                        <label for="register-parent-phone-number" class="block text-sm font-medium text-gray-700">Parent
+                            phone
+                            Number</label>
+                        <input type="tel" id="register-parent-phone-number" required
+                            class="mt-1 w-full p-1 border border-gray-300 rounded-lg focus:ring-primary focus:border-primary">
+                    </div>
+
+                    <div>
                         <label class="block text-sm font-medium text-gray-700">Profile Picture (Optional)</label>
                         <input type="file" id="register-image-input" accept="image/*"
                             onchange="handleImageUpload(event)"
@@ -101,6 +109,17 @@
                             class="w-20 h-20 rounded-full bg-gray-200 mt-2 flex items-center justify-center text-xs text-gray-500 overflow-hidden">
                             Preview
                         </div>
+                    </div>
+
+                    <div>
+                        <label for="register-level" class="block text-sm font-medium text-gray-700">Level</label>
+                        <select id="register-level" required
+                            class="mt-1 w-full p-1 border border-gray-300 rounded-lg focus:ring-primary focus:border-primary bg-white">
+                            <option value="">level of education...</option>
+                            <option value="level 1">level 1</option>
+                            <option value="level 1">level 2</option>
+                            <option value="level 1">level 3</option>
+                        </select>
                     </div>
 
                     <div>
@@ -255,7 +274,29 @@
                                 d="M12 6.5v11M17.5 12h-11M9 21h6a2 2 0 002-2V5a2 2 0 00-2-2H9a2 2 0 00-2 2v14a2 2 0 002 2z">
                             </path>
                         </svg>
-                        Content Management
+                        course Management
+                    </a>
+                    <a href="#"
+                        class="nav-link flex items-center p-3 rounded-xl transition duration-150 text-gray-300 hover:bg-gray-700"
+                        onclick="navigate('manage-lectures-view')">
+                        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                            xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M4 5a1 1 0 011-1h14a1 1 0 011 1v14a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM11 10a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 01-1 1h-2a1 1 0 01-1-1v-2z">
+                            </path>
+                        </svg>
+                        Lecture Management
+                    </a>
+                    <a href="#"
+                        class="nav-link flex items-center p-3 rounded-xl transition duration-150 text-gray-300 hover:bg-gray-700"
+                        onclick="navigate('add-lecture-part-view')">
+                        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                            xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
+                            </path>
+                        </svg>
+                        Lecture Part Management
                     </a>
                     <a href="#"
                         class="nav-link flex items-center p-3 rounded-xl transition duration-150 text-gray-300 hover:bg-gray-700"
@@ -332,7 +373,8 @@
                 </div>
             </nav>
 
-            <main id="portal-main" class="flex-1 overflow-y-auto custom-scrollbar p-6" style="padding-left: 75px; padding-right: 75px;">
+            <main id="portal-main" class="flex-1 overflow-y-auto custom-scrollbar p-6"
+                style="padding-left: 75px; padding-right: 75px;">
 
                 <header class="flex justify-start items-center pb-6 border-b border-gray-200 mb-6">
                     <h2 class="text-3xl font-extrabold text-primary" id="current-portal-header">
@@ -344,9 +386,102 @@
                     <button id="current-role-switch" class="hidden"></button>
                     <button id="notifications-button" class="hidden"></button>
                 </header>
+                <section id="add-lecture-part-view" class="app-view hidden space-y-8">
+    <h1 class="text-3xl font-bold text-gray-800">Add 3 Content Parts to Lecture</h1>
+    <p class="text-gray-600">Define up to 3 individual content parts (Video/Document) for the selected lecture.</p>
+
+    <div class="bg-white p-6 rounded-xl shadow-soft max-w-2xl mx-auto">
+        <form onsubmit="event.preventDefault(); addNewLecturePartFinal();" class="space-y-6">
+            
+            <div>
+                <label class="block text-sm font-medium text-gray-700">1. Target Course</label>
+                <select id="part-target-course" onchange="populateLectureDropdown(this.value, 'part-target-lecture')" required
+                        class="mt-1 w-full p-2 border border-gray-300 rounded-lg bg-white">
+                    <option value="">-- Select Course First --</option>
+                </select>
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700">2. Target Lecture</label>
+                <select id="part-target-lecture" required
+                        class="mt-1 w-full p-2 border border-gray-300 rounded-lg bg-white">
+                    <option value="">-- Select Lecture --</option>
+                </select>
+            </div>
+
+            <h4 class="text-md font-semibold text-gray-800 pt-2 border-t mt-4">3. Individual Content Parts</h4>
+
+            <div class="space-y-2 p-3 border border-dashed border-gray-300 rounded-lg" id="part-group-1">
+                <p class="font-bold text-sm text-primary">Part 1</p>
+                <div>
+                    <label class="block text-xs font-medium text-gray-700">Part Type</label>
+                    <select id="part-type-1" class="mt-1 w-full p-2 border border-gray-300 rounded-lg bg-white">
+                        <option value="">-- Select Type (Optional) --</option>
+                        <option value="VIDEO">Video URL</option>
+                        <option value="PDF">Document / File URL</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-gray-700">Content URL (Optional)</label>
+                    <input type="url" id="part-url-1" placeholder="Paste URL here" class="mt-1 w-full p-2 border border-gray-300 rounded-lg">
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-gray-700">Part Description</label>
+                    <textarea id="part-desc-1" rows="2" placeholder="Brief description of Part 1" class="mt-1 w-full p-2 border border-gray-300 rounded-lg"></textarea>
+                </div>
+            </div>
+
+            <div class="space-y-2 p-3 border border-dashed border-gray-300 rounded-lg" id="part-group-2">
+                <p class="font-bold text-sm text-primary">Part 2</p>
+                <div>
+                    <label class="block text-xs font-medium text-gray-700">Part Type</label>
+                    <select id="part-type-2" class="mt-1 w-full p-2 border border-gray-300 rounded-lg bg-white">
+                        <option value="">-- Select Type (Optional) --</option>
+                        <option value="VIDEO">Video URL</option>
+                        <option value="PDF">Document / File URL</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-gray-700">Content URL (Optional)</label>
+                    <input type="url" id="part-url-2" placeholder="Paste URL here" class="mt-1 w-full p-2 border border-gray-300 rounded-lg">
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-gray-700">Part Description</label>
+                    <textarea id="part-desc-2" rows="2" placeholder="Brief description of Part 2" class="mt-1 w-full p-2 border border-gray-300 rounded-lg"></textarea>
+                </div>
+            </div>
+
+            <div class="space-y-2 p-3 border border-dashed border-gray-300 rounded-lg" id="part-group-3">
+                <p class="font-bold text-sm text-primary">Part 3</p>
+                <div>
+                    <label class="block text-xs font-medium text-gray-700">Part Type</label>
+                    <select id="part-type-3" class="mt-1 w-full p-2 border border-gray-300 rounded-lg bg-white">
+                        <option value="">-- Select Type (Optional) --</option>
+                        <option value="VIDEO">Video URL</option>
+                        <option value="PDF">Document / File URL</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-gray-700">Content URL (Optional)</label>
+                    <input type="url" id="part-url-3" placeholder="Paste URL here" class="mt-1 w-full p-2 border border-gray-300 rounded-lg">
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-gray-700">Part Description</label>
+                    <textarea id="part-desc-3" rows="2" placeholder="Brief description of Part 3" class="mt-1 w-full p-2 border border-gray-300 rounded-lg"></textarea>
+                </div>
+            </div>
+            
+            <button type="submit"
+                class="w-full py-3 bg-secondary text-white rounded-xl font-semibold hover:bg-gray-600 transition shadow-lg">
+                Save All Parts
+            </button>
+        </form>
+    </div>
+</section>
 
                 <section id="home-page-view" class="app-view hidden space-y-8">
-                    <section class="hero-gradient py-16 text-center rounded-xl shadow-soft" style="background: linear-gradient(45deg, #e3e3e3, #f6f6f6);">
+                    <section class="hero-gradient py-16 text-center rounded-xl shadow-soft"
+                        style="background: linear-gradient(45deg, #e3e3e3, #f6f6f6);">
                         <div class="max-w-4xl mx-auto px-6">
                             <h2 class="text-4xl font-black text-primary mb-4 leading-tight">Welcome to BrightRoute!</h2>
                             <p class="text-lg text-secondary mb-8">
@@ -360,7 +495,8 @@
                     <p class="text-lg text-gray-600 text-center mb-10">Start from the basics and move to mastery through
                         our structured paths.</p>
 
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-11 level-card-grid" id="level-cards-container" style="padding-left: 22px; padding-right: 22px;">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-11 level-card-grid" id="level-cards-container"
+                        style="padding-left: 22px; padding-right: 22px;">
                         <!-- Cards dynamically rendered by renderLevelCards() -->
                     </div>
                 </section>
@@ -369,7 +505,7 @@
                 <section id="level-lectures-view" class="app-view hidden space-y-8">
                     <h1 class="text-3xl font-bold text-gray-800" id="current-level-title">Lectures in Level X</h1>
                     <p class="text-gray-600">This section details the lectures available within this course level. Click
-                        'Go To Lecture' and use access code **LEVEL1JS** to unlock content.</p>
+                        'Go To Lecture' and use access code *LEVEL1JS* to unlock content.</p>
 
                     <button class="mb-4 text-primary font-medium flex items-center hover:text-gray-800 transition"
                         onclick="navigate('home-page-view')">
@@ -586,7 +722,7 @@
                                 stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a4 4 0 014-4h8a4 4 0 014 4v1m-2-4a4 4 0 100-8 4 4 0 000 8z">
-                            </path>
+                                </path>
                             </svg>
                             <span class="text-lg font-semibold text-primary">Manage Users</span>
                         </button>
@@ -644,9 +780,9 @@
                         <div class="flex justify-between items-center mb-4">
                             <input type="text" placeholder="Search users by name or email..."
                                 class="p-3 border border-gray-300 rounded-lg w-1/2">
-                            <button
+                            <!-- <button
                                 class="px-4 py-2 bg-secondary text-white rounded-xl hover:bg-gray-600 transition font-semibold">Add
-                                New User</button>
+                                New User</button> -->
                         </div>
 
                         <div class="overflow-x-auto">
@@ -677,16 +813,39 @@
 
 
                 <section id="manage-courses-view" class="app-view hidden space-y-8">
-                    <h1 class="text-3xl font-bold text-gray-800">Content Management</h1>
-                    <p class="text-gray-600">Create, edit, and publish courses, lectures, and quizzes. (Admin Tool)</p>
+                    <h1 class="text-3xl font-bold text-gray-800">Course Management</h1>
+                    <p class="text-gray-600">Create, edit, and publish courses. (Admin Tool)</p>
 
                     <div class="bg-white p-6 rounded-xl shadow-soft">
                         <div class="flex justify-between items-center mb-4">
                             <input type="text" placeholder="Search content..."
                                 class="p-3 border border-gray-300 rounded-lg w-1/2">
-                            <button
+                            <button onclick="showAddCourseModal();"
                                 class="px-4 py-2 bg-primary text-white rounded-xl hover:bg-gray-800 transition font-semibold">Create
                                 New Course</button>
+                        </div>
+
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full divide-y divide-gray-200">
+                                <tbody class="bg-white divide-y divide-gray-200" id="course-table-body">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="manage-lectures-view" class="app-view hidden space-y-8">
+                    <h1 class="text-3xl font-bold text-gray-800">Lecture Management</h1>
+                    <p class="text-gray-600">Manage individual lectures and their internal content parts (Videos,
+                        Files). (Admin Tool)</p>
+
+                    <div class="bg-white p-6 rounded-xl shadow-soft">
+                        <div class="flex justify-between items-center mb-4">
+                            <input type="text" placeholder="Search lectures by title or course..."
+                                class="p-3 border border-gray-300 rounded-lg w-1/2">
+                            <button onclick="showAddLectureModal();"
+                                class="px-4 py-2 bg-secondary text-white rounded-xl font-semibold hover:bg-gray-600 transition">Add
+                                New Lecture</button>
                         </div>
 
                         <div class="overflow-x-auto">
@@ -695,23 +854,19 @@
                                     <tr>
                                         <th
                                             class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            Course Title</th>
+                                            Lecture Title</th>
                                         <th
                                             class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            Instructor</th>
+                                            Course Name</th>
                                         <th
                                             class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            Lectures</th>
-                                        <th
-                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            Status</th>
+                                            Parts Count</th>
                                         <th
                                             class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                             Actions</th>
                                     </tr>
                                 </thead>
-                                <tbody class="bg-white divide-y divide-gray-200" id="course-table-body">
-                                    <!-- Dynamic content generated by renderContentManagement() -->
+                                <tbody class="bg-white divide-y divide-gray-200" id="lecture-table-body">
                                 </tbody>
                             </table>
                         </div>
@@ -745,8 +900,10 @@
                                     custom hooks.</p>
                             </li>
                             <li class="p-4 bg-gray-50 rounded-lg border-l-4 border-accent">
-                                <span class="font-bold text-gray-900">Module 3: Routing and Deployment (5 Lectures)</span>
-                                <p class="text-sm text-gray-600">Implementing client-side routing, API fetching, and final deployment strategies.</p>
+                                <span class="font-bold text-gray-900">Module 3: Routing and Deployment (5
+                                    Lectures)</span>
+                                <p class="text-sm text-gray-600">Implementing client-side routing, API fetching, and
+                                    final deployment strategies.</p>
                             </li>
                         </ul>
                     </div>
@@ -768,14 +925,14 @@
         </div>
     </div>
 
+    <script src="js/auth.js"></script>
     <script src="js/data.js"></script>
     <script src="js/ui.js"></script>
     <script src="js/navigation.js"></script>
     <script src="js/profile.js"></script>
     <script src="js/contentRenders.js"></script>
     <script src="js/lecturePart.js"></script>
-    <script src="js/auth.js"></script>
-    <script src="js/index.js"></script>
+    <script type="Module" src="js/index.js"></script>
 
 </body>
 
