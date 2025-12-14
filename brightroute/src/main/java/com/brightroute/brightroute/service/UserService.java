@@ -76,10 +76,11 @@ public class UserService {
         // --- 3. SAVE ONLY THE PARENT ENTITY (User) ---
         // CascadeType.ALL on User handles the Student insertion automatically.
         User savedUser = userRepository.save(user);
-        // 
+        //
 
         // 🚨 CRITICAL FIX RESTORED: Explicitly save student if role is STUDENT
-        // Since we removed the bi-directional relationship from User side to avoid recursion/locking issues,
+        // Since we removed the bi-directional relationship from User side to avoid
+        // recursion/locking issues,
         // we must manually save the Student entity here.
         if (dto.getRole() == Role.STUDENT) {
             studentProfile.setUser(savedUser); // Link to saved user (ID will be mapped)
@@ -87,7 +88,8 @@ public class UserService {
         }
 
         // Log Registration
-        systemLogService.logAction("REGISTRATION", savedUser.getId(), "User registered successfully with role: " + savedUser.getRole());
+        systemLogService.logAction("REGISTRATION", savedUser.getId(),
+                "User registered successfully with role: " + savedUser.getRole());
 
         return savedUser;
     }
@@ -107,9 +109,6 @@ public class UserService {
         if (!passwordEncoder.matches(rawPassword, user.getPasswordHash())) {
             throw new RuntimeException("Invalid credentials.");
         }
-
-        // Log Login
-        systemLogService.logAction("LOGIN", user.getId(), "User logged in successfully");
 
         return user;
     }
