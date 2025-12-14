@@ -19,8 +19,8 @@ public class SystemLogController {
     // تسجيل عملية جديدة
     @PostMapping
     public ResponseEntity<SystemLog> log(@RequestParam String action,
-                                         @RequestParam(required = false) Integer userId, // CORRECTION: Integer
-                                         @RequestParam(required = false) String details) {
+            @RequestParam(required = false) Integer userId, // CORRECTION: Integer
+            @RequestParam(required = false) String details) {
         SystemLog log = systemLogService.logAction(action, userId, details);
         return ResponseEntity.ok(log);
     }

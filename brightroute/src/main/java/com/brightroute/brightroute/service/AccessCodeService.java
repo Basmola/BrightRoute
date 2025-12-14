@@ -145,12 +145,10 @@ public class AccessCodeService {
     // إلغاء/حذف الكود (Revoke)
     @Transactional
     public void revokeAccessCode(Integer id) {
-        AccessCode code = accessCodeRepository.findById(id)
-                .orElseThrow(() -> new AccessCodeNotFoundException("AccessCode not found for ID: " + id));
-
-        code.setCodeIsUsed(true);
-        code.setCodeUsedAt(LocalDateTime.now());
-        accessCodeRepository.save(code);
+        if (!accessCodeRepository.existsById(id)) {
+            throw new AccessCodeNotFoundException("AccessCode not found for ID: " + id);
+        }
+        accessCodeRepository.deleteById(id);
     }
 
     // NEW: Get all access codes

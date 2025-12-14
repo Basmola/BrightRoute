@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BrightRoute - Course Management</title>
+    <title>BrightRoute - System Logs</title>
 
     <script src="https://cdn.tailwindcss.com"></script>
 
@@ -37,7 +37,7 @@
         class="hidden fixed inset-0 bg-gray-900 bg-opacity-50 z-50 flex items-center justify-center transition-opacity duration-300">
         <div class="modal-content bg-white p-6 rounded-xl shadow-2xl max-w-sm w-full">
             <h3 id="modal-title" class="text-xl font-bold text-gray-800 mb-3">Message</h3>
-            <div id="modal-message" class="text-gray-600 mb-6">This is a confirmation message.</div>
+            <p id="modal-message" class="text-gray-600 mb-6">This is a confirmation message.</p>
             <div id="modal-actions" class="flex justify-end">
                 <button id="modal-close-btn"
                     class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-gray-800 transition">Close</button>
@@ -75,7 +75,7 @@
                     Admin Dashboard
                 </a>
                 <a href="course_management.html"
-                    class="nav-link flex items-center p-3 rounded-xl transition duration-150 bg-gray-700 text-white font-semibold">
+                    class="nav-link flex items-center p-3 rounded-xl transition duration-150 text-gray-300 hover:bg-gray-700">
                     <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"
                         xmlns="http://www.w3.org/2000/svg">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -114,7 +114,6 @@
                     </svg>
                     User Management
                 </a>
-
                 <a href="access_code_management.html"
                     class="nav-link flex items-center p-3 rounded-xl transition duration-150 text-gray-300 hover:bg-gray-700">
                     <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"
@@ -126,7 +125,7 @@
                     Access Code Management
                 </a>
                 <a href="system_logs.html"
-                    class="nav-link flex items-center p-3 rounded-xl transition duration-150 text-gray-300 hover:bg-gray-700">
+                    class="nav-link flex items-center p-3 rounded-xl transition duration-150 bg-gray-700 text-white font-semibold">
                     <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"
                         xmlns="http://www.w3.org/2000/svg">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -201,55 +200,43 @@
 
                 <header class="flex justify-start items-center pb-6 border-b border-gray-200 mb-6">
                     <h2 class="text-3xl font-extrabold text-primary" id="current-portal-header">
-                        Course Management
+                        System Logs
                         <span id="current-user-role-badge"
                             class="ml-2 inline-flex items-center px-3 py-0.5 rounded-full text-sm font-medium bg-red-500 text-white">ADMIN</span>
                     </h2>
                 </header>
 
-                <section id="manage-courses-view" class="app-view space-y-8">
-                    <h1 class="text-3xl font-bold text-gray-800">Course Management</h1>
-                    <p class="text-gray-600">Create, edit, and publish courses. (Admin Tool)</p>
+                <section id="system-logs-view" class="app-view space-y-8">
 
-                    <div class="bg-white p-6 rounded-xl shadow-soft">
-                        <div class="flex justify-between items-center mb-4">
-                            <input type="text" id="course-search-input" placeholder="Search content..."
-                                class="p-3 border border-gray-300 rounded-lg w-1/2">
-                            <button onclick="openCreateCourseModal()"
-                                class="px-4 py-2 bg-primary text-white rounded-xl hover:bg-gray-800 transition font-semibold">Create
-                                New Course</button>
-                        </div>
-
+                    <div class="bg-white rounded-xl shadow-soft overflow-hidden">
                         <div class="overflow-x-auto">
                             <table class="min-w-full divide-y divide-gray-200">
                                 <thead class="bg-gray-50">
                                     <tr>
-                                        <th
+                                        <th scope="col"
                                             class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            Course Title</th>
-                                        <th
+                                            ID</th>
+                                        <th scope="col"
                                             class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            Level</th>
-                                        <th
+                                            Action</th>
+                                        <th scope="col"
                                             class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            Lectures</th>
-                                        <th
+                                            User</th>
+                                        <th scope="col"
                                             class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            Actions</th>
+                                            Details</th>
+                                        <th scope="col"
+                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            Timestamp</th>
                                     </tr>
                                 </thead>
-                                <tbody class="bg-white divide-y divide-gray-200" id="course-table-body">
-                                    <tr>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                            Loading...</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"></td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"></td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium"></td>
-                                    </tr>
+                                <tbody id="system-logs-table-body" class="bg-white divide-y divide-gray-200">
+                                    <!-- Logs will be populated here -->
                                 </tbody>
                             </table>
                         </div>
                     </div>
+
                 </section>
 
             </main>
@@ -361,14 +348,9 @@
             } else if (sidebar) {
                 sidebar.classList.add('-translate-x-full');
             }
-
-
-
         };
     </script>
-    <script src="js/ui.js"></script>
-    <script src="js/data.js"></script>
-    <script src="js/course_management.js"></script>
+    <script src="js/system_logs.js"></script>
 </body>
 
 </html>

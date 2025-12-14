@@ -14,8 +14,10 @@ public class SystemLog {
 
     // ADDED: Nullable Many-to-One relationship to User
     // The user_id is nullable in SQL (ON DELETE SET NULL)
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = true) 
+    // ADDED: Nullable Many-to-One relationship to User
+    // The user_id is nullable in SQL (ON DELETE SET NULL)
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "user_id", nullable = true)
     private User user;
 
     @Column(name = "action", nullable = false, length = 255)
@@ -27,16 +29,18 @@ public class SystemLog {
 
     @Column(name = "timestamp", updatable = false)
     // NOTE: Relying on the SQL default (GETDATE()) for insertion
-    private LocalDateTime timestamp; 
+    private LocalDateTime timestamp;
 
     // Constructors
-    public SystemLog() {}
+    public SystemLog() {
+    }
 
     // ===== Getters and Setters =====
-    
+
     public Integer getLogId() {
         return logId;
     }
+
     public void setLogId(Integer logId) {
         this.logId = logId;
     }
@@ -44,6 +48,7 @@ public class SystemLog {
     public User getUser() {
         return user;
     }
+
     public void setUser(User user) {
         this.user = user;
     }
@@ -51,6 +56,7 @@ public class SystemLog {
     public String getAction() {
         return action;
     }
+
     public void setAction(String action) {
         this.action = action;
     }
@@ -58,6 +64,7 @@ public class SystemLog {
     public String getDetails() {
         return details;
     }
+
     public void setDetails(String details) {
         this.details = details;
     }
@@ -68,9 +75,9 @@ public class SystemLog {
     // Setter for timestamp is usually omitted if it's database-managed
 }
 
-    // public User getUser() {
-    //     return user;
-    // }
-    // public void setUser(User user) {
-    //     this.user = user;
-    // }
+// public User getUser() {
+// return user;
+// }
+// public void setUser(User user) {
+// this.user = user;
+// }

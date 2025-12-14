@@ -124,6 +124,11 @@ async function handleLogin(e) {
         console.log('Login successful. User:', user);
         console.log('User Role:', user.role);
 
+        if (user.accountStatus === 'SUSPENDED') {
+            alert('Your account has been suspended. Please contact support.');
+            return;
+        }
+
         localStorage.setItem('currentUser', JSON.stringify(user));
 
         // REDIRECT based on role

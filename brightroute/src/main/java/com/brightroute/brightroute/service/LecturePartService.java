@@ -28,12 +28,12 @@ public class LecturePartService {
     public Optional<LecturePart> findPartById(Integer partId) {
         return lecturePartRepository.findById(partId);
     }
-    
+
     @Transactional
     public LecturePart savePart(LecturePart part) {
         return lecturePartRepository.save(part);
     }
-    
+
     // ======================================================
     // 2. Content Management Methods
     // ======================================================
@@ -45,24 +45,25 @@ public class LecturePartService {
 
     public Object getContent(Integer partId) {
         LecturePart part = getPartByIdOrThrow(partId);
-        
+
         // This is where you would implement logic to retrieve the actual
         // Quiz object based on part.getPartType() == "QUIZ"
         // For now, it returns the content URL or null.
-        return part.getPartContentUrl(); 
+        return part.getPartContentUrl();
     }
 
     @Transactional
     public void updateContent(Integer partId, String newContentUrl) {
         LecturePart part = getPartByIdOrThrow(partId);
-        
+
         if ("QUIZ".equals(part.getPartType())) {
-              throw new IllegalArgumentException("Cannot update content URL for a QUIZ part. Update Quiz entity instead.");
+            throw new IllegalArgumentException(
+                    "Cannot update content URL for a QUIZ part. Update Quiz entity instead.");
         }
-        
+
         part.setPartContentUrl(newContentUrl);
         lecturePartRepository.save(part);
- 
+
     }
 
     @Transactional

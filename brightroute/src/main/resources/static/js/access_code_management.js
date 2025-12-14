@@ -103,7 +103,7 @@ function renderAccessCodeTable(codesToRender = allAccessCodes) {
             </td>
             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${code.usedBy ? code.usedBy.firstName + ' ' + code.usedBy.lastName : '-'}</td>
             <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                ${!code.codeIsUsed ? `<button onclick="revokeAccessCode(${code.accessCodeId})" class="text-red-600 hover:text-red-900">Revoke</button>` : ''}
+                ${!code.codeIsUsed ? `<button onclick="revokeAccessCode(${code.codeId})" class="text-red-600 hover:text-red-900">Revoke</button>` : ''}
             </td>
         </tr>
     `).join('');

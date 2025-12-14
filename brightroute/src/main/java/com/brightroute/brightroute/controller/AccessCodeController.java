@@ -45,11 +45,11 @@ public class AccessCodeController {
         return ResponseEntity.ok(redeemedCode);
     }
 
-    // 4. إلغاء/حذف الكود (Revoke) - (قد يعني "إلغاء تنشيطه يدوياً قبل الاستخدام")
+    // 4. إلغاء/حذف الكود (Revoke) - (حذف نهائي من قاعدة البيانات)
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> revoke(@PathVariable Integer id) {
         accessCodeService.revokeAccessCode(id);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok().build();
     }
 
     // 5. Get All Access Codes
