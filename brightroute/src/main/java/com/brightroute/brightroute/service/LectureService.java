@@ -14,11 +14,14 @@ public class LectureService {
 
     private final LectureRepository lectureRepository;
     private final LecturePartRepository lecturePartRepository;
+    private final com.brightroute.brightroute.repository.CourseRepository courseRepository;
 
     public LectureService(LectureRepository lectureRepository,
-            LecturePartRepository lecturePartRepository) {
+            LecturePartRepository lecturePartRepository,
+            com.brightroute.brightroute.repository.CourseRepository courseRepository) {
         this.lectureRepository = lectureRepository;
         this.lecturePartRepository = lecturePartRepository;
+        this.courseRepository = courseRepository;
     }
 
     // ===== Lecture CRUD =====
@@ -46,6 +49,26 @@ public class LectureService {
         if (id == null)
             throw new IllegalArgumentException("ID cannot be null");
         lectureRepository.deleteById(id);
+    }
+
+    @Transactional
+    public Lecture updateLecture(Integer id, Lecture updatedLecture) {
+        Lecture existingLecture = getLectureById(id);
+
+        existingLecture.setLectureTitle(updatedLecture.getLectureTitle());
+        existingLecture.setLectureDescription(updatedLecture.getLectureDescription());
+        existingLecture.setLectureOrderNumber(updatedLecture.getLectureOrderNumber());
+
+        // Handle Course update
+        if (updatedLecture.getCourse() != null && updatedLecture.getCourse().getCourseId() != null) {
+            com.brightroute.brightroute.model.Course course = courseRepository
+                    .findById(updatedLecture.getCourse().getCourseId())
+                    .orElseThrow(() -> new RuntimeException(
+                            "Course not found for ID: " + updatedLecture.getCourse().getCourseId()));
+            existingLecture.setCourse(course);
+        }
+
+        return lectureRepository.save(existingLecture);
     }
 
     // ===== LecturePart operations =====

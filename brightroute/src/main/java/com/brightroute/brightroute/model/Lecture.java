@@ -1,8 +1,8 @@
 package com.brightroute.brightroute.model;
 
 import jakarta.persistence.*;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonProperty; // Import added
 import java.util.List;
 import java.time.LocalDateTime;
 
@@ -31,13 +31,13 @@ public class Lecture {
     @Column(name = "lecture_created_at", updatable = false)
     private LocalDateTime lectureCreatedAt = LocalDateTime.now();
 
-    // FIX: @JsonIgnore hides the Course object to prevent recursion/deep nesting
-    @JsonIgnore
+    // FIXED: Changed @JsonIgnore to @JsonProperty(access = WRITE_ONLY)
+    // This allows you to send the course ID in the JSON when creating a lecture
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "course_id", nullable = false)
     private Course course;
 
-    // FIX: @JsonManagedReference allows LectureParts to be included in JSON output
     @JsonManagedReference
     @OneToMany(mappedBy = "lecture", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<LecturePart> parts;
@@ -103,7 +103,8 @@ public class Lecture {
         this.course = course;
     }
 
-    // Convenience Getter for the Course ID (still useful)
+    // Convenience Getter for the Course ID
+    // Note: Ensure your Course class has the method getCourseId() or getId()
     public Integer getCourseId() {
         return course != null ? course.getCourseId() : null;
     }

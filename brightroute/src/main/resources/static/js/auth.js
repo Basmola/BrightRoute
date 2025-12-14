@@ -123,14 +123,22 @@ async function handleLogin(e) {
         }
 
         const user = await response.json();
+        console.log('Login successful. User:', user);
+        console.log('User Role:', user.role);
 
         localStorage.setItem('currentUser', JSON.stringify(user));
 
         // REDIRECT based on role
         if (user.role && user.role.toUpperCase() === 'ADMIN') {
+            console.log('Redirecting to Admin Dashboard');
             window.location.href = 'admin_dashboard.html';
+        } else if (user.role && user.role.toUpperCase() === 'STUDENT') {
+            console.log('Redirecting to Student Dashboard');
+            window.location.href = 'index.html';
         } else {
-            window.location.href = 'index.html'; // Assuming index.html is the student portal
+            // Default fallback
+            console.log('Redirecting to Default Dashboard');
+            window.location.href = 'index.html';
         }
 
     } catch (error) {

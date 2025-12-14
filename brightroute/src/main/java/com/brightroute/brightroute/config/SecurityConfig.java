@@ -25,25 +25,36 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-            // Disables CSRF, preventing 403 Forbidden errors on POST/PUT requests
-            .csrf(csrf -> csrf.disable()) 
-            
-            // Configures Authorization Rules
-            .authorizeHttpRequests(auth -> auth
-                
-                // 🚀 GLOBAL FIX: Permit ALL traffic to ALL controllers under /api/
-                // This replaces the separate rules for users and courses.
-                // This ensures that all your controllers (Lectures, Quizzes, Submissions, etc.) 
-                // are publicly accessible for development/testing.
-                .requestMatchers("/api/**").permitAll() 
-                
-                // Allow OPTIONS requests (important for frontend pre-flight checks)
-                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                
-                // Fallback: This is now just a safety net since /api/** is permitted.
-                .anyRequest().permitAll() 
-            );
+                // Disables CSRF, preventing 403 Forbidden errors on POST/PUT requests
+                .csrf(csrf -> csrf.disable())
+
+                // Configures Authorization Rules
+                .authorizeHttpRequests(auth -> auth
+
+                        // 🚀 GLOBAL FIX: Permit ALL traffic to ALL controllers under /api/
+                        // This replaces the separate rules for users and courses.
+                        // This ensures that all your controllers (Lectures, Quizzes, Submissions, etc.)
+                        // are publicly accessible for development/testing.
+                        .requestMatchers("/api/**").permitAll()
+
+                        // Allow OPTIONS requests (important for frontend pre-flight checks)
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+
+                        // Fallback: This is now just a safety net since /api/** is permitted.
+                        .anyRequest().permitAll())
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()));
 
         return http.build();
+    }
+
+    @Bean
+    public org.springframework.web.cors.CorsConfigurationSource corsConfigurationSource() {
+        org.springframework.web.cors.CorsConfiguration configuration = new org.springframework.web.cors.CorsConfiguration();
+        configuration.setAllowedOrigins(java.util.List.of("*")); // Allow all origins
+        configuration.setAllowedMethods(java.util.List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuration.setAllowedHeaders(java.util.List.of("*"));
+        org.springframework.web.cors.UrlBasedCorsConfigurationSource source = new org.springframework.web.cors.UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
     }
 }

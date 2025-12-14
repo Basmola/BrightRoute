@@ -9,8 +9,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/lectures") 
+@RequestMapping("/api/lectures")
 public class LectureController {
+    // Controller for managing lectures - Updated at 2025-12-14 01:30
 
     private final LectureService lectureService;
 
@@ -41,17 +42,22 @@ public class LectureController {
 
     // ===== LecturePart endpoints =====
     @PostMapping("/{lectureId}/parts")
-    public Lecture addPart(@PathVariable Integer lectureId, @RequestBody LecturePart part) { 
+    public Lecture addPart(@PathVariable Integer lectureId, @RequestBody LecturePart part) {
         return lectureService.addPart(lectureId, part);
     }
 
     @DeleteMapping("/{lectureId}/parts/{partId}")
-    public Lecture deletePart(@PathVariable Integer lectureId, @PathVariable Integer partId) { 
+    public Lecture deletePart(@PathVariable Integer lectureId, @PathVariable Integer partId) {
         return lectureService.deletePart(lectureId, partId);
     }
 
     @PutMapping("/{lectureId}/parts")
-    public Lecture updatePart(@PathVariable Integer lectureId, @RequestBody LecturePart part) { 
+    public Lecture updatePart(@PathVariable Integer lectureId, @RequestBody LecturePart part) {
         return lectureService.updatePart(lectureId, part);
+    }
+
+    @PutMapping("/{id}")
+    public Lecture updateLecture(@PathVariable Integer id, @RequestBody Lecture lecture) {
+        return lectureService.updateLecture(id, lecture);
     }
 }

@@ -1,6 +1,17 @@
+// Global state
+const COURSE_API_URL = 'http://localhost:7070/api/courses';
+const LECTURE_API_URL = 'http://localhost:7070/api/lectures';
+const LECTURE_PART_API_URL = 'http://localhost:7070/api/lecture-parts';
+
+let allCourses = [];
+let allLectures = [];
+let currentLectureParts = [];
+let currentLectureId = null;
 
 document.addEventListener('DOMContentLoaded', () => {
     checkAdminAuth();
+    fetchCourses();
+    setupEventListeners();
 });
 
 function checkAdminAuth() {
@@ -11,7 +22,6 @@ function checkAdminAuth() {
     }
 
     const user = JSON.parse(userJson);
-    // Case-insensitive role check
     if (user.role.toUpperCase() !== 'ADMIN') {
         window.location.href = 'index.html';
         return;
@@ -22,7 +32,6 @@ function checkAdminAuth() {
 
 function updateUserProfile(user) {
     const fullName = `${user.firstName} ${user.lastName}`;
-
     const nameElement = document.getElementById('user-full-name');
     if (nameElement) nameElement.textContent = fullName;
 
@@ -36,214 +45,233 @@ function updateUserProfile(user) {
     }
 }
 
-// =======================================================
-// 7. LECTURE & QUIZ LOGIC (Conceptual: lecture_parts.js) - START
-// =======================================================
+function setupEventListeners() {
+    const courseSelect = document.getElementById('course-select');
+    const lectureSelect = document.getElementById('lecture-select');
+    const partForm = document.getElementById('part-form');
 
-function showAccessCodeModal(lectureId) {
-    currentLectureId = lectureId;
-    const modal = document.getElementById('custom-modal');
-    document.getElementById('modal-title').textContent = 'Access Code Required';
+    courseSelect.addEventListener('change', (e) => {
+        const courseId = e.target.value;
+        if (courseId) {
+            fetchLectures(courseId);
+            lectureSelect.disabled = false;
+        } else {
+            lectureSelect.innerHTML = '<option value="">-- Select a Lecture --</option>';
+            lectureSelect.disabled = true;
+            document.getElementById('parts-table-container').classList.add('hidden');
+            document.getElementById('add-part-btn').disabled = true;
+        }
+    });
 
-    document.getElementById('modal-message').innerHTML = `
-                <p class="text-gray-600 mb-4">Please enter your unique access code to unlock this lecture.</p>
-                <input type="text" id="access-code-input" placeholder="Enter Access Code" 
-                        class="mt-1 w-full p-3 border border-gray-300 rounded-lg focus:ring-primary focus:border-primary uppercase text-center font-mono">
-            `;
+    lectureSelect.addEventListener('change', (e) => {
+        const lectureId = e.target.value;
+        if (lectureId) {
+            currentLectureId = lectureId;
+            fetchParts(lectureId);
+            document.getElementById('add-part-btn').disabled = false;
+        } else {
+            currentLectureId = null;
+            document.getElementById('parts-table-container').classList.add('hidden');
+            document.getElementById('add-part-btn').disabled = true;
+        }
+    });
 
-    document.getElementById('modal-actions').innerHTML = `
-                <button onclick="handleAccessCodeSubmit();" class="px-4 py-2 bg-secondary text-white rounded-lg hover:bg-gray-600 transition shadow-md mr-3">Validate & Unlock</button>
-                <button onclick="hideModal();" class="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-100 transition">Cancel</button>
-            `;
-
-    modal.classList.remove('hidden');
-    setTimeout(() => modal.classList.add('modal-visible'), 10);
+    partForm.addEventListener('submit', handlePartSubmit);
 }
-window.showAccessCodeModal = showAccessCodeModal;
 
-function handleAccessCodeSubmit() {
-    const codeInput = document.getElementById('access-code-input');
-    const code = codeInput.value.toUpperCase().trim();
+async function fetchCourses() {
+    try {
+        console.log('Fetching courses...');
+        const response = await fetch(COURSE_API_URL);
+        console.log('Courses response status:', response.status);
+        if (!response.ok) throw new Error('Failed to fetch courses');
+        allCourses = await response.json();
+        console.log('Courses fetched:', allCourses);
+        populateCourseSelect();
+    } catch (error) {
+        console.error('Error fetching courses:', error);
+        showMessage('Error', 'Failed to load courses.');
+    }
+}
 
-    if (!validAccessCodes.includes(code)) {
-        showMessage('Access Denied', 'The code you entered is invalid. Please check your key.');
+function populateCourseSelect() {
+    const select = document.getElementById('course-select');
+    if (!select) {
+        console.error('Course select element not found!');
+        return;
+    }
+    select.innerHTML = '<option value="">-- Select a Course --</option>';
+    if (!allCourses || allCourses.length === 0) {
+        console.warn('No courses available to populate.');
+        return;
+    }
+    allCourses.forEach(course => {
+        console.log('Adding course:', course);
+        const option = document.createElement('option');
+        option.value = course.courseId;
+        option.textContent = course.courseTitle;
+        select.appendChild(option);
+    });
+}
+
+async function fetchLectures(courseId) {
+    try {
+        const response = await fetch(LECTURE_API_URL);
+        if (!response.ok) throw new Error('Failed to fetch lectures');
+        const lectures = await response.json();
+        // Filter lectures by courseId
+        const courseLectures = lectures.filter(l => l.courseId == courseId || (l.course && l.course.courseId == courseId));
+        populateLectureSelect(courseLectures);
+    } catch (error) {
+        console.error('Error fetching lectures:', error);
+        showMessage('Error', 'Failed to load lectures.');
+    }
+}
+
+function populateLectureSelect(lectures) {
+    const select = document.getElementById('lecture-select');
+    select.innerHTML = '<option value="">-- Select a Lecture --</option>';
+    lectures.forEach(lecture => {
+        const option = document.createElement('option');
+        option.value = lecture.lectureId;
+        option.textContent = lecture.lectureTitle;
+        select.appendChild(option);
+    });
+}
+
+async function fetchParts(lectureId) {
+    try {
+        // Fetch the lecture to get its parts
+        const response = await fetch(`${LECTURE_API_URL}/${lectureId}`);
+        if (!response.ok) throw new Error('Failed to fetch lecture details');
+        const lecture = await response.json();
+        // Access parts from the lecture object. 
+        // Note: Lecture.java has 'parts' field, serialized as 'parts' (or 'lectureParts' if configured differently, but standard is field name)
+        currentLectureParts = lecture.parts || [];
+        renderPartsTable();
+    } catch (error) {
+        console.error('Error fetching parts:', error);
+        showMessage('Error', 'Failed to load lecture parts.');
+    }
+}
+
+function renderPartsTable() {
+    const container = document.getElementById('parts-table-container');
+    const tbody = document.getElementById('parts-table-body');
+    container.classList.remove('hidden');
+    tbody.innerHTML = '';
+
+    if (currentLectureParts.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="4" class="px-6 py-4 text-center text-gray-500">No parts found for this lecture.</td></tr>';
         return;
     }
 
-    if (usedAccessCodes.includes(code)) {
-        showMessage('Access Denied', 'This access code has already been used and is no longer valid.');
-        return;
-    }
-
-    usedAccessCodes.push(code);
-    hideModal();
-
-    navigate('lecture-detail-view');
-
-    renderQuizQuestions();
-
-    document.querySelectorAll('.lecture-part-content').forEach(c => c.classList.add('hidden'));
-    document.getElementById('quiz-intro-content').classList.remove('hidden');
-    document.getElementById('quiz-content-actual').classList.add('hidden');
-
-    showMessage('Access Granted', 'Lecture unlocked successfully! Please start the quiz to proceed to the content.');
+    currentLectureParts.forEach(part => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${part.partTitle || 'Untitled'}</td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${part.partType || 'N/A'}</td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 truncate max-w-xs">${part.contentUrl || ''}</td>
+            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                <button onclick="openEditPartModal(${part.id})" class="text-indigo-600 hover:text-indigo-900 mr-3">Edit</button>
+                <button onclick="deletePart(${part.id})" class="text-red-600 hover:text-red-900">Delete</button>
+            </td>
+        `;
+        tbody.appendChild(tr);
+    });
 }
-window.handleAccessCodeSubmit = handleAccessCodeSubmit;
 
-function renderQuizQuestions() {
-    const quizContainer = document.getElementById('quiz-questions-container');
-    if (!quizContainer) return;
+// Modal Functions
+function openCreatePartModal() {
+    document.getElementById('part-modal-title').textContent = 'Add Lecture Part';
+    document.getElementById('part-form').reset();
+    document.getElementById('part-id').value = '';
+    document.getElementById('part-modal').classList.remove('hidden');
+}
 
-    quizContainer.innerHTML = '';
+function openEditPartModal(partId) {
+    const part = currentLectureParts.find(p => p.id === partId);
+    if (!part) return;
 
-    mockQuizQuestions.forEach((q, index) => {
-        const qElement = document.createElement('div');
-        qElement.className = 'bg-gray-100 p-4 rounded-lg';
+    document.getElementById('part-modal-title').textContent = 'Edit Lecture Part';
+    document.getElementById('part-id').value = part.id;
+    document.getElementById('part-title').value = part.partTitle || '';
+    document.getElementById('part-type').value = part.partType || 'VIDEO';
+    document.getElementById('part-content').value = part.contentUrl || '';
 
-        let optionsHtml = '';
-        q.answerOptions.forEach((option, optionIndex) => {
-            const optionId = `q${index}-opt${optionIndex}`;
-            optionsHtml += `
-                        <label class="block cursor-pointer hover:bg-gray-200 p-2 rounded-md transition text-gray-700">
-                            <input type="radio" name="q${index}" value="${optionIndex}" class="text-primary mr-2"> 
-                            ${option.text}
-                        </label>
-                    `;
+    document.getElementById('part-modal').classList.remove('hidden');
+}
+
+function closePartModal() {
+    document.getElementById('part-modal').classList.add('hidden');
+}
+
+async function handlePartSubmit(e) {
+    e.preventDefault();
+
+    const partId = document.getElementById('part-id').value;
+    const partData = {
+        partTitle: document.getElementById('part-title').value,
+        partType: document.getElementById('part-type').value,
+        contentUrl: document.getElementById('part-content').value
+    };
+
+    try {
+        let response;
+        if (partId) {
+            // Update
+            response = await fetch(`${LECTURE_PART_API_URL}/${partId}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(partData)
+            });
+        } else {
+            // Create
+            response = await fetch(`${LECTURE_API_URL}/${currentLectureId}/parts`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(partData)
+            });
+        }
+
+        if (!response.ok) throw new Error('Failed to save part');
+
+        closePartModal();
+        showMessage('Success', 'Lecture part saved successfully.');
+        fetchParts(currentLectureId); // Refresh list
+    } catch (error) {
+        console.error('Error saving part:', error);
+        showMessage('Error', 'Failed to save lecture part.');
+    }
+}
+
+async function deletePart(partId) {
+    if (!confirm('Are you sure you want to delete this part?')) return;
+
+    try {
+        const response = await fetch(`${LECTURE_PART_API_URL}/${partId}`, {
+            method: 'DELETE'
         });
 
-        qElement.innerHTML = `
-                    <p class="font-medium text-gray-800 mb-2">Q${q.questionNumber}: ${q.question}</p>
-                    <div class="space-y-1 mt-2">${optionsHtml}</div>
-                `;
-        quizContainer.appendChild(qElement);
-    });
-}
+        if (!response.ok) throw new Error('Failed to delete part');
 
-function startQuiz() {
-    document.getElementById('quiz-intro-content').classList.add('hidden');
-    document.getElementById('quiz-content-actual').classList.remove('hidden');
-    const quizSubmitBtn = document.getElementById('quiz-submit-btn');
-    if (quizSubmitBtn) {
-        quizSubmitBtn.disabled = false;
-        quizSubmitBtn.textContent = 'Submit Quiz';
-        quizSubmitBtn.classList.remove('bg-gray-500', 'cursor-not-allowed');
-        quizSubmitBtn.classList.add('bg-secondary');
-    }
-}
-window.startQuiz = startQuiz;
-
-function showLecturePart(partId) {
-    document.querySelectorAll('.lecture-part-content').forEach(content => {
-        content.classList.add('hidden');
-    });
-
-    document.getElementById(partId).classList.remove('hidden');
-
-    if (partId === 'quiz-content') {
-        const quizSubmitted = document.getElementById('quiz-submit-btn').disabled;
-
-        if (quizSubmitted) {
-            document.getElementById('quiz-intro-content').classList.add('hidden');
-            document.getElementById('quiz-content-actual').classList.add('hidden');
-            showLecturePart('part1-content');
-            return;
-        }
-
-        document.getElementById('quiz-intro-content').classList.remove('hidden');
-        document.getElementById('quiz-content-actual').classList.add('hidden');
-    }
-
-    document.querySelectorAll('.part-button').forEach(btn => {
-        btn.classList.remove('bg-gray-600', 'text-white', 'font-bold');
-        btn.classList.add('text-gray-300', 'hover:bg-gray-700');
-
-        if (btn.getAttribute('onclick') && btn.getAttribute('onclick').includes(partId)) {
-            btn.classList.add('bg-gray-600', 'text-white', 'font-bold');
-            btn.classList.remove('text-gray-300', 'hover:bg-gray-700');
-        }
-    });
-}
-window.showLecturePart = showLecturePart;
-
-
-// =======================================================
-// وظيفة فتح المحتوى (UNLOCKING CONTENT)
-// =======================================================
-function unlockLectureContent() {
-    // 1. إلغاء قفل أزرار التنقل في القائمة الجانبية للمحاضرة
-    const lockedButtons = document.querySelectorAll('.lecture-part-locked');
-    lockedButtons.forEach(btn => {
-        btn.disabled = false;
-        btn.classList.remove('opacity-50', 'cursor-not-allowed', 'lecture-part-locked');
-        btn.classList.add('hover:bg-gray-700');
-    });
-
-    // 2. تعطيل زر إرسال الاختبار لمنع الإرسال مرة أخرى
-    const quizSubmitBtn = document.getElementById('quiz-submit-btn');
-    if (quizSubmitBtn) {
-        quizSubmitBtn.disabled = true;
-        quizSubmitBtn.textContent = 'Quiz Completed';
-        quizSubmitBtn.classList.remove('bg-secondary', 'hover:bg-gray-600');
-        quizSubmitBtn.classList.add('bg-gray-500', 'cursor-not-allowed');
-    }
-}
-window.unlockLectureContent = unlockLectureContent;
-// =======================================================
-// وظيفة submitQuiz المُعدَّلة لفرض الإجابة على جميع الأسئلة
-//// =======================================================
-// وظيفة submitQuiz المُعدَّلة
-// =======================================================
-
-function submitQuiz() {
-    const quizContainer = document.getElementById('quiz-questions-container');
-    if (!quizContainer) {
-        if (typeof showMessage !== 'undefined') showMessage('Error', 'Quiz questions were not loaded.');
-        return;
-    }
-
-    // 1. جمع وتجميع أسماء الأسئلة (بدون تغيير)
-    const radioInputs = quizContainer.querySelectorAll('input[type="radio"]');
-    const uniqueQuestionNames = new Set();
-    radioInputs.forEach(input => {
-        if (input.name) {
-            uniqueQuestionNames.add(input.name);
-        }
-    });
-
-    // 2. التحقق من الإجابة على كل سؤال (بدون تغيير)
-    let allAnswered = true;
-    for (const name of uniqueQuestionNames) {
-        const answered = quizContainer.querySelector(`input[name="${name}"]:checked`);
-        if (!answered) {
-            allAnswered = false;
-            break;
-        }
-    }
-
-    // 3. تنفيذ الشرط (إظهار خطأ إذا لم يتم الإجابة على كل شيء)
-    if (!allAnswered) {
-        if (typeof showMessage !== 'undefined') {
-            showMessage('Quiz Submission Failed', 'You must answer all questions before submitting the quiz.');
-        }
-        return;
-    }
-
-    // 4. في حالة نجاح التحقق (جميع الأسئلة مجاب عليها):
-
-    // أ. إلغاء قفل المحتوى (فتح أزرار القائمة الجانبية للمحاضرة)
-    if (typeof unlockLectureContent !== 'undefined') {
-        unlockLectureContent();
-    }
-
-    // ب. نقل المستخدم إلى الجزء الأول من المحتوى (Part 1: Core Concepts Video)
-    if (typeof showLecturePart !== 'undefined') {
-        showLecturePart('part1-content');
-    }
-
-    // ج. عرض رسالة النجاح
-    if (typeof showMessage !== 'undefined') {
-        showMessage('Quiz Submitted', 'Quiz passed successfully! The lecture content is now unlocked.');
+        showMessage('Success', 'Lecture part deleted successfully.');
+        fetchParts(currentLectureId); // Refresh list
+    } catch (error) {
+        console.error('Error deleting part:', error);
+        showMessage('Error', 'Failed to delete lecture part.');
     }
 }
 
-window.submitQuiz = submitQuiz;
+// Helper for messages (reused from other files or defined here if needed)
+function showMessage(title, message) {
+    const modal = document.getElementById('custom-modal');
+    if (modal) {
+        document.getElementById('modal-title').textContent = title;
+        document.getElementById('modal-message').textContent = message;
+        modal.classList.remove('hidden');
+        document.getElementById('modal-close-btn').onclick = () => modal.classList.add('hidden');
+    } else {
+        alert(`${title}: ${message}`);
+    }
+}

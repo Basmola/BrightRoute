@@ -198,121 +198,110 @@
                     </h2>
                 </header>
 
-                <section id="add-lecture-part-view" class="app-view space-y-8">
-                    <h1 class="text-3xl font-bold text-gray-800">Add 3 Content Parts to Lecture</h1>
-                    <p class="text-gray-600">Define up to 3 individual content parts (Video/Document) for the selected
-                        lecture.</p>
+                <section id="lecture-part-crud-view" class="app-view space-y-8">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <h1 class="text-3xl font-bold text-gray-800">Manage Lecture Content</h1>
+                            <p class="text-gray-600">Select a course and lecture to manage its content parts.</p>
+                        </div>
+                        <button onclick="openCreatePartModal()" id="add-part-btn" disabled
+                            class="px-4 py-2 bg-primary text-white rounded-xl font-semibold hover:bg-gray-800 transition disabled:opacity-50 disabled:cursor-not-allowed">
+                            Add New Part
+                        </button>
+                    </div>
 
-                    <div class="bg-white p-6 rounded-xl shadow-soft max-w-2xl mx-auto">
-                        <form
-                            onsubmit="event.preventDefault(); showMessage('Success', 'Lecture parts data submitted successfully (Needs actual backend integration).');"
-                            class="space-y-6">
+                    <!-- Selection Controls -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 bg-white p-6 rounded-xl shadow-soft">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Select Course</label>
+                            <select id="course-select"
+                                class="w-full p-3 border border-gray-300 rounded-lg bg-gray-50 focus:ring-2 focus:ring-primary focus:border-primary transition">
+                                <option value="">-- Select a Course --</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Select Lecture</label>
+                            <select id="lecture-select" disabled
+                                class="w-full p-3 border border-gray-300 rounded-lg bg-gray-50 focus:ring-2 focus:ring-primary focus:border-primary transition disabled:bg-gray-100 disabled:text-gray-400">
+                                <option value="">-- Select a Lecture --</option>
+                            </select>
+                        </div>
+                    </div>
 
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700">1. Target Course</label>
-                                <select id="part-target-course" required
-                                    class="mt-1 w-full p-2 border border-gray-300 rounded-lg bg-white">
-                                    <option value="">-- Select Course First (Static Example) --</option>
-                                    <option value="1">React Fundamentals</option>
-                                    <option value="2">Advanced JS</option>
-                                </select>
-                            </div>
-
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700">2. Target Lecture</label>
-                                <select id="part-target-lecture" required
-                                    class="mt-1 w-full p-2 border border-gray-300 rounded-lg bg-white">
-                                    <option value="">-- Select Lecture (Static Example) --</option>
-                                    <option value="101">Introduction to JSX</option>
-                                    <option value="102">Component Lifecycle</option>
-                                </select>
-                            </div>
-
-                            <h4 class="text-md font-semibold text-gray-800 pt-2 border-t mt-4">3. Individual Content
-                                Parts</h4>
-
-                            <div class="space-y-2 p-3 border border-dashed border-gray-300 rounded-lg"
-                                id="part-group-1">
-                                <p class="font-bold text-sm text-primary">Part 1</p>
-                                <div>
-                                    <label class="block text-xs font-medium text-gray-700">Part Type</label>
-                                    <select id="part-type-1"
-                                        class="mt-1 w-full p-2 border border-gray-300 rounded-lg bg-white">
-                                        <option value="">-- Select Type (Optional) --</option>
-                                        <option value="VIDEO">Video URL</option>
-                                        <option value="PDF">Document / File URL</option>
-                                    </select>
-                                </div>
-                                <div>
-                                    <label class="block text-xs font-medium text-gray-700">Content URL
-                                        (Optional)</label>
-                                    <input type="url" id="part-url-1" placeholder="Paste URL here"
-                                        class="mt-1 w-full p-2 border border-gray-300 rounded-lg">
-                                </div>
-                                <div>
-                                    <label class="block text-xs font-medium text-gray-700">Part Description</label>
-                                    <textarea id="part-desc-1" rows="2" placeholder="Brief description of Part 1"
-                                        class="mt-1 w-full p-2 border border-gray-300 rounded-lg"></textarea>
-                                </div>
-                            </div>
-
-                            <div class="space-y-2 p-3 border border-dashed border-gray-300 rounded-lg"
-                                id="part-group-2">
-                                <p class="font-bold text-sm text-primary">Part 2</p>
-                                <div>
-                                    <label class="block text-xs font-medium text-gray-700">Part Type</label>
-                                    <select id="part-type-2"
-                                        class="mt-1 w-full p-2 border border-gray-300 rounded-lg bg-white">
-                                        <option value="">-- Select Type (Optional) --</option>
-                                        <option value="VIDEO">Video URL</option>
-                                        <option value="PDF">Document / File URL</option>
-                                    </select>
-                                </div>
-                                <div>
-                                    <label class="block text-xs font-medium text-gray-700">Content URL
-                                        (Optional)</label>
-                                    <input type="url" id="part-url-2" placeholder="Paste URL here"
-                                        class="mt-1 w-full p-2 border border-gray-300 rounded-lg">
-                                </div>
-                                <div>
-                                    <label class="block text-xs font-medium text-gray-700">Part Description</label>
-                                    <textarea id="part-desc-2" rows="2" placeholder="Brief description of Part 2"
-                                        class="mt-1 w-full p-2 border border-gray-300 rounded-lg"></textarea>
-                                </div>
-                            </div>
-
-                            <div class="space-y-2 p-3 border border-dashed border-gray-300 rounded-lg"
-                                id="part-group-3">
-                                <p class="font-bold text-sm text-primary">Part 3</p>
-                                <div>
-                                    <label class="block text-xs font-medium text-gray-700">Part Type</label>
-                                    <select id="part-type-3"
-                                        class="mt-1 w-full p-2 border border-gray-300 rounded-lg bg-white">
-                                        <option value="">-- Select Type (Optional) --</option>
-                                        <option value="VIDEO">Video URL</option>
-                                        <option value="PDF">Document / File URL</option>
-                                    </select>
-                                </div>
-                                <div>
-                                    <label class="block text-xs font-medium text-gray-700">Content URL
-                                        (Optional)</label>
-                                    <input type="url" id="part-url-3" placeholder="Paste URL here"
-                                        class="mt-1 w-full p-2 border border-gray-300 rounded-lg">
-                                </div>
-                                <div>
-                                    <label class="block text-xs font-medium text-gray-700">Part Description</label>
-                                    <textarea id="part-desc-3" rows="2" placeholder="Brief description of Part 3"
-                                        class="mt-1 w-full p-2 border border-gray-300 rounded-lg"></textarea>
-                                </div>
-                            </div>
-
-                            <button type="submit"
-                                class="w-full py-3 bg-secondary text-white rounded-xl font-semibold hover:bg-gray-600 transition shadow-lg">
-                                Save All Parts
-                            </button>
-                        </form>
+                    <!-- Parts Table -->
+                    <div class="bg-white rounded-xl shadow-soft overflow-hidden hidden" id="parts-table-container">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th scope="col"
+                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Description</th>
+                                    <th scope="col"
+                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Order</th>
+                                    <th scope="col"
+                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Type</th>
+                                    <th scope="col"
+                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Content URL</th>
+                                    <th scope="col"
+                                        class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="parts-table-body" class="bg-white divide-y divide-gray-200">
+                                <!-- Dynamic Content -->
+                            </tbody>
+                        </table>
                     </div>
                 </section>
+
+                <!-- Create/Edit Part Modal -->
+                <div id="part-modal"
+                    class="hidden fixed inset-0 bg-gray-900 bg-opacity-50 z-50 flex items-center justify-center transition-opacity duration-300">
+                    <div class="bg-white p-8 rounded-xl shadow-2xl max-w-md w-full transform transition-all scale-100">
+                        <h2 id="part-modal-title" class="text-2xl font-bold text-gray-800 mb-6">Add Lecture Part</h2>
+                        <form id="part-form" class="space-y-4">
+                            <input type="hidden" id="part-id">
+
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Part Description</label>
+                                <input type="text" id="part-description" required
+                                    class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition">
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Order Number</label>
+                                <input type="number" id="part-order" required value="1"
+                                    class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition">
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Part Type</label>
+                                <select id="part-type"
+                                    class="w-full p-3 border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-primary focus:border-primary transition">
+                                    <option value="VIDEO">Video</option>
+                                    <option value="TEXT">Text/Document</option>
+                                    <option value="QUIZ">Quiz</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Content URL / Text</label>
+                                <textarea id="part-content" rows="3" required
+                                    class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition"></textarea>
+                            </div>
+
+                            <div class="flex justify-end space-x-3 pt-4">
+                                <button type="button" onclick="closePartModal()"
+                                    class="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition">Cancel</button>
+                                <button type="submit"
+                                    class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-gray-800 transition shadow-md">Save</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
 
             </main>
 
@@ -430,8 +419,288 @@
     </script>
     <script src="js/ui.js"></script>
     <script src="js/data.js"></script>
-    <script src="js/lecturePart.js"></script>
+    <script>
+        // Global state
+        const COURSE_API_URL = 'http://localhost:7070/api/courses';
+        const LECTURE_API_URL = 'http://localhost:7070/api/lectures';
+        const LECTURE_PART_API_URL = 'http://localhost:7070/api/lecture-parts';
+
+        let allCourses = [];
+        let allLectures = [];
+        let currentLectureParts = [];
+        // let currentLectureId = null; // Removed duplicate declaration
+
+        document.addEventListener('DOMContentLoaded', () => {
+            checkAdminAuth();
+            fetchCourses();
+            setupEventListeners();
+        });
+
+        function checkAdminAuth() {
+            const userJson = localStorage.getItem('currentUser');
+            if (!userJson) {
+                window.location.href = 'Login&Register.html';
+                return;
+            }
+
+            const user = JSON.parse(userJson);
+            if (user.role.toUpperCase() !== 'ADMIN') {
+                window.location.href = 'index.html';
+                return;
+            }
+
+            updateUserProfile(user);
+        }
+
+        function updateUserProfile(user) {
+            const fullName = `${user.firstName} ${user.lastName}`;
+            const nameElement = document.getElementById('user-full-name');
+            if (nameElement) nameElement.textContent = fullName;
+
+            const greetingElement = document.getElementById('nav-greeting-text');
+            if (greetingElement) greetingElement.textContent = `Hello, ${user.firstName}!`;
+
+            const initialsElement = document.getElementById('user-initials');
+            if (initialsElement) {
+                const initials = (user.firstName.charAt(0) + user.lastName.charAt(0)).toUpperCase();
+                initialsElement.textContent = initials;
+            }
+        }
+
+        function setupEventListeners() {
+            const courseSelect = document.getElementById('course-select');
+            const lectureSelect = document.getElementById('lecture-select');
+            const partForm = document.getElementById('part-form');
+
+            courseSelect.addEventListener('change', (e) => {
+                const courseId = e.target.value;
+                if (courseId) {
+                    fetchLectures(courseId);
+                    lectureSelect.disabled = false;
+                } else {
+                    lectureSelect.innerHTML = '<option value="">-- Select a Lecture --</option>';
+                    lectureSelect.disabled = true;
+                    document.getElementById('parts-table-container').classList.add('hidden');
+                    document.getElementById('add-part-btn').disabled = true;
+                }
+            });
+
+            lectureSelect.addEventListener('change', (e) => {
+                const lectureId = e.target.value;
+                if (lectureId) {
+                    currentLectureId = lectureId;
+                    fetchParts(lectureId);
+                    document.getElementById('add-part-btn').disabled = false;
+                } else {
+                    currentLectureId = null;
+                    document.getElementById('parts-table-container').classList.add('hidden');
+                    document.getElementById('add-part-btn').disabled = true;
+                }
+            });
+
+            partForm.addEventListener('submit', handlePartSubmit);
+        }
+
+        async function fetchCourses() {
+            try {
+                console.log('Fetching courses...');
+                const response = await fetch(COURSE_API_URL);
+                console.log('Courses response status:', response.status);
+                if (!response.ok) throw new Error('Failed to fetch courses');
+                allCourses = await response.json();
+                console.log('Courses fetched:', allCourses);
+                populateCourseSelect();
+            } catch (error) {
+                console.error('Error fetching courses:', error);
+                showMessage('Error', 'Failed to load courses.');
+            }
+        }
+
+        function populateCourseSelect() {
+            const select = document.getElementById('course-select');
+            if (!select) {
+                console.error('Course select element not found!');
+                return;
+            }
+            select.innerHTML = '<option value="">-- Select a Course --</option>';
+            if (!allCourses || allCourses.length === 0) {
+                console.warn('No courses available to populate.');
+                return;
+            }
+            allCourses.forEach(course => {
+                console.log('Adding course:', course);
+                const option = document.createElement('option');
+                option.value = course.courseId;
+                option.textContent = course.courseTitle;
+                select.appendChild(option);
+            });
+        }
+
+        async function fetchLectures(courseId) {
+            try {
+                const response = await fetch(LECTURE_API_URL);
+                if (!response.ok) throw new Error('Failed to fetch lectures');
+                const lectures = await response.json();
+                // Filter lectures by courseId
+                const courseLectures = lectures.filter(l => l.courseId == courseId || (l.course && l.course.courseId == courseId));
+                populateLectureSelect(courseLectures);
+            } catch (error) {
+                console.error('Error fetching lectures:', error);
+                showMessage('Error', 'Failed to load lectures.');
+            }
+        }
+
+        function populateLectureSelect(lectures) {
+            const select = document.getElementById('lecture-select');
+            select.innerHTML = '<option value="">-- Select a Lecture --</option>';
+            lectures.forEach(lecture => {
+                const option = document.createElement('option');
+                option.value = lecture.id; // Corrected: Lecture model uses 'id'
+                option.textContent = lecture.lectureTitle;
+                select.appendChild(option);
+            });
+        }
+
+        async function fetchParts(lectureId) {
+            const url = `${LECTURE_API_URL}/${lectureId}`;
+            console.log(`Fetching parts from: ${url}`);
+            try {
+                // Fetch the lecture to get its parts
+                const response = await fetch(url);
+                console.log('Fetch parts response status:', response.status);
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(`Failed to fetch lecture details: ${response.status} ${response.statusText} - ${errorText}`);
+                }
+
+                const lecture = await response.json();
+                console.log('Lecture details fetched:', lecture);
+
+                // Access parts from the lecture object. 
+                // Note: Lecture.java has 'parts' field, serialized as 'parts' (or 'lectureParts' if configured differently, but standard is field name)
+                currentLectureParts = lecture.parts || [];
+                console.log('Parts found:', currentLectureParts);
+
+                renderPartsTable();
+            } catch (error) {
+                console.error('Error fetching parts:', error);
+                showMessage('Error', `Failed to load lecture parts: ${error.message}`);
+            }
+        }
+
+        function renderPartsTable() {
+            const container = document.getElementById('parts-table-container');
+            const tbody = document.getElementById('parts-table-body');
+            container.classList.remove('hidden');
+            tbody.innerHTML = '';
+
+            if (currentLectureParts.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="4" class="px-6 py-4 text-center text-gray-500">No parts found for this lecture.</td></tr>';
+                return;
+            }
+
+            currentLectureParts.forEach(part => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${part.partDescription || 'No Description'}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${part.partOrderNumber || 0}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${part.partType || 'N/A'}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 truncate max-w-xs">${part.partContentUrl || ''}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                        <button onclick="openEditPartModal(${part.id})" class="text-indigo-600 hover:text-indigo-900 mr-3">Edit</button>
+                        <button onclick="deletePart(${part.id})" class="text-red-600 hover:text-red-900">Delete</button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // Modal Functions
+        function openCreatePartModal() {
+            document.getElementById('part-modal-title').textContent = 'Add Lecture Part';
+            document.getElementById('part-form').reset();
+            document.getElementById('part-id').value = '';
+            document.getElementById('part-order').value = (currentLectureParts.length + 1);
+            document.getElementById('part-modal').classList.remove('hidden');
+        }
+
+        function openEditPartModal(partId) {
+            const part = currentLectureParts.find(p => p.id === partId);
+            if (!part) return;
+
+            document.getElementById('part-modal-title').textContent = 'Edit Lecture Part';
+            document.getElementById('part-id').value = part.id;
+            document.getElementById('part-description').value = part.partDescription || '';
+            document.getElementById('part-order').value = part.partOrderNumber || 1;
+            document.getElementById('part-type').value = part.partType || 'VIDEO';
+            document.getElementById('part-content').value = part.partContentUrl || '';
+
+            document.getElementById('part-modal').classList.remove('hidden');
+        }
+
+        function closePartModal() {
+            document.getElementById('part-modal').classList.add('hidden');
+        }
+
+        async function handlePartSubmit(e) {
+            e.preventDefault();
+
+            const partId = document.getElementById('part-id').value;
+            const partData = {
+                partDescription: document.getElementById('part-description').value,
+                partOrderNumber: parseInt(document.getElementById('part-order').value),
+                partType: document.getElementById('part-type').value,
+                partContentUrl: document.getElementById('part-content').value
+            };
+
+            try {
+                let response;
+                if (partId) {
+                    // Update
+                    response = await fetch(`${LECTURE_PART_API_URL}/${partId}`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(partData)
+                    });
+                } else {
+                    // Create
+                    response = await fetch(`${LECTURE_API_URL}/${currentLectureId}/parts`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(partData)
+                    });
+                }
+
+                if (!response.ok) throw new Error('Failed to save part');
+
+                closePartModal();
+                showMessage('Success', 'Lecture part saved successfully.');
+                fetchParts(currentLectureId); // Refresh list
+            } catch (error) {
+                console.error('Error saving part:', error);
+                showMessage('Error', 'Failed to save lecture part.');
+            }
+        }
+
+        async function deletePart(partId) {
+            if (!confirm('Are you sure you want to delete this part?')) return;
+
+            try {
+                const response = await fetch(`${LECTURE_PART_API_URL}/${partId}`, {
+                    method: 'DELETE'
+                });
+
+                if (!response.ok) throw new Error('Failed to delete part');
+
+                showMessage('Success', 'Lecture part deleted successfully.');
+                fetchParts(currentLectureId); // Refresh list
+            } catch (error) {
+                console.error('Error deleting part:', error);
+                showMessage('Error', 'Failed to delete lecture part.');
+            }
+        }
+    </script>
 </body>
 
 </html>
-

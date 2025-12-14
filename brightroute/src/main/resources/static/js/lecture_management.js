@@ -10,6 +10,30 @@ let allCourses = [];
 document.addEventListener('DOMContentLoaded', async () => {
     checkAdminAuth();
     await Promise.all([fetchLectures(), fetchCourses()]);
+    renderLectureTable();
+
+    // Search functionality
+    const searchInput = document.getElementById('lecture-search-input');
+    if (searchInput) {
+        searchInput.addEventListener('input', (e) => {
+            const searchTerm = e.target.value.toLowerCase();
+            const filteredLectures = allLectures.filter(lecture => {
+                // Resolve course name for search
+                let courseName = '';
+                if (lecture.course && lecture.course.courseTitle) {
+                    courseName = lecture.course.courseTitle;
+                } else if (lecture.courseId) {
+                    const course = allCourses.find(c => c.courseId === lecture.courseId);
+                    if (course) courseName = course.courseTitle;
+                }
+
+                return lecture.lectureTitle.toLowerCase().includes(searchTerm) ||
+                    courseName.toLowerCase().includes(searchTerm) ||
+                    (lecture.lectureDescription && lecture.lectureDescription.toLowerCase().includes(searchTerm));
+            });
+            renderLectureTable(filteredLectures);
+        });
+    }
 });
 
 function checkAdminAuth() {
@@ -50,7 +74,6 @@ async function fetchLectures() {
         const response = await fetch(API_BASE_URL);
         if (!response.ok) throw new Error('Failed to fetch lectures');
         allLectures = await response.json();
-        renderLectureTable();
     } catch (error) {
         console.error('Error fetching lectures:', error);
         alert('Failed to load lectures.');
@@ -67,17 +90,24 @@ async function fetchCourses() {
     }
 }
 
-function renderLectureTable() {
+function renderLectureTable(lecturesToRender = allLectures) {
     const tableBody = document.getElementById('lecture-table-body');
     if (!tableBody) return;
 
-    if (allLectures.length === 0) {
+    if (lecturesToRender.length === 0) {
         tableBody.innerHTML = '<tr><td colspan="4" class="px-6 py-4 text-center text-gray-500">No lectures found.</td></tr>';
         return;
     }
 
-    tableBody.innerHTML = allLectures.map(lecture => {
-        const courseName = lecture.course ? lecture.course.courseTitle : 'N/A';
+    tableBody.innerHTML = lecturesToRender.map(lecture => {
+        // Resolve course name: try direct object first, then lookup by ID
+        let courseName = 'N/A';
+        if (lecture.course && lecture.course.courseTitle) {
+            courseName = lecture.course.courseTitle;
+        } else if (lecture.courseId) {
+            const course = allCourses.find(c => c.courseId === lecture.courseId);
+            if (course) courseName = course.courseTitle;
+        }
         const partsCount = lecture.parts ? lecture.parts.length : 0;
 
         return `
@@ -118,7 +148,15 @@ function showModal(title, lectureData) {
     const lectureTitle = isEditing ? lectureData.lectureTitle : '';
     const lectureDescription = isEditing ? lectureData.lectureDescription : '';
     const lectureOrder = isEditing ? lectureData.lectureOrderNumber : 1;
-    const courseId = isEditing && lectureData.course ? lectureData.course.courseId : '';
+    // Handle both nested course object and flat courseId
+    let courseId = '';
+    if (isEditing) {
+        if (lectureData.course && lectureData.course.courseId) {
+            courseId = lectureData.course.courseId;
+        } else if (lectureData.courseId) {
+            courseId = lectureData.courseId;
+        }
+    }
 
     // Generate Course Options
     const courseOptions = allCourses.map(course =>
@@ -203,7 +241,8 @@ async function saveLecture() {
 
         if (response.ok) {
             closeModal();
-            fetchLectures();
+            await fetchLectures();
+            renderLectureTable();
         } else {
             const errorText = await response.text();
             alert('Error saving lecture: ' + errorText);
@@ -227,7 +266,8 @@ async function deleteLecture(lectureId) {
         });
 
         if (response.ok) {
-            fetchLectures();
+            await fetchLectures();
+            renderLectureTable();
         } else {
             alert('Failed to delete lecture.');
         }

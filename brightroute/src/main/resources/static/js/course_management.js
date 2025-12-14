@@ -18,16 +18,16 @@ async function fetchCourses() {
 }
 
 // Render the course table
-function renderCourseTable() {
+function renderCourseTable(coursesToRender = allCourses) {
     const tableBody = document.getElementById('course-table-body');
     if (!tableBody) return;
 
-    if (allCourses.length === 0) {
+    if (coursesToRender.length === 0) {
         tableBody.innerHTML = '<tr><td colspan="4" class="px-6 py-4 text-center text-gray-500">No courses found.</td></tr>';
         return;
     }
 
-    tableBody.innerHTML = allCourses.map(course => `
+    tableBody.innerHTML = coursesToRender.map(course => `
         <tr>
             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${course.courseTitle}</td>
             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${getLevelLabel(course.levelId)}</td>
@@ -198,6 +198,20 @@ async function deleteCourse(courseId) {
 document.addEventListener('DOMContentLoaded', () => {
     checkAdminAuth();
     fetchCourses();
+
+    // Search functionality
+    const searchInput = document.getElementById('course-search-input');
+    if (searchInput) {
+        searchInput.addEventListener('input', (e) => {
+            const searchTerm = e.target.value.toLowerCase();
+            const filteredCourses = allCourses.filter(course =>
+                course.courseTitle.toLowerCase().includes(searchTerm) ||
+                course.courseInstructor.toLowerCase().includes(searchTerm) ||
+                (course.courseDescription && course.courseDescription.toLowerCase().includes(searchTerm))
+            );
+            renderCourseTable(filteredCourses);
+        });
+    }
 });
 
 function checkAdminAuth() {
