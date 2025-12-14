@@ -11,13 +11,12 @@ function checkAdminAuth() {
     }
 
     const user = JSON.parse(userJson);
-    // Case-insensitive role check
+     
     if (user.role.toUpperCase() !== 'ADMIN') {
-        window.location.href = 'index.html'; // Redirect non-admins to student portal
+        window.location.href = 'index.html';  
         return;
     }
 
-    // Update UI with user info
     updateUserProfile(user);
 }
 
@@ -39,7 +38,7 @@ function updateUserProfile(user) {
 
 async function fetchDashboardData() {
     try {
-        // Fetch Courses
+         
         const coursesResponse = await fetch('/api/courses');
         if (coursesResponse.ok) {
             const courses = await coursesResponse.json();
@@ -48,7 +47,6 @@ async function fetchDashboardData() {
             console.error('Failed to fetch courses');
         }
 
-        // Fetch Lectures
         const lecturesResponse = await fetch('/api/lectures');
         if (lecturesResponse.ok) {
             const lectures = await lecturesResponse.json();
@@ -57,7 +55,6 @@ async function fetchDashboardData() {
             console.error('Failed to fetch lectures');
         }
 
-        // Fetch Lecture Parts
         const partsResponse = await fetch('/api/lecture-parts');
         if (partsResponse.ok) {
             const parts = await partsResponse.json();
@@ -66,7 +63,6 @@ async function fetchDashboardData() {
             console.error('Failed to fetch lecture parts');
         }
 
-        // Fetch Users and Count Students
         const usersResponse = await fetch('/api/users');
         if (usersResponse.ok) {
             const users = await usersResponse.json();
@@ -85,6 +81,6 @@ function updateDashboardCard(elementId, count) {
     const element = document.getElementById(elementId);
     if (element) {
         element.textContent = count;
-        // Simple animation effect could be added here
+         
     }
 }

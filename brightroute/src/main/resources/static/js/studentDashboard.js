@@ -1,14 +1,12 @@
-// 1. Dashboard Overview
+ 
 function renderStudentDashboard() {
     const container = document.getElementById('student-dashboard-view');
     const user = getLoggedInUser();
 
-    // Stats Logic (Mock)
     const activeCourses = state.courses.filter(c => c.progress > 0 && c.progress < 100).length;
     const completedCourses = state.courses.filter(c => c.progress === 100).length;
-    const avgScore = 88; // Mock
+    const avgScore = 88;  
 
-    // Render all courses or a message if empty
     const coursesHtml = state.courses.length > 0
         ? renderCourseCards(state.courses)
         : '<div class="col-span-full text-center py-10 text-gray-500">No courses available at the moment.</div>';
@@ -71,7 +69,6 @@ function renderStudentDashboard() {
         </div>
     `;
 
-    // Fetch and Render Stats
     fetchDashboardStats(user.id);
 }
 window.renderStudentDashboard = renderStudentDashboard;
@@ -82,8 +79,8 @@ async function fetchDashboardStats(userId) {
 
     try {
         const [coursesRes, enrollmentsRes] = await Promise.all([
-            fetch(`http://localhost:7070/api/course-subscription/user/${userId}`),
-            fetch(`http://localhost:7070/api/enrollment/user/${userId}`)
+            fetch(`http: 
+            fetch(`http: 
         ]);
 
         if (coursesRes.ok) {
@@ -99,13 +96,11 @@ async function fetchDashboardStats(userId) {
         console.error('Error fetching dashboard stats:', error);
     }
 
-    // Update Counters
     const subEl = document.getElementById('subscribed-count');
     const enrollEl = document.getElementById('enrolled-count');
     if (subEl) subEl.textContent = subscribedCount;
     if (enrollEl) enrollEl.textContent = enrolledLecturesCount;
 
-    // Render Chart
     const ctx = document.getElementById('activityChart');
     if (ctx) {
         new Chart(ctx.getContext('2d'), {
@@ -116,8 +111,8 @@ async function fetchDashboardStats(userId) {
                     label: 'Count',
                     data: [subscribedCount, enrolledLecturesCount],
                     backgroundColor: [
-                        'rgba(59, 130, 246, 0.8)', // Blue
-                        'rgba(16, 185, 129, 0.8)'  // Green
+                        'rgba(59, 130, 246, 0.8)',  
+                        'rgba(16, 185, 129, 0.8)'   
                     ],
                     borderRadius: 6,
                     borderSkipped: false
@@ -143,11 +138,9 @@ async function fetchDashboardStats(userId) {
     }
 }
 
-// 2. My Courses View
 async function renderMyCourses() {
     const container = document.getElementById('my-courses-view');
 
-    // Ensure we have the latest subscribed courses
     const courses = await fetchSubscribedCourses();
 
     if (courses && courses.length > 0) {

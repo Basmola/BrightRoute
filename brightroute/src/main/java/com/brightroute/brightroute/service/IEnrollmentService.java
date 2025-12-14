@@ -7,9 +7,9 @@ import java.util.List;
 
 public interface IEnrollmentService {
 
-    Enrollment enroll(Integer lectureId, Integer userId); // CORRECTION: Use Integer and userId
+    Enrollment enroll(Integer lectureId, Integer userId);  
 
-    Enrollment updateStatus(Integer enrollmentId, EnrollmentStatus status); // CORRECTION: Use Integer
+    Enrollment updateStatus(Integer enrollmentId, EnrollmentStatus status);  
 
     List<EnrollmentDTO> getUserEnrollments(Integer userId);
 }

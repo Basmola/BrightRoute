@@ -16,6 +16,5 @@ public interface CourseSubscriptionRepository extends JpaRepository<CourseSubscr
 
     void deleteByUserIdAndCourseCourseId(Integer userId, Integer courseId);
 
-    // NEW: Find all subscriptions by user ID
     List<CourseSubscription> findByUserId(Integer userId);
 }

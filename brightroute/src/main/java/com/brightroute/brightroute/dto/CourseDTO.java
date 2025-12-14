@@ -8,7 +8,6 @@ public class CourseDTO {
     private Integer levelId;
     private byte[] courseImageCover;
 
-    // Constructors
     public CourseDTO() {
     }
 
@@ -22,7 +21,6 @@ public class CourseDTO {
         this.courseImageCover = courseImageCover;
     }
 
-    // Getters and Setters
     public Integer getCourseId() {
         return courseId;
     }

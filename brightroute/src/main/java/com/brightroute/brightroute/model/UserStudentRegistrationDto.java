@@ -5,27 +5,23 @@ import com.brightroute.brightroute.enums.AccountStatus;
 
 public class UserStudentRegistrationDto {
 
-    // --- USER FIELDS ---
     private String firstName;
     private String lastName;
     private String email;
     private String phoneNumber;
-    private String password; // Raw password
+    private String password;  
     
     private byte[] userImage; 
-    // Default values for new registrations
+     
     private Role role = Role.STUDENT; 
     private AccountStatus accountStatus = AccountStatus.ACTIVE;
-    
-    // --- STUDENT FIELDS ---
+
     private String nationalId;
     private Long parentNumber;
-    private String idType; // e.g., NATIONAL_ID / BIRTH_CERTIFICATE
+    private String idType;  
     private String levelOfEducation;
     private byte[] nationalIdFront;
     private byte[] birthCertificate;
-
-
 
     public String getFirstName() { return firstName; }
     public void setFirstName(String firstName) { this.firstName = firstName; }

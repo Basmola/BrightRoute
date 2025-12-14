@@ -1,10 +1,8 @@
 
 const API_BASE_URL = 'http://localhost:7070/api/courses';
 
-// Global store for courses
 let allCourses = [];
 
-// Fetch courses from API
 async function fetchCourses() {
     try {
         const response = await fetch(API_BASE_URL);
@@ -17,7 +15,6 @@ async function fetchCourses() {
     }
 }
 
-// Render the course table
 function renderCourseTable(coursesToRender = allCourses) {
     const tableBody = document.getElementById('course-table-body');
     if (!tableBody) return;
@@ -40,7 +37,6 @@ function renderCourseTable(coursesToRender = allCourses) {
     `).join('');
 }
 
-// Helper to get level label
 function getLevelLabel(levelId) {
     switch (levelId) {
         case 1: return 'Level 1 (Junior)';
@@ -50,12 +46,10 @@ function getLevelLabel(levelId) {
     }
 }
 
-// Open Modal for Creating a New Course
 function openCreateCourseModal() {
     showModal('Create New Course', null);
 }
 
-// Open Modal for Editing an Existing Course
 function openEditCourseModal(courseId) {
     const course = allCourses.find(c => c.courseId === courseId);
     if (course) {
@@ -63,17 +57,15 @@ function openEditCourseModal(courseId) {
     }
 }
 
-// Helper: Convert file to Base64
 function convertFileToBase64(file) {
     return new Promise((resolve, reject) => {
         const reader = new FileReader();
         reader.readAsDataURL(file);
-        reader.onload = () => resolve(reader.result.split(',')[1]); // Remove prefix
+        reader.onload = () => resolve(reader.result.split(',')[1]);  
         reader.onerror = error => reject(error);
     });
 }
 
-// Show Modal with Form
 function showModal(title, courseData) {
     const modal = document.getElementById('custom-modal');
     const modalTitle = document.getElementById('modal-title');
@@ -128,12 +120,10 @@ function showModal(title, courseData) {
     modal.classList.remove('hidden');
 }
 
-// Close Modal
 function closeModal() {
     document.getElementById('custom-modal').classList.add('hidden');
 }
 
-// Save Course (Create or Update)
 async function saveCourse() {
     const id = document.getElementById('course-id').value;
     const title = document.getElementById('course-title').value;
@@ -172,14 +162,14 @@ async function saveCourse() {
     try {
         let response;
         if (id) {
-            // Update
+             
             response = await fetch(`${API_BASE_URL}/${id}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(courseData)
             });
         } else {
-            // Create
+             
             response = await fetch(API_BASE_URL, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -189,7 +179,7 @@ async function saveCourse() {
 
         if (response.ok) {
             closeModal();
-            fetchCourses(); // Refresh table
+            fetchCourses();  
         } else {
             const errorText = await response.text();
             alert('Error saving course: ' + errorText);
@@ -200,14 +190,12 @@ async function saveCourse() {
     }
 }
 
-// Confirm Delete
 function confirmDeleteCourse(courseId) {
     if (confirm('Are you sure you want to delete this course?')) {
         deleteCourse(courseId);
     }
 }
 
-// Delete Course
 async function deleteCourse(courseId) {
     try {
         const response = await fetch(`${API_BASE_URL}/${courseId}`, {
@@ -215,7 +203,7 @@ async function deleteCourse(courseId) {
         });
 
         if (response.ok) {
-            fetchCourses(); // Refresh table
+            fetchCourses();  
         } else {
             alert('Failed to delete course.');
         }
@@ -225,12 +213,10 @@ async function deleteCourse(courseId) {
     }
 }
 
-// Initialize
 document.addEventListener('DOMContentLoaded', () => {
     checkAdminAuth();
     fetchCourses();
 
-    // Search functionality
     const searchInput = document.getElementById('course-search-input');
     if (searchInput) {
         searchInput.addEventListener('input', (e) => {
@@ -253,7 +239,7 @@ function checkAdminAuth() {
     }
 
     const user = JSON.parse(userJson);
-    // Case-insensitive role check
+     
     if (user.role.toUpperCase() !== 'ADMIN') {
         window.location.href = 'index.html';
         return;

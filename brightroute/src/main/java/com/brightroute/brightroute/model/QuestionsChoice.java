@@ -3,9 +3,9 @@ package com.brightroute.brightroute.model;
 import jakarta.persistence.*;
 
 @Entity
-// CORRECTION: Updated table name to match the SQL rename
+ 
 @Table(name = "QuestionsChoice", schema = "quiz")
-// CORRECTION: Updated class name to reflect the SQL rename (Optional but highly recommended)
+ 
 public class QuestionsChoice {
 
     @Id
@@ -13,7 +13,6 @@ public class QuestionsChoice {
     @Column(name = "choice_id")
     private Integer choiceId;
 
-    // CORRECTION: Modeling the FK as a Many-to-One relationship to the QuizQuestion entity
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "question_id", nullable = false)
     private QuizQuestion question;
@@ -37,10 +36,8 @@ public class QuestionsChoice {
     @Column(name = "choice_explanation_image")
     private byte[] choiceExplanationImage;
 
-    // Constructors
     public QuestionsChoice() {}
 
-    // ===== Getters and Setters (Updated for 'question' entity) =====
     public Integer getChoiceId() {
         return choiceId;
     }
@@ -49,7 +46,6 @@ public class QuestionsChoice {
         this.choiceId = choiceId;
     }
 
-    // Updated getter/setter for the QuizQuestion entity relationship
     public QuizQuestion getQuestion() {
         return question;
     }

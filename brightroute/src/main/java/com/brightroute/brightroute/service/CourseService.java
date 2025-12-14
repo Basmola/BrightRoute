@@ -31,7 +31,7 @@ public class CourseService {
     }
 
     public Course saveCourse(@Valid @NotNull Course course) {
-        // Business logic can go here (e.g., validation, logging)
+         
         return courseRepository.save(course);
     }
 

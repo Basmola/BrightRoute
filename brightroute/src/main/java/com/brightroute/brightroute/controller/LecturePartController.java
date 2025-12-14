@@ -19,10 +19,6 @@ public class LecturePartController {
         this.lecturePartService = lecturePartService;
     }
 
-    // ----------------------------------------------------
-    // Core CRUD Operations
-    // ----------------------------------------------------
-
     @GetMapping
     public List<LecturePart> getAllParts() {
         return lecturePartService.getAllParts();
@@ -42,24 +38,17 @@ public class LecturePartController {
         
         return lecturePartService.findPartById(partId)
                 .map(existingPart -> {
-                    updatedPart.setId(partId); // Ensure the ID from the path is used
-                    
-                    // CRITICAL FIX: Ensure the Lecture relationship is maintained if not provided in the payload.
-                    // This prevents setting the required 'lecture_id' foreign key to null.
+                    updatedPart.setId(partId);  
+
                     if (updatedPart.getLecture() == null && existingPart.getLecture() != null) {
                         updatedPart.setLecture(existingPart.getLecture());
                     }
-                    
-                    // In a DTO approach, you'd manually copy fields to existingPart here.
+
                     LecturePart savedPart = lecturePartService.savePart(updatedPart);
                     return ResponseEntity.ok(savedPart);
                 })
                 .orElse(ResponseEntity.notFound().build());
     }
-    
-    // ----------------------------------------------------
-    // Content Management Endpoints
-    // ----------------------------------------------------
 
     @GetMapping("/{partId}/content")
     public Object getContent(@PathVariable Integer partId) {
@@ -72,16 +61,15 @@ public class LecturePartController {
         return ResponseEntity.noContent().build();
     }
 
-
     @DeleteMapping("/{partId}")
     public ResponseEntity<Void> deletePart(@PathVariable Integer partId) {
         boolean isDeleted = lecturePartService.deletePartById(partId);
 
         if (isDeleted) {
-            // 204 No Content is the standard response for a successful DELETE.
+             
             return ResponseEntity.noContent().build();
         } else {
-            // 404 Not Found if the part doesn't exist.
+             
             return ResponseEntity.notFound().build();
         }
     }

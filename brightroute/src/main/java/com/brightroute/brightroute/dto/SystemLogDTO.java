@@ -8,17 +8,14 @@ public class SystemLogDTO {
     private String details;
     private LocalDateTime timestamp;
 
-    // Flattened User Info
     private Integer userId;
     private String userFirstName;
     private String userLastName;
     private String userEmail;
 
-    // Default Constructor
     public SystemLogDTO() {
     }
 
-    // Getters and Setters
     public Integer getLogId() {
         return logId;
     }

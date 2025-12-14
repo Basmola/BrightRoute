@@ -24,10 +24,9 @@ public class LectureService {
         this.courseRepository = courseRepository;
     }
 
-    // ===== Lecture CRUD =====
     @Transactional
     public Lecture saveLecture(Lecture lecture) {
-        // CRITICAL: Ensure all child parts link back to the parent lecture
+         
         if (lecture.getParts() != null) {
             for (LecturePart part : lecture.getParts()) {
                 part.setLecture(lecture);
@@ -59,7 +58,6 @@ public class LectureService {
         existingLecture.setLectureDescription(updatedLecture.getLectureDescription());
         existingLecture.setLectureOrderNumber(updatedLecture.getLectureOrderNumber());
 
-        // Handle Course update
         if (updatedLecture.getCourse() != null && updatedLecture.getCourse().getCourseId() != null) {
             com.brightroute.brightroute.model.Course course = courseRepository
                     .findById(updatedLecture.getCourse().getCourseId())
@@ -70,8 +68,6 @@ public class LectureService {
 
         return lectureRepository.save(existingLecture);
     }
-
-    // ===== LecturePart operations =====
 
     @Transactional
     public Lecture addPart(Integer lectureId, LecturePart part) {

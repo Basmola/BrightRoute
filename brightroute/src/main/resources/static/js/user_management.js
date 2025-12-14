@@ -3,13 +3,10 @@ const API_BASE_URL = 'http://localhost:7070/api/users';
 
 let allUsers = [];
 
-// Fetch users on load
 document.addEventListener('DOMContentLoaded', async () => {
     checkAdminAuth();
     await fetchUsers();
 
-
-    // Search functionality
     const searchInput = document.getElementById('user-search-input');
     if (searchInput) {
         searchInput.addEventListener('input', (e) => {
@@ -32,7 +29,7 @@ function checkAdminAuth() {
     }
 
     const user = JSON.parse(userJson);
-    // Case-insensitive role check
+     
     if (user.role.toUpperCase() !== 'ADMIN') {
         window.location.href = 'index.html';
         return;
@@ -115,7 +112,7 @@ function openEditUserModal(userId) {
 function showModal(title, userData) {
     const modal = document.getElementById('custom-modal');
     const modalTitle = document.getElementById('modal-title');
-    const modalMessage = document.getElementById('modal-message'); // We repurpose this for the form
+    const modalMessage = document.getElementById('modal-message');  
     const modalActions = document.getElementById('modal-actions');
 
     modalTitle.textContent = title;

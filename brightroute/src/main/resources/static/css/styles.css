@@ -1,11 +1,10 @@
-/* Smooth transitions */
+ 
 .transition-all {
     transition-property: all;
     transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
     transition-duration: 300ms;
 }
 
-/* Custom Scrollbar */
 .custom-scrollbar::-webkit-scrollbar {
     width: 6px;
     height: 6px;
@@ -24,7 +23,6 @@
     background-color: #d1d5db;
 }
 
-/* Modal Animations */
 .modal-open #modal-backdrop {
     opacity: 1;
 }
@@ -34,7 +32,6 @@
     opacity: 1;
 }
 
-/* Card Hover Effects */
 .hover-card {
     transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
@@ -44,7 +41,6 @@
     box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
 }
 
-/* Auth Background */
 .auth-bg-pattern {
     background-color: #f9fafb;
     background-image: radial-gradient(#e5e7eb 1px, transparent 1px);

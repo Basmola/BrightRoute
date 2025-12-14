@@ -11,7 +11,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/lectures")
 public class LectureController {
-    // Controller for managing lectures - Updated at 2025-12-14 01:30
 
     private final LectureService lectureService;
 
@@ -40,7 +39,6 @@ public class LectureController {
         lectureService.deleteLecture(id);
     }
 
-    // ===== LecturePart endpoints =====
     @PostMapping("/{lectureId}/parts")
     public Lecture addPart(@PathVariable Integer lectureId, @RequestBody LecturePart part) {
         return lectureService.addPart(lectureId, part);

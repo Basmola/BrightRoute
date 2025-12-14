@@ -1,4 +1,4 @@
-// Global state
+ 
 const COURSE_API_URL = 'http://localhost:7070/api/courses';
 const LECTURE_API_URL = 'http://localhost:7070/api/lectures';
 const LECTURE_PART_API_URL = 'http://localhost:7070/api/lecture-parts';
@@ -119,7 +119,7 @@ async function fetchLectures(courseId) {
         const response = await fetch(LECTURE_API_URL);
         if (!response.ok) throw new Error('Failed to fetch lectures');
         const lectures = await response.json();
-        // Filter lectures by courseId
+         
         const courseLectures = lectures.filter(l => l.courseId == courseId || (l.course && l.course.courseId == courseId));
         populateLectureSelect(courseLectures);
     } catch (error) {
@@ -141,12 +141,11 @@ function populateLectureSelect(lectures) {
 
 async function fetchParts(lectureId) {
     try {
-        // Fetch the lecture to get its parts
+         
         const response = await fetch(`${LECTURE_API_URL}/${lectureId}`);
         if (!response.ok) throw new Error('Failed to fetch lecture details');
         const lecture = await response.json();
-        // Access parts from the lecture object. 
-        // Note: Lecture.java has 'parts' field, serialized as 'parts' (or 'lectureParts' if configured differently, but standard is field name)
+
         currentLectureParts = lecture.parts || [];
         renderPartsTable();
     } catch (error) {
@@ -181,7 +180,6 @@ function renderPartsTable() {
     });
 }
 
-// Modal Functions
 function openCreatePartModal() {
     document.getElementById('part-modal-title').textContent = 'Add Lecture Part';
     document.getElementById('part-form').reset();
@@ -219,14 +217,14 @@ async function handlePartSubmit(e) {
     try {
         let response;
         if (partId) {
-            // Update
+             
             response = await fetch(`${LECTURE_PART_API_URL}/${partId}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(partData)
             });
         } else {
-            // Create
+             
             response = await fetch(`${LECTURE_API_URL}/${currentLectureId}/parts`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -238,7 +236,7 @@ async function handlePartSubmit(e) {
 
         closePartModal();
         showMessage('Success', 'Lecture part saved successfully.');
-        fetchParts(currentLectureId); // Refresh list
+        fetchParts(currentLectureId);  
     } catch (error) {
         console.error('Error saving part:', error);
         showMessage('Error', 'Failed to save lecture part.');
@@ -256,14 +254,13 @@ async function deletePart(partId) {
         if (!response.ok) throw new Error('Failed to delete part');
 
         showMessage('Success', 'Lecture part deleted successfully.');
-        fetchParts(currentLectureId); // Refresh list
+        fetchParts(currentLectureId);  
     } catch (error) {
         console.error('Error deleting part:', error);
         showMessage('Error', 'Failed to delete lecture part.');
     }
 }
 
-// Helper for messages (reused from other files or defined here if needed)
 function showMessage(title, message) {
     const modal = document.getElementById('custom-modal');
     if (modal) {

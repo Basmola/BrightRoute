@@ -20,11 +20,9 @@ public class QuizController {
         this.quizService = quizService;
     }
 
-    // --- Quiz CRUD ---
-
     @PostMapping
     public ResponseEntity<Quiz> createQuiz(@RequestBody Quiz quiz) {
-        // The client must ensure that nested QuizQuestions and their Choices are provided here.
+         
         Quiz newQuiz = quizService.saveQuiz(quiz);
         return ResponseEntity.ok(newQuiz);
     }
@@ -47,18 +45,13 @@ public class QuizController {
         return ResponseEntity.noContent().build();
     }
 
-    // --- Quiz Question Retrieval ---
-    
-    /**
-     * Retrieves the questions (and their choices) for a specific Quiz.
-     */
     @GetMapping("/{id}/questions")
     public ResponseEntity<List<QuizQuestion>> getQuizQuestions(@PathVariable Integer id) {
         try {
             List<QuizQuestion> questions = quizService.getQuestionsForQuiz(id);
             return ResponseEntity.ok(questions);
         } catch (RuntimeException e) {
-            // Catches the "Quiz not found" exception from the service
+             
             return ResponseEntity.notFound().build();
         }
     }

@@ -19,8 +19,6 @@ public class QuizQuestionController {
         this.quizQuestionService = quizQuestionService;
     }
 
-    // --- GET methods ---
-    
     @GetMapping
     public List<QuizQuestion> getAllQuestions() {
         return quizQuestionService.findAllQuestions();
@@ -33,11 +31,9 @@ public class QuizQuestionController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    // --- POST/PUT methods ---
-
     @PostMapping
     public QuizQuestion createQuestion(@RequestBody QuizQuestion question) {
-        // NOTE: The request body must include the nested Choices/Answers for this to work.
+         
         return quizQuestionService.saveQuestion(question);
     }
 
@@ -48,18 +44,15 @@ public class QuizQuestionController {
         
         return quizQuestionService.findQuestionById(id)
                 .map(existingQuestion -> {
-                    // Set the ID from the path to ensure the correct entity is updated
+                     
                     questionDetails.setQuestionId(id); 
-                    
-                    // The service's save method will handle the update (merge)
+
                     QuizQuestion updatedQuestion = quizQuestionService.saveQuestion(questionDetails);
                     return ResponseEntity.ok(updatedQuestion);
                 })
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    // --- DELETE method ---
-    
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteQuestion(@PathVariable Integer id) {
         if (quizQuestionService.findQuestionById(id).isPresent()) {

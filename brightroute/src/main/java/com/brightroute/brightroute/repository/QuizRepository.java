@@ -10,9 +10,7 @@ import java.util.List;
 @Repository
 public interface QuizRepository extends JpaRepository<Quiz, Integer> {
 
-    // Custom query to find quizzes by their link to a LecturePart
     Optional<Quiz> findByLecturePart_Id(Integer partId);
-    
-    // Custom query to find quizzes based on title (optional)
+
     List<Quiz> findByQuizTitleContainingIgnoreCase(String title);
 }

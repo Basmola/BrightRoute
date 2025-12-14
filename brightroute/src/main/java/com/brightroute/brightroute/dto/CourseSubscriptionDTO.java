@@ -4,20 +4,18 @@ import java.time.LocalDateTime;
 
 public class CourseSubscriptionDTO {
     private Integer id;
-    private Integer userId; // Only the ID of the User
-    private Integer courseId; // Only the ID of the Course
+    private Integer userId;  
+    private Integer courseId;  
     private LocalDateTime subscribedAt;
 
-    // Constructor to map the Entity to the DTO
     public CourseSubscriptionDTO(CourseSubscription subscription) {
         this.id = subscription.getId();
-        // Extracting IDs from the related entities
+         
         this.userId = subscription.getUser().getId(); 
         this.courseId = subscription.getCourse().getCourseId();
         this.subscribedAt = subscription.getSubscribedAt();
     }
 
-    // Standard Getters and Setters (omitted for brevity)
     public Integer getId() { return id; }
     public void setId(Integer id) { this.id = id; }
     public Integer getUserId() { return userId; }

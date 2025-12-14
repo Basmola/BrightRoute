@@ -5,14 +5,10 @@ const COURSES_API_URL = 'http://localhost:7070/api/courses';
 let allAccessCodes = [];
 let allCourses = [];
 
-// Fetch data on load
-// Fetch data on load
 document.addEventListener('DOMContentLoaded', async () => {
     checkAdminAuth();
     await Promise.all([fetchAccessCodes(), fetchCourses()]);
 
-
-    // Search functionality
     const searchInput = document.getElementById('access-code-search-input');
     if (searchInput) {
         searchInput.addEventListener('input', (e) => {
@@ -35,7 +31,7 @@ function checkAdminAuth() {
     }
 
     const user = JSON.parse(userJson);
-    // Case-insensitive role check
+     
     if (user.role.toUpperCase() !== 'ADMIN') {
         window.location.href = 'index.html';
         return;

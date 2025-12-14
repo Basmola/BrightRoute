@@ -17,10 +17,6 @@ public class LecturePartService {
         this.lecturePartRepository = lecturePartRepository;
     }
 
-    // ======================================================
-    // 1. Core CRUD Methods
-    // ======================================================
-
     public List<LecturePart> getAllParts() {
         return lecturePartRepository.findAll();
     }
@@ -34,10 +30,6 @@ public class LecturePartService {
         return lecturePartRepository.save(part);
     }
 
-    // ======================================================
-    // 2. Content Management Methods
-    // ======================================================
-
     private LecturePart getPartByIdOrThrow(Integer partId) {
         return lecturePartRepository.findById(partId)
                 .orElseThrow(() -> new RuntimeException("LecturePart not found for ID: " + partId));
@@ -46,9 +38,6 @@ public class LecturePartService {
     public Object getContent(Integer partId) {
         LecturePart part = getPartByIdOrThrow(partId);
 
-        // This is where you would implement logic to retrieve the actual
-        // Quiz object based on part.getPartType() == "QUIZ"
-        // For now, it returns the content URL or null.
         return part.getPartContentUrl();
     }
 

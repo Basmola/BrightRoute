@@ -31,23 +31,19 @@ public class CourseSubscriptionService {
 
     public CourseSubscriptionDTO subscribe(Integer userId, Integer courseId) {
 
-        // Check if subscription already exists
         if (courseSubscriptionRepository.existsByUserIdAndCourseCourseId(userId, courseId)) {
             throw new RuntimeException("User is already subscribed to this course");
         }
 
-        // Fetch User and Course entities
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         Course course = courseRepository.findById(courseId)
                 .orElseThrow(() -> new RuntimeException("Course not found"));
 
-        // Create and save the entity
         CourseSubscription subscription = new CourseSubscription(user, course);
         CourseSubscription savedSubscription = courseSubscriptionRepository.save(subscription);
 
-        // Convert the saved JPA entity to the DTO before returning
         return new CourseSubscriptionDTO(savedSubscription);
     }
 
@@ -60,7 +56,6 @@ public class CourseSubscriptionService {
         courseSubscriptionRepository.deleteByUserIdAndCourseCourseId(userId, courseId);
     }
 
-    // NEW: Get all courses a user is subscribed to
     public java.util.List<CourseDTO> getSubscribedCourses(Integer userId) {
         return courseSubscriptionRepository.findByUserId(userId)
                 .stream()

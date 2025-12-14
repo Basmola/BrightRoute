@@ -2,7 +2,7 @@ package com.brightroute.brightroute.controller;
 
 import com.brightroute.brightroute.model.Course;
 import com.brightroute.brightroute.service.CourseService;
-import jakarta.validation.Valid; // Import for OCL Validation
+import jakarta.validation.Valid;  
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -32,13 +32,11 @@ public class CourseController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    // OCL Implementation: Check constraints before Create
     @PostMapping
     public Course createCourse(@Valid @RequestBody Course course) {
         return courseService.saveCourse(course);
     }
 
-    // OCL Implementation: Check constraints before Update
     @PutMapping("/{id}")
     public ResponseEntity<Course> updateCourse(@PathVariable Integer id, @Valid @RequestBody Course courseDetails) {
         return courseService.findCourseById(id)

@@ -4,12 +4,12 @@ import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "Student", schema = "users") // Renamed from StudentProfile
+@Table(name = "Student", schema = "users")  
 public class Student {
 
     @Id
     @Column(name = "student_id")
-    private Integer id; // CORRECTION: Changed from Long to Integer
+    private Integer id;  
 
     @Column(name = "student_national_id", unique = true)
     private String nationalId;
@@ -17,9 +17,8 @@ public class Student {
     @Column(name = "parent_number")
     private Long parentNumber;
 
-    // CORRECTION: Corrected Column name in SQL. Removed @Enumerated (optional)
     @Column(name = "student_id_type") 
-    private String idType; // NATIONAL_ID / BIRTH_CERTIFICATE
+    private String idType;  
 
     @Lob
     @Column(name = "student_national_id_front")
@@ -29,24 +28,19 @@ public class Student {
     @Column(name = "student_birth_certificate")
     private byte[] birthCertificate;
 
-    // CORRECTION: Corrected Column name in SQL
     @Column(name = "student_level_of_education")
     private String levelOfEducation;
 
-    @Column(name = "student_created_at", updatable = false) // ENHANCEMENT: Added updatable=false
+    @Column(name = "student_created_at", updatable = false)  
     private LocalDateTime createdAt = LocalDateTime.now();
 
-    // One-to-One Shared Primary Key Mapping (This part is correctly done!)
-    // 1. @MapsId tells JPA to use the primary key of this entity (id) as the foreign key.
-    // 2. @JoinColumn specifies the FK column name.
     @OneToOne(fetch = FetchType.LAZY)
     @MapsId 
-    @JoinColumn(name = "student_id") // Maps the student_id column to the primary key of the User table
+    @JoinColumn(name = "student_id")  
     private User user;
 
     public Student() {}
 
-    // GETTERS & SETTERS (Updated for Integer ID)
     public Integer getId() { return id; }
     public void setId(Integer id) { this.id = id; }
 

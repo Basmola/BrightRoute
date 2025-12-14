@@ -31,7 +31,6 @@ public class CourseSubscriptionController {
         courseSubscriptionService.unsubscribe(userId, courseId);
     }
 
-    // NEW: Get subscribed courses
     @GetMapping("/user/{userId}")
     public java.util.List<CourseDTO> getSubscribedCourses(@PathVariable Integer userId) {
         return courseSubscriptionService.getSubscribedCourses(userId);

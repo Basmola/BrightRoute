@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-// Simple DTO for login request to avoid incomplete User entity
 class LoginRequest {
     public String email;
     public String password;
@@ -32,35 +31,21 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    /**
-     * Handles unified registration for both the base User and the Student profile.
-     * Takes a DTO containing all necessary fields.
-     * Maps to: POST /api/users/register
-     */
     @PostMapping("/register")
     public ResponseEntity<User> register(@RequestBody UserStudentRegistrationDto registrationDto) {
-        // Delegates the transactional save of both User and Student to the service.
+         
         User registeredUser = userService.registerUserAndStudent(registrationDto);
-        return new ResponseEntity<>(registeredUser, HttpStatus.CREATED); // Returns 201 Created on success
+        return new ResponseEntity<>(registeredUser, HttpStatus.CREATED);  
     }
 
-    /**
-     * Handles user login authentication.
-     * Maps to: POST /api/users/login
-     */
     @PostMapping("/login")
     public ResponseEntity<User> login(
-            @RequestBody LoginRequest request // Use a DTO for cleaner input
+            @RequestBody LoginRequest request  
     ) {
-        // Service handles password verification and user lookup
+         
         return ResponseEntity.ok(userService.login(request.getEmail(), request.getPassword()));
     }
 
-    /**
-     * Handles updating the user's editable profile fields (first name, last name,
-     * phone number).
-     * Maps to: PUT /api/users/{id}
-     */
     @PutMapping("/{id}")
     public ResponseEntity<User> updateProfile(
             @PathVariable Integer id,
@@ -68,19 +53,11 @@ public class UserController {
         return ResponseEntity.ok(userService.updateProfile(id, updatedUser));
     }
 
-    /**
-     * Retrieves a single user's profile data by ID.
-     * Maps to: GET /api/users/{id}
-     */
     @GetMapping("/{id}")
     public ResponseEntity<User> viewUser(@PathVariable Integer id) {
         return ResponseEntity.ok(userService.viewUser(id));
     }
 
-    /**
-     * Verifies a user's identity based on ID, names, and password.
-     * Maps to: POST /api/users/verify
-     */
     @PostMapping("/verify")
     public ResponseEntity<Boolean> verify(
             @RequestParam Integer userId,
@@ -91,18 +68,12 @@ public class UserController {
                 userService.verifyIdentity(userId, firstName, lastName, password));
     }
 
-    /**
-     * Handles user logout (primarily for server-side session cleanup if
-     * applicable).
-     * Maps to: POST /api/users/logout
-     */
     @PostMapping("/logout")
     public ResponseEntity<Void> logout(@RequestParam Integer userId) {
         userService.logout(userId);
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build(); // Returns 204 No Content
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();  
     }
 
-    // NEW ENDPOINTS
     @GetMapping("/profile/{id}")
     public ResponseEntity<UserStudentRegistrationDto> getProfile(@PathVariable Integer id) {
         return ResponseEntity.ok(userService.getProfile(id));

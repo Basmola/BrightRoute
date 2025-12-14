@@ -1,30 +1,21 @@
-// =======================================================
-// 6. CONTENT RENDERING (contentRenders.js)
-// Backend Integration: Connected to Spring Boot CourseController
-// =======================================================
+ 
 
 const API_BASE_URL = 'http://localhost:7070/api/courses';
 
-// Global store for courses to avoid re-fetching constantly
 window.allCourses = [];
 
-// Configuration to map Database Level IDs to UI Styles
 const LEVEL_CONFIG = {
     1: { title: 'Junior Level', tag: 'primary', label: 'Junior' },
     2: { title: 'Intermediate Level', tag: 'secondary', label: 'Intermediate' },
     3: { title: 'Expert Level', tag: 'accent', label: 'Expert' }
 };
 
-/**
- * HELPER: Fetches all courses from the API and updates the global store.
- * Returns the list of courses.
- */
 async function fetchCourses() {
     try {
         const response = await fetch(API_BASE_URL);
         if (!response.ok) throw new Error('Failed to fetch courses');
         const courses = await response.json();
-        window.allCourses = courses; // Update global store
+        window.allCourses = courses;  
         return courses;
     } catch (error) {
         console.error('API Error:', error);
@@ -33,19 +24,10 @@ async function fetchCourses() {
     }
 }
 
-// =======================================================
-// STUDENT / PUBLIC VIEWS
-// =======================================================
-
-/**
- * UPDATED: Renders individual COURSE Cards (fetched from API).
- * Iterates through actual courses instead of static level summaries.
- */
 async function renderLevelCards() {
     const container = document.getElementById('level-cards-container');
     if (!container) return;
 
-    // 1. Fetch fresh data
     const courses = await fetchCourses();
 
     if (courses.length === 0) {
@@ -53,12 +35,10 @@ async function renderLevelCards() {
         return;
     }
 
-    // 2. Generate HTML for each course
     const cards = courses.map(course => {
-        // Get style config based on levelId, default to Level 1 style if not found
+         
         const levelConfig = LEVEL_CONFIG[course.levelId] || LEVEL_CONFIG[1];
-        
-        // Handle potentially missing description or lecture count
+
         const desc = course.courseDescription || 'No description provided.';
         const lectureCount = course.courseNumberOfLectures || 0;
 
@@ -103,15 +83,10 @@ async function renderLevelCards() {
 }
 window.renderLevelCards = renderLevelCards;
 
-
-/**
- * Renders the list of enrolled/published courses on the Student Dashboard.
- */
 async function renderStudentDashboardCourses() {
     const container = document.getElementById('student-courses-list');
     if (!container) return;
 
-    // Use global store if available, or fetch if empty
     let courses = window.allCourses;
     if (courses.length === 0) courses = await fetchCourses();
 
@@ -123,11 +98,10 @@ async function renderStudentDashboardCourses() {
     }
 
     const courseList = validCourses.map(course => {
-        // Determine styling based on Level ID
+         
         const levelId = course.levelId || 1;
         const config = LEVEL_CONFIG[levelId] || LEVEL_CONFIG[1];
-        
-        // Colors for placeholder image
+
         let bgColor = 'cccccc', textColor = '000000';
         if(config.tag === 'primary') { bgColor = '111827'; textColor = 'ffffff'; }
         if(config.tag === 'secondary') { bgColor = '374151'; textColor = 'ffffff'; }
@@ -153,10 +127,6 @@ async function renderStudentDashboardCourses() {
 }
 window.renderStudentDashboardCourses = renderStudentDashboardCourses;
 
-
-/**
- * Renders lectures for a specific level (filtered from API courses).
- */
 async function renderLevelLectures(levelId) {
     const container = document.getElementById('lectures-grid');
     if (!container) return;
@@ -164,15 +134,13 @@ async function renderLevelLectures(levelId) {
     let courses = window.allCourses;
     if (courses.length === 0) courses = await fetchCourses();
 
-    // 1. Filter courses by Level ID
     const levelCourses = courses.filter(c => c.levelId == levelId);
 
-    // 2. Extract all lectures from these courses
     let allLectures = [];
     levelCourses.forEach(c => {
         if(c.lectures) {
             c.lectures.forEach(l => {
-                // Add course metadata to lecture for display
+                 
                 l.color = LEVEL_CONFIG[levelId] ? LEVEL_CONFIG[levelId].tag : 'primary';
                 l.parentCourseTitle = c.courseTitle;
                 allLectures.push(l);
@@ -202,14 +170,6 @@ async function renderLevelLectures(levelId) {
 }
 window.renderLevelLectures = renderLevelLectures;
 
-
-// =======================================================
-// ADMIN RENDERERS (Content Management)
-// =======================================================
-
-/**
- * Renders the Course Management table (Admin View).
- */
 async function renderContentManagement() {
     const container = document.getElementById('course-table-body');
     if (!container) return;
@@ -239,9 +199,6 @@ async function renderContentManagement() {
 }
 window.renderContentManagement = renderContentManagement;
 
-/**
- * Renders the Lecture Management table.
- */
 async function renderLectureManagement() {
     const container = document.getElementById('lecture-table-body');
     if (!container) return;
@@ -250,8 +207,7 @@ async function renderLectureManagement() {
     if (courses.length === 0) courses = await fetchCourses();
 
     let allLectures = [];
-    
-    // Aggregate lectures
+
     courses.forEach(course => {
         if (course.lectures && Array.isArray(course.lectures)) {
             course.lectures.forEach(lecture => {
@@ -285,15 +241,11 @@ async function renderLectureManagement() {
 }
 window.renderLectureManagement = renderLectureManagement;
 
-
-/**
- * Renders User Management.
- */
 async function renderUserManagement() {
     const container = document.getElementById('user-table-body');
     if (!container) return;
     
-    const users = []; // Empty for now
+    const users = [];  
 
     if(users.length === 0) {
         container.innerHTML = '<tr><td colspan="4" class="px-6 py-4 text-center text-gray-500">No User API Endpoint connected.</td></tr>';
@@ -302,14 +254,6 @@ async function renderUserManagement() {
 }
 window.renderUserManagement = renderUserManagement;
 
-
-// =======================================================
-// ACTION HANDLERS (CRUD)
-// =======================================================
-
-/**
- * PREPARE MODAL: Shows the modal for adding or editing a Course.
- */
 function showAddCourseModal(courseDataToEdit = null) {
     const modal = document.getElementById('custom-modal');
     const titleElement = document.getElementById('modal-title');
@@ -318,16 +262,14 @@ function showAddCourseModal(courseDataToEdit = null) {
 
     const isEditing = courseDataToEdit !== null;
     const currentCourseId = isEditing ? courseDataToEdit.courseId : null;
-    
-    // Default/Existing values
+
     const defaultTitle = isEditing ? courseDataToEdit.courseTitle : '';
     const defaultInstructor = isEditing ? courseDataToEdit.courseInstructor : '';
     const defaultDescription = isEditing ? courseDataToEdit.courseDescription : ''; 
     const defaultLevel = isEditing ? courseDataToEdit.levelId : '';
 
     titleElement.textContent = isEditing ? `Edit Course: ${defaultTitle}` : 'Create New Course';
-    
-    // Modal Content (Form)
+
     messageElement.innerHTML = `
         <div class="space-y-4">
             <div class="grid grid-cols-2 gap-4">
@@ -359,7 +301,6 @@ function showAddCourseModal(courseDataToEdit = null) {
         <input type="hidden" id="course-edit-id" value="${currentCourseId || ''}">
     `;
 
-    // Action Buttons
     const buttonText = isEditing ? 'Update Course' : 'Save Course';
     actionsElement.innerHTML = `
         <button onclick="saveCourseToApi();" class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-gray-800 transition shadow-md mr-3">${buttonText}</button>
@@ -371,10 +312,6 @@ function showAddCourseModal(courseDataToEdit = null) {
 }
 window.showAddCourseModal = showAddCourseModal; 
 
-
-/**
- * ACTION: Creates (POST) or Updates (PUT) a course via API.
- */
 async function saveCourseToApi() {
     const editId = document.getElementById('course-edit-id').value.trim(); 
     const title = document.getElementById('new-course-title').value.trim();
@@ -397,14 +334,14 @@ async function saveCourseToApi() {
     try {
         let response;
         if (editId) {
-            // UPDATE (PUT)
+             
             response = await fetch(`${API_BASE_URL}/${editId}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(courseData)
             });
         } else {
-            // CREATE (POST)
+             
             response = await fetch(API_BASE_URL, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -416,7 +353,7 @@ async function saveCourseToApi() {
             showMessage('Success', `Course saved successfully!`);
             hideModal();
             fetchCourses().then(() => {
-                // Refresh views
+                 
                 if(document.getElementById('course-table-body')) renderContentManagement();
                 if(document.getElementById('level-cards-container')) renderLevelCards();
             });
@@ -430,10 +367,6 @@ async function saveCourseToApi() {
 }
 window.saveCourseToApi = saveCourseToApi; 
 
-
-/**
- * ACTION: Triggered by Edit button in table. Finds course and opens modal.
- */
 function editCourse(courseId) {
     const courseToEdit = window.allCourses.find(c => c.courseId === courseId);
     if (courseToEdit) {
@@ -444,10 +377,6 @@ function editCourse(courseId) {
 }
 window.editCourse = editCourse;
 
-
-/**
- * ACTION: Triggered by Delete button. Shows confirmation.
- */
 function deleteCourse(courseId) {
     const confirmationMessage = `Are you sure you want to delete course ID: ${courseId}?`;
     const actions = `
@@ -458,9 +387,6 @@ function deleteCourse(courseId) {
 }
 window.deleteCourse = deleteCourse;
 
-/**
- * ACTION: Executes DELETE request.
- */
 async function confirmDeleteCourseApi(courseId) {
     try {
         const response = await fetch(`${API_BASE_URL}/${courseId}`, {
@@ -470,7 +396,7 @@ async function confirmDeleteCourseApi(courseId) {
         if (response.ok) {
             hideModal();
             showMessage('Success', 'Course deleted.');
-            // Refresh data
+             
             fetchCourses().then(() => renderContentManagement());
         } else {
             throw new Error('Failed to delete');
@@ -482,14 +408,6 @@ async function confirmDeleteCourseApi(courseId) {
 }
 window.confirmDeleteCourseApi = confirmDeleteCourseApi;
 
-
-// =======================================================
-// LECTURE & DROPDOWN HELPERS
-// =======================================================
-
-/**
- * POPULATE: Fills course dropdown for "Add Lecture" forms.
- */
 function populateCourseDropdowns() {
     const courseDropdown = document.getElementById('part-target-course'); 
     const lectureCourseDropdown = document.getElementById('lecture-target-course');
@@ -511,16 +429,12 @@ function populateCourseDropdowns() {
 }
 window.populateCourseDropdowns = populateCourseDropdowns;
 
-/**
- * POPULATE: Fills lecture dropdown based on selected course.
- */
 function populateLectureDropdown(courseId, targetElementId) {
     const lectureDropdown = document.getElementById(targetElementId);
     if (!lectureDropdown) return;
     
     lectureDropdown.innerHTML = '<option value="">-- Select Lecture --</option>';
 
-    // Find course in global store
     const course = window.allCourses.find(c => c.courseId == courseId);
 
     if (course && course.lectures && course.lectures.length > 0) {
@@ -534,11 +448,8 @@ function populateLectureDropdown(courseId, targetElementId) {
 }
 window.populateLectureDropdown = populateLectureDropdown;
 
-/**
- * ACTION: Add New Lecture.
- */
 async function addNewLecture() {
-    // 1. Capture Data
+     
     const courseId = document.getElementById('lecture-target-course').value;
     const lectureTitle = document.getElementById('new-lecture-title').value.trim();
     const lectureDescription = document.getElementById('new-lecture-description').value.trim();
@@ -548,11 +459,9 @@ async function addNewLecture() {
         return; 
     }
 
-    // 2. Get the current course object
     const course = window.allCourses.find(c => c.courseId == courseId);
     if (!course) return showMessage('Error', 'Course not found.');
 
-    // 3. Prepare new Lecture object
     const newLecture = {
         lectureTitle: lectureTitle,
         lectureDescription: lectureDescription,
@@ -561,7 +470,6 @@ async function addNewLecture() {
         parts: []
     };
 
-    // 4. Update Course via PUT
     if (!course.lectures) course.lectures = [];
     course.lectures.push(newLecture);
 

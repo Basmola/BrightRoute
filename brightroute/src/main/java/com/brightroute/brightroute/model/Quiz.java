@@ -11,37 +11,29 @@ public class Quiz {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "quiz_id")
-    private Integer id; // Matches SQL INT type
+    private Integer id;  
 
-    // One-to-One relationship: Quiz is the owning side, using the FK 'part_id'
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "part_id", unique = true, nullable = false) // FK constraint in the SQL schema
+    @JoinColumn(name = "part_id", unique = true, nullable = false)  
     private LecturePart lecturePart;
 
     @Column(name = "quiz_title")
     private String quizTitle;
 
     @Column(name = "quiz_passing_score")
-    private Integer quizPassingScore; // Corresponds to the SQL field
+    private Integer quizPassingScore;  
 
     @Column(name = "quiz_created_at", updatable = false)
     private LocalDateTime quizCreatedAt = LocalDateTime.now();
 
-    // One-to-Many relationship: One Quiz has Many QuizQuestions
-    // 'mappedBy' points to the 'quiz' field in the QuizQuestion entity
     @OneToMany(mappedBy = "quiz", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<QuizQuestion> questions;
 
-    // One-to-Many relationship: One Quiz has Many Submissions
     @OneToMany(mappedBy = "quiz", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<StudentQuizSubmission> submissions;
 
-
-    // Constructors
     public Quiz() {}
 
-    // ===== Getters and Setters =====
-    
     public Integer getId() { return id; }
     public void setId(Integer id) { this.id = id; }
 

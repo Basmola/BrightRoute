@@ -26,15 +26,12 @@ public class EnrollmentService implements IEnrollmentService {
     @Override
     public Enrollment enroll(Integer lectureId, Integer userId) {
 
-        // 1. Fetch Lecture
         Lecture lecture = lectureRepository.findById(lectureId)
                 .orElseThrow(() -> new RuntimeException("Lecture not found for ID: " + lectureId));
 
-        // 2. Fetch User
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found for ID: " + userId));
 
-        // 3. Create Enrollment
         Enrollment enrollment = new Enrollment(lecture, user);
 
         return enrollmentRepository.save(enrollment);

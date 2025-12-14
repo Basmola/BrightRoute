@@ -8,6 +8,5 @@ import org.springframework.validation.annotation.Validated;
 @Repository
 @Validated
 public interface CourseRepository extends JpaRepository<Course, Integer> {
-    // Custom query methods can be added here, e.g.,
-    // List<Course> findByCourseInstructor(String instructor);
+
 }

@@ -5,20 +5,17 @@ const COURSE_API_URL = 'http://localhost:7070/api/courses';
 let allLectures = [];
 let allCourses = [];
 
-// Fetch lectures and courses on load
-// Fetch lectures and courses on load
 document.addEventListener('DOMContentLoaded', async () => {
     checkAdminAuth();
     await Promise.all([fetchLectures(), fetchCourses()]);
     renderLectureTable();
 
-    // Search functionality
     const searchInput = document.getElementById('lecture-search-input');
     if (searchInput) {
         searchInput.addEventListener('input', (e) => {
             const searchTerm = e.target.value.toLowerCase();
             const filteredLectures = allLectures.filter(lecture => {
-                // Resolve course name for search
+                 
                 let courseName = '';
                 if (lecture.course && lecture.course.courseTitle) {
                     courseName = lecture.course.courseTitle;
@@ -44,7 +41,7 @@ function checkAdminAuth() {
     }
 
     const user = JSON.parse(userJson);
-    // Case-insensitive role check
+     
     if (user.role.toUpperCase() !== 'ADMIN') {
         window.location.href = 'index.html';
         return;
@@ -100,7 +97,7 @@ function renderLectureTable(lecturesToRender = allLectures) {
     }
 
     tableBody.innerHTML = lecturesToRender.map(lecture => {
-        // Resolve course name: try direct object first, then lookup by ID
+         
         let courseName = 'N/A';
         if (lecture.course && lecture.course.courseTitle) {
             courseName = lecture.course.courseTitle;
@@ -138,7 +135,7 @@ function openEditLectureModal(lectureId) {
 function showModal(title, lectureData) {
     const modal = document.getElementById('custom-modal');
     const modalTitle = document.getElementById('modal-title');
-    const modalMessage = document.getElementById('modal-message'); // We repurpose this for the form
+    const modalMessage = document.getElementById('modal-message');  
     const modalActions = document.getElementById('modal-actions');
 
     modalTitle.textContent = title;
@@ -148,7 +145,7 @@ function showModal(title, lectureData) {
     const lectureTitle = isEditing ? lectureData.lectureTitle : '';
     const lectureDescription = isEditing ? lectureData.lectureDescription : '';
     const lectureOrder = isEditing ? lectureData.lectureOrderNumber : 1;
-    // Handle both nested course object and flat courseId
+     
     let courseId = '';
     if (isEditing) {
         if (lectureData.course && lectureData.course.courseId) {
@@ -158,7 +155,6 @@ function showModal(title, lectureData) {
         }
     }
 
-    // Generate Course Options
     const courseOptions = allCourses.map(course =>
         `<option value="${course.courseId}" ${course.courseId === courseId ? 'selected' : ''}>${course.courseTitle}</option>`
     ).join('');
@@ -224,14 +220,14 @@ async function saveLecture() {
     try {
         let response;
         if (id) {
-            // Update
+             
             response = await fetch(`${API_BASE_URL}/${id}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(lectureData)
             });
         } else {
-            // Create
+             
             response = await fetch(API_BASE_URL, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },

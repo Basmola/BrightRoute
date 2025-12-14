@@ -45,14 +45,6 @@ public class User {
     @Column(name = "user_created_at", updatable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
 
-    // ----------------------------
-    // RELATIONSHIPS
-    // CascadeType.ALL is CRITICAL for saving the Student automatically during
-    // registration
-    // ----------------------------
-
-    // Other MappedBy relationships
-    // Other MappedBy relationships
     @com.fasterxml.jackson.annotation.JsonIgnore
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<CourseSubscription> subscriptions;
@@ -75,8 +67,6 @@ public class User {
 
     public User() {
     }
-
-    // ===== Getters & Setters =====
 
     public Integer getId() {
         return id;
@@ -142,7 +132,6 @@ public class User {
         this.accountStatus = accountStatus;
     }
 
-    // Add Getter/Setter for userImage if needed
     public byte[] getUserImage() {
         return userImage;
     }

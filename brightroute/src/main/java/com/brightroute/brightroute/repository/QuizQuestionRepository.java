@@ -6,5 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface QuizQuestionRepository extends JpaRepository<QuizQuestion, Integer> {
-    // Example: List<QuizQuestion> findByPartId(Integer partId);
+     
 }

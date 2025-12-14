@@ -16,26 +16,22 @@ public class SystemLogController {
     @Autowired
     private SystemLogService systemLogService;
 
-    // تسجيل عملية جديدة
     @PostMapping
     public ResponseEntity<SystemLog> log(@RequestParam String action,
-            @RequestParam(required = false) Integer userId, // CORRECTION: Integer
+            @RequestParam(required = false) Integer userId,  
             @RequestParam(required = false) String details) {
         SystemLog log = systemLogService.logAction(action, userId, details);
         return ResponseEntity.ok(log);
     }
 
-    // جلب كل الـ logs
     @GetMapping
     public ResponseEntity<List<SystemLog>> getAll() {
         List<SystemLog> logs = systemLogService.getAllLogs();
         return ResponseEntity.ok(logs);
     }
 
-    // جلب الـ logs الخاصة بـ User معين
-    // This method is ready to be uncommented once the service method is fixed.
     @GetMapping("/user/{userId}")
-    public ResponseEntity<List<SystemLog>> getByUser(@PathVariable Integer userId) { // CORRECTION: Integer
+    public ResponseEntity<List<SystemLog>> getByUser(@PathVariable Integer userId) {  
         List<SystemLog> logs = systemLogService.getLogsByUser(userId);
         return ResponseEntity.ok(logs);
     }

@@ -22,7 +22,7 @@ public class StudentQuestionsAnswerController {
 
     @PostMapping
     public ResponseEntity<StudentQuestionsAnswer> createAnswer(@Valid @RequestBody StudentQuestionsAnswer answer) {
-        // NOTE: Answers should typically be saved in bulk via the StudentQuizSubmission service
+         
         return ResponseEntity.ok(answerService.saveAnswer(answer));
     }
 
@@ -32,18 +32,18 @@ public class StudentQuestionsAnswerController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<StudentQuestionsAnswer> getAnswerById(@PathVariable Integer id) { // CORRECTION: Integer
+    public ResponseEntity<StudentQuestionsAnswer> getAnswerById(@PathVariable Integer id) {  
         return answerService.getAnswerById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteAnswer(@PathVariable Integer id) { // CORRECTION: Integer
+    public ResponseEntity<Void> deleteAnswer(@PathVariable Integer id) {  
         if (answerService.getAnswerById(id).isPresent()) {
             answerService.deleteAnswer(id);
             return ResponseEntity.noContent().build();
         }
-        return ResponseEntity.notFound().build(); // Handle case where ID doesn't exist
+        return ResponseEntity.notFound().build();  
     }
 }

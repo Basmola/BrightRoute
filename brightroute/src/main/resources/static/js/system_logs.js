@@ -11,13 +11,12 @@ function checkAdminAuth() {
     }
 
     const user = JSON.parse(userJson);
-    // Case-insensitive role check
+     
     if (user.role.toUpperCase() !== 'ADMIN') {
-        window.location.href = 'index.html'; // Redirect non-admins to student portal
+        window.location.href = 'index.html';  
         return;
     }
 
-    // Update UI with user info
     updateUserProfile(user);
 }
 
@@ -42,8 +41,7 @@ async function fetchSystemLogs() {
         const response = await fetch('/api/system-logs');
         if (response.ok) {
             const logs = await response.json();
-            // Sort logs by timestamp desc if not already sorted by backend
-            // The backend service method getAllLogs() usually returns in insertion order or we can sort here
+
             logs.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
             renderLogsTable(logs);
         } else {

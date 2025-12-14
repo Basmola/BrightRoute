@@ -1,7 +1,7 @@
 package com.brightroute.brightroute.controller;
 
-import com.brightroute.brightroute.model.QuestionsChoice; // Use the correct model name
-import com.brightroute.brightroute.service.QuestionsChoiceService; // Use the correct service name
+import com.brightroute.brightroute.model.QuestionsChoice;  
+import com.brightroute.brightroute.service.QuestionsChoiceService;  
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -9,10 +9,10 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/questions-choices") // Renamed the base path for clarity
+@RequestMapping("/api/questions-choices")  
 public class QuestionsChoiceController {
 
-    private final QuestionsChoiceService questionsChoiceService; // Use the correct service name
+    private final QuestionsChoiceService questionsChoiceService;  
 
     @Autowired
     public QuestionsChoiceController(QuestionsChoiceService questionsChoiceService) {
@@ -32,7 +32,7 @@ public class QuestionsChoiceController {
     }
 
     @PostMapping
-    public QuestionsChoice createChoice(@RequestBody QuestionsChoice choice) { // CORRECTION: Use QuestionsChoice model
+    public QuestionsChoice createChoice(@RequestBody QuestionsChoice choice) {  
         return questionsChoiceService.saveChoice(choice);
     }
 

@@ -1,6 +1,5 @@
-// =======================================================
-// 1. DATA AND STATE (Conceptual: data.js) - START
-// =======================================================
+ 
+
 function setLogLevel() { }
 setLogLevel('Debug');
 
@@ -30,7 +29,7 @@ const mockCourses = [
         status: 'Published',
         tag: 'primary',
         imageText: 'DEV',
-        levelTag: 'primary' // تحديد مستوى التعليم هنا
+        levelTag: 'primary'  
     },
     {
         id: 'C2',
@@ -40,7 +39,7 @@ const mockCourses = [
         status: 'Draft',
         tag: 'secondary',
         imageText: 'SQL',
-        levelTag: 'secondary' // تحديد مستوى التعليم هنا
+        levelTag: 'secondary'  
     },
     {
         id: 'C3',
@@ -50,11 +49,10 @@ const mockCourses = [
         status: 'Published',
         tag: 'accent',
         imageText: 'PY',
-        levelTag: 'highschool' // تحديد مستوى التعليم هنا
+        levelTag: 'highschool'  
     },
 ];
 
-// NEW: Mock data for dynamic Level Cards
 const mockLevels = [
     { level: 1, title: 'Foundations and Launchpad', desc: 'This level is for beginners. You will learn the core concepts and essential tools needed to start your career path.', tag: 'secondary', courses: 5, lectures: '20+', projects: 'Simple Practical Projects' },
     { level: 2, title: 'Application and Specialization', desc: 'Refine your skills through intermediate courses. You will start building more complex applications and understanding specializations.', tag: 'primary', courses: 8, lectures: '40+', projects: 'Real-World Case Studies' },
@@ -76,9 +74,6 @@ const mockQuizQuestions = [
     { questionNumber: 9, question: "To apply CSS styles to only one specific HTML element, which selector should you use?", answerOptions: [{ text: "Class selector", rationale: "Class selectors can target multiple elements.", isCorrect: false }, { text: "Tag selector", rationale: "Tag selectors target all elements of a given tag name.", isCorrect: false }, { text: "ID selector", rationale: "The ID selector targets one unique element per page, making it ideal for specific styling.", isCorrect: true }, { text: "Universal selector", rationale: "The universal selector targets all elements.", isCorrect: false }] },
 ];
 
-// ===============================
-// NEW: Auth functions
-// ===============================
 function findUserByEmail(email) {
     return registeredUsers.find(u => u.email === email);
 }
@@ -98,6 +93,4 @@ function loginUser(email, password) {
     if (user.password !== password) return { success: false, message: "Incorrect password" };
     return { success: true, message: "Login successful", user };
 }
-// =======================================================
-// 1. DATA AND STATE (Conceptual: data.js) - END
-// =======================================================
+

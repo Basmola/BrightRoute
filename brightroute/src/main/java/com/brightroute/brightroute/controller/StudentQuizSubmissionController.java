@@ -20,31 +20,27 @@ public class StudentQuizSubmissionController {
         this.submissionService = submissionService;
     }
 
-    /**
-     * Handles the creation and grading of a complete quiz submission.
-     * This endpoint should primarily call the business logic method (submitQuiz).
-     */
-    @PostMapping("/submit") // Renamed endpoint for clarity
+    @PostMapping("/submit")  
     public ResponseEntity<StudentQuizSubmission> submitQuiz(@Valid @RequestBody StudentQuizSubmission submission) {
-        // CORRECTION: Calls the business logic method (submitQuiz)
+         
         return ResponseEntity.ok(submissionService.submitQuiz(submission));
     }
 
     @GetMapping
     public ResponseEntity<List<StudentQuizSubmission>> getAllSubmissions() {
-        // You might want a filter here, but basic implementation is fine
+         
         return ResponseEntity.ok(submissionService.getAllSubmissions());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<StudentQuizSubmission> getSubmissionById(@PathVariable Integer id) { // CORRECTION: Integer
+    public ResponseEntity<StudentQuizSubmission> getSubmissionById(@PathVariable Integer id) {  
         return submissionService.getSubmissionById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteSubmission(@PathVariable Integer id) { // CORRECTION: Integer
+    public ResponseEntity<Void> deleteSubmission(@PathVariable Integer id) {  
         if (submissionService.getSubmissionById(id).isPresent()) {
              submissionService.deleteSubmission(id);
              return ResponseEntity.noContent().build();

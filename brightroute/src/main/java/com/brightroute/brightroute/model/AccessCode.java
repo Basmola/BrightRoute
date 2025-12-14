@@ -28,22 +28,17 @@ public class AccessCode {
     @Column(name = "code_expires_at")
     private LocalDateTime codeExpiresAt;
 
-    // Relations
-
-    // Links to the Course for which the code was generated
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "course_id", nullable = false)
     @JsonIgnoreProperties({ "lectures", "accessCodes", "hibernateLazyInitializer", "handler" })
     private Course course;
 
-    // Links to the User who consumed the code
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "used_by")
     @JsonIgnoreProperties({ "usedAccessCodes", "subscriptions", "quizSubmissions", "enrollments", "logs",
             "studentProfile", "hibernateLazyInitializer", "handler" })
     private User usedBy;
 
-    // Links to the specific Lecture
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "used_for_lecture")
     @JsonIgnoreProperties({ "course", "lectureParts", "hibernateLazyInitializer", "handler" })
@@ -51,8 +46,6 @@ public class AccessCode {
 
     public AccessCode() {
     }
-
-    // ===== Getters and Setters =====
 
     public Integer getCodeId() {
         return codeId;

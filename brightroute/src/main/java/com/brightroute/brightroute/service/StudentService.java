@@ -8,7 +8,7 @@ import com.brightroute.brightroute.repository.UserRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional; // Added for best practice
+import org.springframework.transaction.annotation.Transactional;  
 
 @Service
 public class StudentService {
@@ -19,33 +19,28 @@ public class StudentService {
     @Autowired 
     private UserRepository userRepository;
 
-    // CREATE STUDENT PROFILE
-    @Transactional // Ensures both user update and profile save are atomic
-    public Student createStudentProfile(Integer userId, Student profile) { // ID type is correct (Integer)
+    @Transactional  
+    public Student createStudentProfile(Integer userId, Student profile) {  
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found."));
 
-        // Assign 1-1 relationship and shared primary key
         profile.setUser(user);
         profile.setId(userId);
 
-        // Enforce role consistency (change base user role to STUDENT)
         user.setRole(Role.STUDENT);
         userRepository.save(user);
 
         return studentRepository.save(profile);
     }
 
-    // VIEW STUDENT PROFILE
-    public Student viewStudent(Integer id) { // ID type is correct (Integer)
+    public Student viewStudent(Integer id) {  
         return studentRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Student not found."));
     }
 
-    // UPDATE
     @Transactional
-    public Student updateStudent(Integer id, Student updated) { // ID type is correct (Integer)
+    public Student updateStudent(Integer id, Student updated) {  
 
         Student s = studentRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Student not found."));
@@ -60,11 +55,8 @@ public class StudentService {
         return studentRepository.save(s);
     }
 
-    // DELETE PROFILE
-    public void deleteStudent(Integer id) { // ID type is correct (Integer)
-        // Deleting the Student entity will cascade via ON DELETE CASCADE in SQL,
-        // but typically you delete the base User to cascade deletion of all profile data.
-        // For simplicity, we stick to deleting the profile here.
+    public void deleteStudent(Integer id) {  
+
         studentRepository.deleteById(id);
     }
 }

@@ -1,7 +1,7 @@
 package com.brightroute.brightroute.model;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.*; // Import for OCL Implementation
+import jakarta.validation.constraints.*;  
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -14,13 +14,11 @@ public class Course {
     @Column(name = "course_id")
     private Integer courseId;
 
-    // Implementation of OCL: self.courseTitle <> null and size <= 200
     @NotBlank(message = "Course title is mandatory")
     @Size(max = 200, message = "Title length must be <= 200")
     @Column(name = "course_title", nullable = false, length = 200)
     private String courseTitle;
 
-    // Implementation of OCL: self.courseDescription <> null
     @NotBlank(message = "Course description is mandatory")
     @Lob
     @Column(name = "course_description", nullable = false)
@@ -30,13 +28,11 @@ public class Course {
     @Column(name = "course_image_cover")
     private byte[] courseImageCover;
 
-    // Implementation of OCL: self.courseInstructor <> null and size <= 150
     @NotBlank(message = "Instructor is mandatory")
     @Size(max = 150, message = "Instructor name must be <= 150")
     @Column(name = "course_instructor", nullable = false, length = 150)
     private String courseInstructor;
 
-    // Implementation of OCL: self.courseNumberOfLectures >= 0
     @Min(value = 0, message = "Lectures count cannot be negative")
     @Column(name = "course_number_of_lectures", nullable = false)
     private Integer courseNumberOfLectures = 0;
@@ -47,24 +43,14 @@ public class Course {
     @Column(name = "course_created_at", updatable = false)
     private LocalDateTime courseCreatedAt = LocalDateTime.now();
 
-    // ----------------------------
-    // RELATIONSHIPS
-    // ----------------------------
-
     @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<Lecture> lectures;
 
-    // Constructors
     public Course() {
         this.courseNumberOfLectures = 0;
         this.courseCreatedAt = LocalDateTime.now();
     }
 
-    // =================================================================
-    // OCL IMPLEMENTATION: Consistency Rule
-    // self.courseNumberOfLectures = self.lectures->size()
-    // هذه الدالة تنفذ أوتوماتيكياً قبل الحفظ لتطبيق الشرط
-    // =================================================================
     @PrePersist
     @PreUpdate
     public void syncLecturesCount() {
@@ -75,7 +61,6 @@ public class Course {
         }
     }
 
-    // ===== Getters and Setters =====
     public Integer getCourseId() {
         return courseId;
     }

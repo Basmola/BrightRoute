@@ -10,12 +10,8 @@ public class SystemLog {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "log_id")
-    private Integer logId; // CORRECTION: Changed from Long to Integer
+    private Integer logId;  
 
-    // ADDED: Nullable Many-to-One relationship to User
-    // The user_id is nullable in SQL (ON DELETE SET NULL)
-    // ADDED: Nullable Many-to-One relationship to User
-    // The user_id is nullable in SQL (ON DELETE SET NULL)
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id", nullable = true)
     private User user;
@@ -23,19 +19,16 @@ public class SystemLog {
     @Column(name = "action", nullable = false, length = 255)
     private String action;
 
-    @Lob // Using @Lob for potentially large details text
+    @Lob  
     @Column(name = "details")
     private String details;
 
     @Column(name = "timestamp", updatable = false)
-    // NOTE: Relying on the SQL default (GETDATE()) for insertion
+     
     private LocalDateTime timestamp;
 
-    // Constructors
     public SystemLog() {
     }
-
-    // ===== Getters and Setters =====
 
     public Integer getLogId() {
         return logId;
@@ -72,12 +65,6 @@ public class SystemLog {
     public LocalDateTime getTimestamp() {
         return timestamp;
     }
-    // Setter for timestamp is usually omitted if it's database-managed
+     
 }
 
-// public User getUser() {
-// return user;
-// }
-// public void setUser(User user) {
-// this.user = user;
-// }

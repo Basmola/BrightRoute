@@ -1,32 +1,25 @@
-// =======================================================
-        // 2. UI AND MODAL UTILITIES (Conceptual: ui.js) - START
-        // =======================================================
+ 
 
 function showModal(title, contentHTML, actionsHTML) {
     const modal = document.getElementById('custom-modal');
-    
-    // 1. إعداد المحتوى
+
     document.getElementById('modal-title').textContent = title;
     document.getElementById('modal-message').innerHTML = contentHTML;
     document.getElementById('modal-actions').innerHTML = actionsHTML;
-    
-    // 2. ضمان الإظهار: إزالة 'hidden' أولاً
+
     modal.classList.remove('hidden');
-    
-    // 3. تطبيق الانتقال السلس (modal-visible)
+
     setTimeout(() => modal.classList.add('modal-visible'), 10);
-    
-    // 4. ربط زر الإغلاق الافتراضي
+
     const closeButton = document.getElementById('modal-close-btn');
     if(closeButton) closeButton.onclick = hideModal;
 }
 window.showModal = showModal;
-// في ملف ui.js
+ 
 function hideModal() {
     const modal = document.getElementById('custom-modal');
     modal.classList.remove('modal-visible'); 
-    
-    // تأخير إضافة 'hidden' لضمان تطبيق الانتقال
+
     setTimeout(() => {
         modal.classList.add('hidden');
     }, 300); 
@@ -49,12 +42,11 @@ function showMessage(title, message, callback = null) {
         if (callback) setTimeout(callback, 300);
     };
 
-    // هذا هو منطق الإظهار:
     modal.classList.remove('hidden');
     setTimeout(() => modal.classList.add('modal-visible'), 10);
 }
 window.showMessage = showMessage;
-// ... (باقي دوال الـ UI)
+ 
         function toggleSidebar(forceState = null) {
             const sidebar = document.getElementById('portal-sidebar');
             const backdrop = document.getElementById('sidebar-backdrop');
@@ -144,9 +136,6 @@ window.showMessage = showMessage;
                 `;
             }
         }
-        // =======================================================
-        // 2. UI AND MODAL UTILITIES (Conceptual: ui.js) - END
-        // =======================================================
 
 function initSidebar() {
     const sidebar = document.getElementById('sidebar');

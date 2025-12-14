@@ -7,6 +7,6 @@ import java.util.Optional;
 
 @Repository
 public interface AccessCodeRepository extends JpaRepository<AccessCode, Integer> { 
-    // CORRECT: PK type is Integer
+     
     Optional<AccessCode> findByCodeValue(String codeValue);
 }
