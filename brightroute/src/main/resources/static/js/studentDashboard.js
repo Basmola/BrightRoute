@@ -1,11 +1,17 @@
- 
-function renderStudentDashboard() {
+
+async function renderStudentDashboard() {
     const container = document.getElementById('student-dashboard-view');
     const user = getLoggedInUser();
 
+    // Ensure state is populated before rendering
+    if (state.courses.length === 0) {
+        await fetchAndStoreCourses();
+    }
+    await fetchSubscribedCourses();
+
     const activeCourses = state.courses.filter(c => c.progress > 0 && c.progress < 100).length;
     const completedCourses = state.courses.filter(c => c.progress === 100).length;
-    const avgScore = 88;  
+    const avgScore = 88;
 
     const coursesHtml = state.courses.length > 0
         ? renderCourseCards(state.courses)
@@ -79,8 +85,8 @@ async function fetchDashboardStats(userId) {
 
     try {
         const [coursesRes, enrollmentsRes] = await Promise.all([
-            fetch(`http: 
-            fetch(`http: 
+            fetch(`http://localhost:7070/api/courses`),
+            fetch(`http://localhost:7070/api/course-subscription/user/${userId}`)
         ]);
 
         if (coursesRes.ok) {
@@ -111,8 +117,8 @@ async function fetchDashboardStats(userId) {
                     label: 'Count',
                     data: [subscribedCount, enrolledLecturesCount],
                     backgroundColor: [
-                        'rgba(59, 130, 246, 0.8)',  
-                        'rgba(16, 185, 129, 0.8)'   
+                        'rgba(59, 130, 246, 0.8)',
+                        'rgba(16, 185, 129, 0.8)'
                     ],
                     borderRadius: 6,
                     borderSkipped: false

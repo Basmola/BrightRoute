@@ -1,8 +1,8 @@
- 
+
 const state = {
-    users: [],  
-    courses: [],  
-    subscribedCourses: [],  
+    users: [],
+    courses: [],
+    subscribedCourses: [],
     currentUser: null
 };
 
@@ -38,11 +38,11 @@ async function fetchAndStoreCourses() {
             instructor: c.courseInstructor,
             level: c.levelId,
             description: c.courseDescription,
-             
+
             image: c.courseImageCover ? `data:image/jpeg;base64,${c.courseImageCover}` : 'https://placehold.co/600x400?text=Course+Image',
-            progress: 0,  
-            status: 'In Progress',  
-            lectures: c.lectures || []  
+            progress: 0,
+            status: 'In Progress',
+            lectures: c.lectures || []
         }));
 
         console.log("Courses loaded into state:", state.courses);
@@ -62,7 +62,7 @@ async function fetchSubscribedCourses() {
     }
 
     try {
-        const url = `http: 
+        const url = `http://localhost:7070/api/course-subscription/user/${user.id}`;
         console.log('Fetching subscribed courses from:', url);
 
         const response = await fetch(url);
@@ -84,7 +84,7 @@ async function fetchSubscribedCourses() {
             level: c.levelId,
             description: c.courseDescription,
             image: c.courseImageCover ? `data:image/jpeg;base64,${c.courseImageCover}` : 'https://placehold.co/600x400?text=Course+Image',
-            progress: 0,  
+            progress: 0,
             status: 'In Progress',
             lectures: c.lectures || []
         }));
