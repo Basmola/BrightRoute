@@ -84,14 +84,14 @@ async function fetchDashboardStats(userId) {
     let enrolledLecturesCount = 0;
 
     try {
-        const [coursesRes, enrollmentsRes] = await Promise.all([
-            fetch(`http://localhost:7070/api/courses`),
-            fetch(`http://localhost:7070/api/course-subscription/user/${userId}`)
+        const [subscriptionsRes, enrollmentsRes] = await Promise.all([
+            fetch(`http://localhost:7070/api/course-subscription/user/${userId}`),
+            fetch(`http://localhost:7070/api/enrollment/user/${userId}`)
         ]);
 
-        if (coursesRes.ok) {
-            const courses = await coursesRes.json();
-            subscribedCount = courses.length;
+        if (subscriptionsRes.ok) {
+            const subscriptions = await subscriptionsRes.json();
+            subscribedCount = subscriptions.length;
         }
 
         if (enrollmentsRes.ok) {
