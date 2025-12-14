@@ -148,3 +148,25 @@ window.showMessage = showMessage;
         // 2. UI AND MODAL UTILITIES (Conceptual: ui.js) - END
         // =======================================================
 
+function initSidebar() {
+    const sidebar = document.getElementById('sidebar');
+    const backdrop = document.getElementById('sidebar-backdrop');
+    const toggleBtn = document.getElementById('sidebar-toggle');
+    const closeBtn = document.getElementById('close-sidebar-btn');
+
+    function openSidebar() {
+        sidebar.classList.remove('-translate-x-full');
+        backdrop.classList.remove('hidden');
+        setTimeout(() => backdrop.classList.remove('opacity-0'), 10);
+    }
+
+    function closeSidebar() {
+        sidebar.classList.add('-translate-x-full');
+        backdrop.classList.add('opacity-0');
+        setTimeout(() => backdrop.classList.add('hidden'), 300);
+    }
+
+    if(toggleBtn) toggleBtn.addEventListener('click', openSidebar);
+    if(closeBtn) closeBtn.addEventListener('click', closeSidebar);
+    if(backdrop) backdrop.addEventListener('click', closeSidebar);
+}

@@ -35,9 +35,7 @@ function checkAuth(requiredRole) {
         if (user.role === 'admin') {
             window.location.href = 'admin_dashboard.html';
         } else if (user.role === 'student') {
-            // Assuming index.html is the student dashboard or there is a student_dashboard.html
-            // The previous context suggests index.html is the student portal
-            window.location.href = 'index.html';
+            window.location.href = 'student_dashboard.html';
         }
         return;
     }
@@ -46,7 +44,7 @@ function checkAuth(requiredRole) {
     const nameEl = document.getElementById('user-name');
     const avatarEl = document.getElementById('sidebar-avatar');
     if (nameEl) nameEl.textContent = `${user.firstName} ${user.lastName}`;
-    if (avatarEl) avatarEl.textContent = user.firstName.charAt(0).toUpperCase();
+    if (avatarEl) avatarEl.textContent = (user.firstName || 'U').charAt(0).toUpperCase();
 }
 
 // Toggle between Login and Register views
@@ -134,11 +132,11 @@ async function handleLogin(e) {
             window.location.href = 'admin_dashboard.html';
         } else if (user.role && user.role.toUpperCase() === 'STUDENT') {
             console.log('Redirecting to Student Dashboard');
-            window.location.href = 'index.html';
+            window.location.href = 'student_dashboard.html';
         } else {
             // Default fallback
             console.log('Redirecting to Default Dashboard');
-            window.location.href = 'index.html';
+            window.location.href = 'student_dashboard.html';
         }
 
     } catch (error) {
