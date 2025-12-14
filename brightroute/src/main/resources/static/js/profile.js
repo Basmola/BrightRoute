@@ -1,4 +1,4 @@
- 
+
 
 async function renderProfileView() {
     const container = document.getElementById('profile-view');
@@ -7,7 +7,7 @@ async function renderProfileView() {
     if (!user) return;
 
     try {
-        const response = await fetch(`http: 
+        const response = await fetch(`http://localhost:7070/api/users/profile/${user.id}`);
         if (!response.ok) throw new Error('Failed to fetch profile');
         const profileData = await response.json();
 
@@ -113,7 +113,7 @@ window.toggleProfileEdit = function (isEditing) {
             input.setAttribute('readonly', 'true');
             input.classList.add('bg-gray-50', 'cursor-not-allowed', 'text-gray-600');
             input.classList.remove('bg-white', 'text-gray-900');
-             
+
             if (btnSave.classList.contains('hidden') === false) {
                 renderProfileView();
             }
@@ -139,7 +139,7 @@ window.handleProfileImageSelect = function (event) {
         const reader = new FileReader();
         reader.onload = function (e) {
             const container = document.getElementById('profile-img-container');
-             
+
             container.dataset.newImage = e.target.result;
 
             container.innerHTML = `<img src="${e.target.result}" id="profile-display-img" class="w-full h-full object-cover">`;
@@ -156,7 +156,7 @@ window.saveProfileChanges = async function () {
         firstName: document.getElementById('profile-firstname').value,
         lastName: document.getElementById('profile-lastname').value,
         phoneNumber: document.getElementById('profile-phone').value,
-        parentNumber: document.getElementById('profile-parent-phone').value,  
+        parentNumber: document.getElementById('profile-parent-phone').value,
         nationalId: document.getElementById('profile-national-id').value,
         levelOfEducation: document.getElementById('profile-level').value
     };
@@ -167,7 +167,7 @@ window.saveProfileChanges = async function () {
     }
 
     try {
-        const response = await fetch(`http: 
+        const response = await fetch(`http://localhost:7070/api/users/profile/${user.id}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json'
