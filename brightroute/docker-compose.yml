@@ -1,0 +1,28 @@
+
+
+services:
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: brightroute-sqlserver
+    environment:
+      - ACCEPT_EULA=Y
+      - MSSQL_SA_PASSWORD=YourStrong@Passw0rd
+    ports:
+      - "1433:1433"
+    volumes:
+      - sqlserver_data:/var/opt/mssql
+    restart: always
+
+  app:
+    build: .
+    container_name: brightroute-app
+    ports:
+      - "7070:8080"
+    depends_on:
+      - sqlserver
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    restart: always
+
+volumes:
+  sqlserver_data:
