@@ -63,6 +63,16 @@ function openEditCourseModal(courseId) {
     }
 }
 
+// Helper: Convert file to Base64
+function convertFileToBase64(file) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => resolve(reader.result.split(',')[1]); // Remove prefix
+        reader.onerror = error => reject(error);
+    });
+}
+
 // Show Modal with Form
 function showModal(title, courseData) {
     const modal = document.getElementById('custom-modal');
@@ -102,6 +112,11 @@ function showModal(title, courseData) {
                 <label class="block text-sm font-medium text-gray-700">Description</label>
                 <textarea id="course-description" rows="3" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm border p-2">${courseDescription}</textarea>
             </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700">Cover Image</label>
+                <input type="file" id="course-image" accept="image/*" class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100">
+                <p class="text-xs text-gray-500 mt-1">Leave empty to keep existing image (if editing).</p>
+            </div>
         </form>
     `;
 
@@ -125,10 +140,22 @@ async function saveCourse() {
     const instructor = document.getElementById('course-instructor').value;
     const level = parseInt(document.getElementById('course-level').value);
     const description = document.getElementById('course-description').value;
+    const imageFile = document.getElementById('course-image').files[0];
 
     if (!title || !instructor) {
         alert('Please fill in all required fields.');
         return;
+    }
+
+    let imageBase64 = null;
+    if (imageFile) {
+        try {
+            imageBase64 = await convertFileToBase64(imageFile);
+        } catch (error) {
+            console.error("Image conversion error:", error);
+            alert("Failed to process image.");
+            return;
+        }
     }
 
     const courseData = {
@@ -137,6 +164,10 @@ async function saveCourse() {
         levelId: level,
         courseDescription: description
     };
+
+    if (imageBase64) {
+        courseData.courseImageCover = imageBase64;
+    }
 
     try {
         let response;

@@ -30,7 +30,7 @@ function checkAuth(requiredRole) {
         return;
     }
 
-    if (requiredRole && user.role !== requiredRole) {
+    if (requiredRole && user.role.toUpperCase() !== requiredRole.toUpperCase()) {
         // Redirect to correct dashboard if role mismatch
         if (user.role === 'admin') {
             window.location.href = 'admin_dashboard.html';

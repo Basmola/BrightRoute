@@ -38,6 +38,9 @@ public class AccessCodeService {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private IEnrollmentService enrollmentService;
+
     // إنشاء كود جديد مربوط بكورس + محاضرة + يوزر
     public AccessCode createAccessCode(Integer courseId, Integer lectureId, Integer userId, String codeValue) {
         // 1. Fetch Course
@@ -125,6 +128,11 @@ public class AccessCodeService {
         }
 
         AccessCode redeemedCode = accessCodeRepository.save(code);
+
+        // 6. Enroll User in Lecture (Integration with EnrollmentService)
+        if (lectureId != null) {
+            enrollmentService.enroll(lectureId, userId);
+        }
 
         // 🚀 حل مشكلة 500/LazyInitializationException:
         if (redeemedCode.getCourse() != null) {

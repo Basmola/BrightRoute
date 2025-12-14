@@ -7,13 +7,13 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
-@Table(name = "Users", schema = "users") 
+@Table(name = "Users", schema = "users")
 public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id")
-    private Integer id; 
+    private Integer id;
 
     @Column(name = "user_first_name", nullable = false)
     private String firstName;
@@ -23,16 +23,16 @@ public class User {
 
     @Column(name = "user_email", unique = true, nullable = false)
     private String email;
-    
+
     @Column(name = "user_phone_number", nullable = false)
-    private String phoneNumber; 
+    private String phoneNumber;
 
     @Column(name = "user_password_hash", nullable = false)
     private String passwordHash;
 
     @Column(name = "user_role", nullable = false)
     @Enumerated(EnumType.STRING)
-    private Role role; 
+    private Role role;
 
     @Column(name = "user_account_status", nullable = false)
     @Enumerated(EnumType.STRING)
@@ -47,10 +47,10 @@ public class User {
 
     // ----------------------------
     // RELATIONSHIPS
-    // CascadeType.ALL is CRITICAL for saving the Student automatically during registration
+    // CascadeType.ALL is CRITICAL for saving the Student automatically during
+    // registration
     // ----------------------------
 
-   
     // Other MappedBy relationships
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<CourseSubscription> subscriptions;
@@ -63,45 +63,94 @@ public class User {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<SystemLog> logs;
-    
+
     @OneToMany(mappedBy = "usedBy", fetch = FetchType.LAZY)
     private List<AccessCode> usedAccessCodes;
 
-    
-    public User() {}
+    public User() {
+    }
 
     // ===== Getters & Setters =====
-    
-    public Integer getId() { return id; }
-    public void setId(Integer id) { this.id = id; }
-    
-    public String getFirstName() { return firstName; }
-    public void setFirstName(String firstName) { this.firstName = firstName; }
-    
-    public String getLastName() { return lastName; }
-    public void setLastName(String lastName) { this.lastName = lastName; }
-    
-    public String getEmail() { return email; }
-    public void setEmail(String email) { this.email = email; }
-    
-    public String getPasswordHash() { return passwordHash; }
-    public void setPasswordHash(String passwordHash) { this.passwordHash = passwordHash; }
-    
-    public String getPhoneNumber() { return phoneNumber; }
-    public void setPhoneNumber(String phoneNumber) { this.phoneNumber = phoneNumber; }
-    
-    public Role getRole() { return role; } 
-    public void setRole(Role role) { this.role = role; } 
 
-    public AccountStatus getAccountStatus() { return accountStatus; }
-    public void setAccountStatus(AccountStatus accountStatus) { this.accountStatus = accountStatus; } 
-    
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getPasswordHash() {
+        return passwordHash;
+    }
+
+    public void setPasswordHash(String passwordHash) {
+        this.passwordHash = passwordHash;
+    }
+
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+
+    public Role getRole() {
+        return role;
+    }
+
+    public void setRole(Role role) {
+        this.role = role;
+    }
+
+    public AccountStatus getAccountStatus() {
+        return accountStatus;
+    }
+
+    public void setAccountStatus(AccountStatus accountStatus) {
+        this.accountStatus = accountStatus;
+    }
+
     // Add Getter/Setter for userImage if needed
-    public byte[] getUserImage() { return userImage; }
-    public void setUserImage(byte[] userImage) { this.userImage = userImage; }
+    public byte[] getUserImage() {
+        return userImage;
+    }
 
-    public LocalDateTime getCreatedAt() { return createdAt; }
-    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
-    
+    public void setUserImage(byte[] userImage) {
+        this.userImage = userImage;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
 
 }

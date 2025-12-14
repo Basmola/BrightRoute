@@ -7,6 +7,7 @@
     <title>Student Dashboard - BrightRoute</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="css/styles.css">
     <script>
         tailwind.config = {
@@ -38,6 +39,11 @@
         </div>
 
         <nav class="flex-1 overflow-y-auto py-4 px-3 space-y-1 custom-scrollbar">
+            <a href="index.html"
+                class="nav-item w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-300 hover:bg-gray-800 hover:text-white transition-colors group">
+                <i class="ph ph-house text-xl group-hover:text-accent-DEFAULT transition-colors"></i>
+                <span class="font-medium">Home Page</span>
+            </a>
             <button onclick="navigate('student-dashboard-view')"
                 class="nav-item w-full flex items-center gap-3 px-3 py-2.5 rounded-lg bg-gray-800 text-white hover:bg-gray-700 transition-colors group">
                 <i class="ph ph-squares-four text-xl text-accent-DEFAULT"></i>
@@ -90,16 +96,18 @@
     </main>
 
     <div id="sidebar-backdrop" class="fixed inset-0 bg-gray-900/50 z-20 hidden lg:hidden transition-opacity"></div>
-    <!-- Modal -->
-    <div id="modal-backdrop" class="fixed inset-0 bg-black/50 hidden z-40"></div>
 
-    <div id="modal" class="fixed inset-0 flex items-center justify-center hidden z-50">
-        <div class="bg-white rounded-xl shadow-xl w-full max-w-md p-6">
-            <h3 id="modal-title" class="text-xl font-bold mb-4"></h3>
-
-            <div id="modal-body"></div>
-
-            <div id="modal-actions" class="mt-6 flex justify-end gap-3"></div>
+    <!-- Custom Modal for Access Code -->
+    <div id="custom-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+        <div class="bg-white rounded-xl shadow-2xl w-full max-w-md p-6 transform transition-all">
+            <div class="flex items-center justify-between mb-4">
+                <h3 id="modal-title" class="text-xl font-bold text-gray-900"></h3>
+                <button id="modal-close-btn" class="text-gray-400 hover:text-gray-600 transition-colors">
+                    <i class="ph ph-x text-2xl"></i>
+                </button>
+            </div>
+            <div id="modal-message" class="mb-6"></div>
+            <div id="modal-actions" class="flex justify-end gap-3"></div>
         </div>
     </div>
 

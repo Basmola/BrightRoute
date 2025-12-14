@@ -5,17 +5,17 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
+import java.util.List;
 
 @Repository
-public interface CourseSubscriptionRepository extends JpaRepository<CourseSubscription, Integer> { 
-    // CORRECTION: PK type is Integer
-    
-    // CORRECTION: Changed StudentId to UserId
+public interface CourseSubscriptionRepository extends JpaRepository<CourseSubscription, Integer> {
+
     Optional<CourseSubscription> findByUserIdAndCourseCourseId(Integer userId, Integer courseId);
-    
-    // CORRECTION: Changed StudentId to UserId
+
     boolean existsByUserIdAndCourseCourseId(Integer userId, Integer courseId);
-    
-    // CORRECTION: Changed StudentId to UserId
+
     void deleteByUserIdAndCourseCourseId(Integer userId, Integer courseId);
+
+    // NEW: Find all subscriptions by user ID
+    List<CourseSubscription> findByUserId(Integer userId);
 }

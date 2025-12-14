@@ -8,85 +8,249 @@ function renderStudentDashboard() {
     const completedCourses = state.courses.filter(c => c.progress === 100).length;
     const avgScore = 88; // Mock
 
+    // Render all courses or a message if empty
+    const coursesHtml = state.courses.length > 0
+        ? renderCourseCards(state.courses)
+        : '<div class="col-span-full text-center py-10 text-gray-500">No courses available at the moment.</div>';
+
     container.innerHTML = `
         <!-- Welcome Banner -->
         <div class="bg-gradient-to-r from-brand-900 to-brand-800 rounded-2xl p-6 lg:p-10 text-white shadow-lg relative overflow-hidden mb-6">
             <div class="relative z-10">
                 <h2 class="text-3xl font-bold mb-2">Welcome back, ${user.firstName}!</h2>
-                <button onclick="navigate('my-courses-view')" class="mt-6 px-6 py-2 bg-accent-DEFAULT hover:bg-accent-hover text-white rounded-lg font-medium transition-colors shadow-lg shadow-blue-900/50">
-                    Continue Learning
+                <p class="text-gray-300 mb-6">You have ${state.courses.length} courses available.</p>
+                <button onclick="navigate('my-courses-view')" class="px-6 py-2 bg-accent-DEFAULT hover:bg-accent-hover text-white rounded-lg font-medium transition-colors shadow-lg shadow-blue-900/50">
+                    View My Courses
                 </button>
             </div>
             <i class="ph ph-rocket absolute right-4 bottom-4 text-9xl text-white opacity-5 transform rotate-12"></i>
         </div>
 
-        <!-- Recent Activity / In Progress -->
+        <!-- Stats & Charts Section -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+            <!-- Counters -->
+            <div class="space-y-6">
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 flex items-center gap-4">
+                    <div class="w-12 h-12 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-2xl">
+                        <i class="ph-fill ph-books"></i>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-500 font-medium">Subscribed Courses</p>
+                        <h3 class="text-2xl font-bold text-gray-900" id="subscribed-count">0</h3>
+                    </div>
+                </div>
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 flex items-center gap-4">
+                    <div class="w-12 h-12 rounded-full bg-green-100 text-green-600 flex items-center justify-center text-2xl">
+                        <i class="ph-fill ph-video"></i>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-500 font-medium">Enrolled Lectures</p>
+                        <h3 class="text-2xl font-bold text-gray-900" id="enrolled-count">0</h3>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chart -->
+            <div class="lg:col-span-2 bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+                <h3 class="text-lg font-bold text-gray-900 mb-4">Activity Overview</h3>
+                <div class="h-64">
+                    <canvas id="activityChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- All Courses Grid -->
         <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-            <h3 class="text-lg font-bold text-gray-900 mb-6">Courses Learning</h3>
+            <div class="flex items-center justify-between mb-6">
+                <h3 class="text-lg font-bold text-gray-900">Available Courses</h3>
+                <span class="text-sm text-gray-500">${state.courses.length} Courses</span>
+            </div>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                ${renderCourseCards(state.courses.slice(0, 3))}
+                ${coursesHtml}
             </div>
         </div>
     `;
+
+    // Fetch and Render Stats
+    fetchDashboardStats(user.id);
+}
+window.renderStudentDashboard = renderStudentDashboard;
+
+async function fetchDashboardStats(userId) {
+    let subscribedCount = 0;
+    let enrolledLecturesCount = 0;
+
+    try {
+        const [coursesRes, enrollmentsRes] = await Promise.all([
+            fetch(`http://localhost:7070/api/course-subscription/user/${userId}`),
+            fetch(`http://localhost:7070/api/enrollment/user/${userId}`)
+        ]);
+
+        if (coursesRes.ok) {
+            const courses = await coursesRes.json();
+            subscribedCount = courses.length;
+        }
+
+        if (enrollmentsRes.ok) {
+            const enrollments = await enrollmentsRes.json();
+            enrolledLecturesCount = enrollments.length;
+        }
+    } catch (error) {
+        console.error('Error fetching dashboard stats:', error);
+    }
+
+    // Update Counters
+    const subEl = document.getElementById('subscribed-count');
+    const enrollEl = document.getElementById('enrolled-count');
+    if (subEl) subEl.textContent = subscribedCount;
+    if (enrollEl) enrollEl.textContent = enrolledLecturesCount;
+
+    // Render Chart
+    const ctx = document.getElementById('activityChart');
+    if (ctx) {
+        new Chart(ctx.getContext('2d'), {
+            type: 'bar',
+            data: {
+                labels: ['Subscribed Courses', 'Enrolled Lectures'],
+                datasets: [{
+                    label: 'Count',
+                    data: [subscribedCount, enrolledLecturesCount],
+                    backgroundColor: [
+                        'rgba(59, 130, 246, 0.8)', // Blue
+                        'rgba(16, 185, 129, 0.8)'  // Green
+                    ],
+                    borderRadius: 6,
+                    borderSkipped: false
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: { display: false }
+                    },
+                    x: {
+                        grid: { display: false }
+                    }
+                }
+            }
+        });
+    }
 }
 
 // 2. My Courses View
-function renderMyCourses() {
+async function renderMyCourses() {
     const container = document.getElementById('my-courses-view');
-    const courses = state.courses;
 
-    container.innerHTML = `
-        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-            <h2 class="text-2xl font-bold text-gray-900 mb-6">My Enrolled Courses</h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                ${renderCourseCards(courses)}
+    // Ensure we have the latest subscribed courses
+    const courses = await fetchSubscribedCourses();
+
+    if (courses && courses.length > 0) {
+        container.innerHTML = `
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+                <h2 class="text-2xl font-bold text-gray-900 mb-6">My Enrolled Courses</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    ${renderCourseCards(courses)}
+                </div>
             </div>
-        </div>
-    `;
+        `;
+    } else {
+        container.innerHTML = `
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 text-center">
+                <h2 class="text-2xl font-bold text-gray-900 mb-4">My Enrolled Courses</h2>
+                <div class="py-12">
+                    <i class="ph ph-student text-4xl text-gray-300 mb-3"></i>
+                    <p class="text-gray-500 text-lg">You haven't enrolled in any courses yet.</p>
+                    <button onclick="navigate('student-dashboard-view')" class="mt-4 px-6 py-2 bg-accent-DEFAULT text-white rounded-lg hover:bg-accent-hover transition-colors">
+                        Browse Courses
+                    </button>
+                </div>
+            </div>
+        `;
+    }
 }
+window.renderMyCourses = renderMyCourses;
 
 // 3. Course Detail (Lectures)
-function renderCourseDetail(courseId) {
+async function renderCourseDetail(courseId) {
     const container = document.getElementById('course-detail-view');
-    const course = state.courses.find(c => c.id === courseId);
+    const course = state.courses.find(c => c.id === courseId) || state.subscribedCourses.find(c => c.id === courseId);
+    const user = getLoggedInUser();
 
     if (!course) return;
 
-    // Build lectures list
-    const lecturesList = course.lectures ? course.lectures.map((lecture, index) => {
-        // VISUAL: Ensure all look unlocked (Play icon, Blue color) by default
-        let iconColor = 'text-accent-DEFAULT';
-        let iconType = 'ph-play-circle';
-        let statusText = lecture.status;
-        
-        // Handle visual status text: Replace "Locked" with "Start"
-        if (statusText === 'Locked') {
-            statusText = 'Start';
+    // Show loading state
+    container.innerHTML = `
+        <div class="flex justify-center items-center py-20">
+            <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-accent-DEFAULT"></div>
+        </div>
+    `;
+    document.querySelectorAll('.view-section').forEach(el => el.classList.add('hidden'));
+    container.classList.remove('hidden');
+
+    // Fetch lectures and user enrollments in parallel
+    let lectures = [];
+    let enrollments = [];
+    try {
+        const [lecturesRes, enrollmentsRes] = await Promise.all([
+            fetch(`http://localhost:7070/api/courses/${courseId}/lectures`),
+            fetch(`http://localhost:7070/api/enrollment/user/${user.id}`)
+        ]);
+
+        if (lecturesRes.ok) {
+            lectures = await lecturesRes.json();
+            console.log('Fetched lectures:', lectures);
         }
+        if (enrollmentsRes.ok) {
+            enrollments = await enrollmentsRes.json();
+            console.log('Fetched user enrollments:', enrollments);
+        }
+    } catch (error) {
+        console.error('Error fetching data:', error);
+    }
 
-        // Only change visual style if explicitly completed
-        // if (lecture.status === 'Completed') { 
-        //     iconColor = 'text-green-500'; 
-        //     iconType = 'ph-check-circle'; 
-        // }
+    // Build lectures list
+    const lecturesList = lectures && lectures.length > 0 ? lectures.map((lecture, index) => {
+        // Check if user is enrolled in this lecture
+        // FIX: Use lectureId from EnrollmentDTO
+        const isEnrolled = enrollments.some(e => e.lectureId === lecture.id);
 
-        // Interaction: onclick triggers promptAccessCode
+        // Determine action based on enrollment
+        const clickAction = isEnrolled
+            ? `renderLecturePlayer(${lecture.id}, ${courseId})`
+            : `promptAccessCode(${lecture.id}, ${courseId})`;
+
+        const statusIcon = isEnrolled
+            ? '<i class="ph-fill ph-check-circle text-green-500 text-2xl"></i>'
+            : '<i class="ph-fill ph-lock-key text-gray-400 text-2xl"></i>';
+
+        const statusText = isEnrolled
+            ? '<span class="text-xs text-green-600 font-bold">Enrolled</span>'
+            : '<span class="text-xs text-gray-500">Locked</span>';
+
         return `
-            <div onclick="promptAccessCode('${lecture.id}')" class="flex items-center justify-between p-4 bg-gray-50 rounded-lg border border-gray-200 hover:bg-gray-100 transition-colors cursor-pointer">
+            <div onclick="${clickAction}" class="flex items-center justify-between p-4 bg-gray-50 rounded-lg border border-gray-200 hover:bg-gray-100 transition-colors cursor-pointer">
                 <div class="flex items-center gap-4">
                     <div class="text-lg font-bold text-gray-400">0${index + 1}</div>
                     <div>
-                        <h4 class="font-semibold text-gray-800">${lecture.title}</h4>
-                        <span class="text-xs text-gray-500">${statusText}</span>
+                        <h4 class="font-semibold text-gray-800">${lecture.lectureTitle}</h4>
+                        <div class="flex items-center gap-2">
+                            ${statusText}
+                        </div>
                     </div>
                 </div>
-                <i class="ph-fill ${iconType} ${iconColor} text-2xl"></i>
+                ${statusIcon}
             </div>
         `;
-    }).join('') : '<p class="text-gray-500">No lectures available.</p>';
+    }).join('') : '<p class="text-gray-500">No lectures available for this course.</p>';
 
     container.innerHTML = `
-        <button onclick="navigate('my-courses-view')" class="mb-4 text-sm text-gray-500 hover:text-accent-DEFAULT flex items-center gap-1">
+        <button onclick="renderCourseDetail(${courseId})" class="mb-4 text-sm text-gray-500 hover:text-accent-DEFAULT flex items-center gap-1">
             <i class="ph-bold ph-arrow-left"></i> Back to Courses
         </button>
 
@@ -118,15 +282,13 @@ function renderCourseDetail(courseId) {
             </div>
         </div>
     `;
-    
-    document.querySelectorAll('.view-section').forEach(el => el.classList.add('hidden'));
-    container.classList.remove('hidden');
 }
+window.renderCourseDetail = renderCourseDetail;
 
 // Helper Card Renderer
 function renderCourseCards(coursesList) {
     return coursesList.map(course => `
-        <div class="bg-white border border-gray-200 rounded-xl overflow-hidden hover:shadow-md transition-shadow cursor-pointer group" onclick="renderCourseDetail('${course.id}')">
+        <div class="bg-white border border-gray-200 rounded-xl overflow-hidden hover:shadow-md transition-shadow cursor-pointer group" onclick="renderCourseDetail(${course.id})">
             <div class="h-32 bg-gray-200 relative overflow-hidden">
                 <img src="${course.image}" alt="${course.title}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
                 <div class="absolute top-2 right-2 bg-white/90 backdrop-blur-sm px-2 py-1 rounded text-xs font-bold text-gray-800">
@@ -143,25 +305,11 @@ function renderCourseCards(coursesList) {
         </div>
     `).join('');
 }
-
-function showModal(title, body, actions) {
-    document.getElementById('modal-title').innerHTML = title;
-    document.getElementById('modal-body').innerHTML = body;
-    document.getElementById('modal-actions').innerHTML = actions;
-
-    document.getElementById('modal').classList.remove('hidden');
-    document.getElementById('modal-backdrop').classList.remove('hidden');
-}
-
-function hideModal() {
-    document.getElementById('modal').classList.add('hidden');
-    document.getElementById('modal-backdrop').classList.add('hidden');
-}
-
+window.renderCourseCards = renderCourseCards;
 
 // --- ACCESS CODE & PLAYER LOGIC ---
 
-window.promptAccessCode = function(lectureId) {
+window.promptAccessCode = function (lectureId, courseId) {
     // Shows popup asking for code
     showModal('Unlock Lecture', `
         <p class="mb-4 text-gray-600">Please enter the access code to view the lecture parts.</p>
@@ -171,168 +319,152 @@ window.promptAccessCode = function(lectureId) {
         </div>
     `, `
         <button onclick="hideModal()" class="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors">Cancel</button>
-        <button onclick="validateLectureAccess('${lectureId}')" class="px-4 py-2 bg-brand-900 text-white rounded-lg hover:bg-brand-800 transition-colors shadow-lg">Access Content</button>
+        <button onclick="validateLectureAccess(${lectureId}, ${courseId})" class="px-4 py-2 bg-brand-900 text-white rounded-lg hover:bg-brand-800 transition-colors shadow-lg">Access Content</button>
     `);
 }
 
-window.validateLectureAccess = function(lectureId) {
+window.validateLectureAccess = async function (lectureId, courseId) {
     const input = document.getElementById('access-code-input').value.trim();
+    const user = getLoggedInUser();
 
-    let foundLecture = null;
-
-    for (const c of state.courses) {
-        if (c.lectures) {
-            const l = c.lectures.find(lec => lec.id === lectureId);
-            if (l) {
-                foundLecture = l;
-                break;
-            }
-        }
+    if (!input) {
+        alert('Please enter an access code');
+        return;
     }
 
-    if (!foundLecture) return;
+    // Redeem access code via API
+    try {
+        const response = await fetch(`http://localhost:7070/api/access-codes/redeem?codeValue=${encodeURIComponent(input)}&userId=${user.id}&lectureId=${lectureId}`, {
+            method: 'POST'
+        });
 
-    // Check if the input matches the lecture's access code or if it's '12345' as a generic fallback for testing
-    // Since mock data might not have accessCode property set for all, we allow '12345'
-    if (input === (foundLecture.accessCode || '12345')) {
-        hideModal();
-        renderLecturePlayer(lectureId);
-    } else {
-        alert('❌ Access Code incorrect');
+        if (response.ok) {
+            const redeemedCode = await response.json();
+            console.log('Access code redeemed:', redeemedCode);
+            hideModal();
+            renderLecturePlayer(lectureId, courseId);
+        } else {
+            let errorMessage = 'Access Code incorrect or already used';
+            try {
+                const errorData = await response.json();
+                if (errorData.message) {
+                    errorMessage = errorData.message;
+                }
+            } catch (e) {
+                const text = await response.text();
+                if (text) errorMessage = text;
+            }
+
+            console.error('Redeem error:', errorMessage);
+            alert('❌ ' + errorMessage);
+        }
+    } catch (error) {
+        console.error('Error redeeming access code:', error);
+        alert('Error validating access code. Please try again.');
     }
 };
 
+window.renderLecturePlayer = async function (lectureId, courseId) {
+    const container = document.getElementById('lecture-detail-view');
 
-window.renderLecturePlayer = function(lectureId) {
-    let foundLecture = null;
-    let foundCourse = null;
-    
-    // Find the lecture data
-    for (const c of state.courses) {
-        if (c.lectures) {
-            const l = c.lectures.find(lec => lec.id === lectureId);
-            if (l) {
-                foundLecture = l;
-                foundCourse = c;
-                break;
-            }
+    // Show loading state
+    container.innerHTML = `
+        <div class="flex justify-center items-center py-20">
+            <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-accent-DEFAULT"></div>
+        </div>
+    `;
+    document.querySelectorAll('.view-section').forEach(el => el.classList.add('hidden'));
+    container.classList.remove('hidden');
+
+    // Fetch lecture details with parts
+    let lecture = null;
+    try {
+        const response = await fetch(`http://localhost:7070/api/lectures/${lectureId}`);
+        if (response.ok) {
+            lecture = await response.json();
+            console.log('Fetched lecture with parts:', lecture);
         }
+    } catch (error) {
+        console.error('Error fetching lecture:', error);
     }
 
-    if (!foundLecture) return;
+    if (!lecture) {
+        container.innerHTML = '<p class="text-red-500">Error loading lecture</p>';
+        return;
+    }
 
-    const container = document.getElementById('lecture-detail-view');
-    
-    // Render the Lecture Parts: 3 Videos and 1 PDF (Accordion Style)
+    // Build lecture parts list
+    // FIX: Use correct field names for LecturePart
+    const lectureParts = lecture.parts && lecture.parts.length > 0
+        ? lecture.parts.map((part, index) => {
+            const isVideo = part.partType === 'VIDEO';
+            const isPdf = part.partType === 'PDF';
+
+            return `
+                <div class="border border-gray-200 rounded-xl overflow-hidden">
+                    <button onclick="toggleLecturePart('part-${part.id}')" class="w-full flex justify-between items-center bg-gray-50 px-4 py-3 font-bold text-gray-800 hover:bg-gray-100 transition-colors text-left">
+                        <span>Part ${index + 1}: ${part.partDescription || 'No Description'}</span>
+                        <i id="icon-part-${part.id}" class="ph-bold ph-caret-down transition-transform duration-300"></i>
+                    </button>
+                    <div id="part-${part.id}" class="hidden border-t border-gray-200">
+                        ${isVideo ? `
+                            <div class="aspect-video bg-gray-900">
+                                <video controls class="w-full h-full">
+                                    <source src="${part.partContentUrl}" type="video/mp4">
+                                    Your browser does not support the video tag.
+                                </video>
+                            </div>
+                        ` : isPdf ? `
+                            <div class="bg-gray-50 p-6">
+                                <div class="flex items-center gap-4 p-4 bg-white border border-gray-200 rounded-lg hover:shadow-md transition-shadow cursor-pointer" onclick="window.open('${part.partContentUrl}', '_blank')">
+                                    <div class="w-12 h-12 bg-red-100 text-red-600 rounded-lg flex items-center justify-center text-2xl">
+                                        <i class="ph-fill ph-file-pdf"></i>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-bold text-gray-900">${part.partDescription || 'PDF Document'}</h4>
+                                        <p class="text-xs text-gray-500">PDF Document</p>
+                                    </div>
+                                    <i class="ph-bold ph-download-simple text-gray-400 ml-auto"></i>
+                                </div>
+                            </div>
+                        ` : `<p class="p-4 text-gray-500">Unsupported content type</p>`}
+                    </div>
+                </div>
+            `;
+        }).join('')
+        : '<p class="text-gray-500">No lecture parts available.</p>';
+
     container.innerHTML = `
-        <button onclick="renderCourseDetail('${foundCourse.id}')" class="mb-4 text-sm text-gray-500 hover:text-accent-DEFAULT flex items-center gap-1">
+        <button onclick="renderCourseDetail(${courseId})" class="mb-4 text-sm text-gray-500 hover:text-accent-DEFAULT flex items-center gap-1">
             <i class="ph-bold ph-arrow-left"></i> Back to Lectures
         </button>
 
         <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
             <div class="p-6 border-b border-gray-100 flex justify-between items-start">
                 <div>
-                    <h2 class="text-2xl font-bold text-gray-900">${foundLecture.title}</h2>
-                    <p class="text-gray-500 text-sm mt-1">${foundCourse.title}</p>
+                    <h2 class="text-2xl font-bold text-gray-900">${lecture.lectureTitle}</h2>
+                    <p class="text-gray-500 text-sm mt-1">Course ID: ${courseId}</p>
                 </div>
                 <span class="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-xs font-bold">Access Granted</span>
             </div>
             
             <div class="p-6 space-y-4">
-                
-                <!-- Part 1: Basics -->
-                <div class="border border-gray-200 rounded-xl overflow-hidden">
-                    <button onclick="toggleLecturePart('part-1')" class="w-full flex justify-between items-center bg-gray-50 px-4 py-3 font-bold text-gray-800 hover:bg-gray-100 transition-colors text-left">
-                        <span>Part 1: Introduction & Basics</span>
-                        <i id="icon-part-1" class="ph-bold ph-caret-down transition-transform duration-300"></i>
-                    </button>
-                    <div id="part-1" class="hidden border-t border-gray-200">
-                        <div class="aspect-video bg-gray-900 flex flex-col items-center justify-center relative group cursor-pointer">
-                            <div class="w-16 h-16 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center group-hover:scale-110 transition-transform z-10">
-                                <i class="ph-fill ph-play text-white text-3xl ml-1"></i>
-                            </div>
-                            <p class="mt-2 text-white text-sm">Watch Video 1</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Part 2: Loops -->
-                <div class="border border-gray-200 rounded-xl overflow-hidden">
-                    <button onclick="toggleLecturePart('part-2')" class="w-full flex justify-between items-center bg-gray-50 px-4 py-3 font-bold text-gray-800 hover:bg-gray-100 transition-colors text-left">
-                        <span>Part 2: Core Logic & Loops</span>
-                        <i id="icon-part-2" class="ph-bold ph-caret-down transition-transform duration-300"></i>
-                    </button>
-                    <div id="part-2" class="hidden border-t border-gray-200">
-                        <div class="aspect-video bg-gray-900 flex flex-col items-center justify-center relative group cursor-pointer">
-                            <div class="w-16 h-16 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center group-hover:scale-110 transition-transform z-10">
-                                <i class="ph-fill ph-play text-white text-3xl ml-1"></i>
-                            </div>
-                            <p class="mt-2 text-white text-sm">Watch Video 2</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Part 3: Advanced -->
-                <div class="border border-gray-200 rounded-xl overflow-hidden">
-                    <button onclick="toggleLecturePart('part-3')" class="w-full flex justify-between items-center bg-gray-50 px-4 py-3 font-bold text-gray-800 hover:bg-gray-100 transition-colors text-left">
-                        <span>Part 3: Advanced Topics</span>
-                        <i id="icon-part-3" class="ph-bold ph-caret-down transition-transform duration-300"></i>
-                    </button>
-                    <div id="part-3" class="hidden border-t border-gray-200">
-                        <div class="aspect-video bg-gray-900 flex flex-col items-center justify-center relative group cursor-pointer">
-                            <div class="w-16 h-16 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center group-hover:scale-110 transition-transform z-10">
-                                <i class="ph-fill ph-play text-white text-3xl ml-1"></i>
-                            </div>
-                            <p class="mt-2 text-white text-sm">Watch Video 3</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Part 4: PDF Material -->
-                <div class="border border-gray-200 rounded-xl overflow-hidden">
-                    <button onclick="toggleLecturePart('part-4')" class="w-full flex justify-between items-center bg-gray-50 px-4 py-3 font-bold text-gray-800 hover:bg-gray-100 transition-colors text-left">
-                        <span>Part 4: Lecture Materials (PDF)</span>
-                        <i id="icon-part-4" class="ph-bold ph-caret-down transition-transform duration-300"></i>
-                    </button>
-                    <div id="part-4" class="hidden border-t border-gray-200">
-                        <div class="p-6 flex items-center justify-between hover:bg-gray-50 transition-colors">
-                            <div class="flex items-center gap-4">
-                                <div class="w-12 h-12 bg-red-100 text-red-600 rounded-lg flex items-center justify-center">
-                                    <i class="ph-fill ph-file-pdf text-3xl"></i>
-                                </div>
-                                <div>
-                                    <h4 class="font-bold text-gray-900">Lecture Notes & Slides</h4>
-                                    <p class="text-sm text-gray-500">Comprehensive guide for this lecture.</p>
-                                </div>
-                            </div>
-                            <button class="px-4 py-2 bg-brand-900 text-white rounded-lg hover:bg-brand-800 transition shadow-sm flex items-center gap-2">
-                                <i class="ph-bold ph-download-simple"></i> Download PDF
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
+                ${lectureParts}
             </div>
         </div>
     `;
-
-    document.querySelectorAll('.view-section').forEach(el => el.classList.add('hidden'));
-    container.classList.remove('hidden');
-    document.getElementById('content-area').scrollTo(0,0);
 }
+window.renderLecturePlayer = renderLecturePlayer;
 
-// Function to handle opening/closing lecture parts
-window.toggleLecturePart = function(partId) {
-    const partContent = document.getElementById(partId);
+window.toggleLecturePart = function (partId) {
+    const content = document.getElementById(partId);
     const icon = document.getElementById('icon-' + partId);
-    
-    if (partContent.classList.contains('hidden')) {
-        // Open
-        partContent.classList.remove('hidden');
-        icon.classList.add('rotate-180');
+
+    if (content.classList.contains('hidden')) {
+        content.classList.remove('hidden');
+        icon.style.transform = 'rotate(180deg)';
     } else {
-        // Close
-        partContent.classList.add('hidden');
-        icon.classList.remove('rotate-180');
+        content.classList.add('hidden');
+        icon.style.transform = 'rotate(0deg)';
     }
 }

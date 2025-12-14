@@ -7,7 +7,8 @@ import com.brightroute.brightroute.repository.CourseRepository;
 import com.brightroute.brightroute.repository.CourseSubscriptionRepository;
 import com.brightroute.brightroute.repository.UserRepository;
 
-import com.brightroute.brightroute.dto.CourseSubscriptionDTO; // 1. NEW: Import the DTO
+import com.brightroute.brightroute.dto.CourseSubscriptionDTO;
+import com.brightroute.brightroute.dto.CourseDTO;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,16 +23,14 @@ public class CourseSubscriptionService {
     public CourseSubscriptionService(
             CourseSubscriptionRepository courseSubscriptionRepository,
             UserRepository userRepository,
-            CourseRepository courseRepository
-    ) {
+            CourseRepository courseRepository) {
         this.courseSubscriptionRepository = courseSubscriptionRepository;
         this.userRepository = userRepository;
         this.courseRepository = courseRepository;
     }
 
-    // 2. MODIFIED: Return type is now CourseSubscriptionDTO
     public CourseSubscriptionDTO subscribe(Integer userId, Integer courseId) {
-        
+
         // Check if subscription already exists
         if (courseSubscriptionRepository.existsByUserIdAndCourseCourseId(userId, courseId)) {
             throw new RuntimeException("User is already subscribed to this course");
@@ -48,8 +47,8 @@ public class CourseSubscriptionService {
         CourseSubscription subscription = new CourseSubscription(user, course);
         CourseSubscription savedSubscription = courseSubscriptionRepository.save(subscription);
 
-        // 3. NEW: Convert the saved JPA entity to the DTO before returning
-        return new CourseSubscriptionDTO(savedSubscription); 
+        // Convert the saved JPA entity to the DTO before returning
+        return new CourseSubscriptionDTO(savedSubscription);
     }
 
     @Transactional
@@ -59,5 +58,22 @@ public class CourseSubscriptionService {
         }
 
         courseSubscriptionRepository.deleteByUserIdAndCourseCourseId(userId, courseId);
+    }
+
+    // NEW: Get all courses a user is subscribed to
+    public java.util.List<CourseDTO> getSubscribedCourses(Integer userId) {
+        return courseSubscriptionRepository.findByUserId(userId)
+                .stream()
+                .map(subscription -> {
+                    Course course = subscription.getCourse();
+                    return new CourseDTO(
+                            course.getCourseId(),
+                            course.getCourseTitle(),
+                            course.getCourseDescription(),
+                            course.getCourseInstructor(),
+                            course.getLevelId(),
+                            course.getCourseImageCover());
+                })
+                .collect(java.util.stream.Collectors.toList());
     }
 }

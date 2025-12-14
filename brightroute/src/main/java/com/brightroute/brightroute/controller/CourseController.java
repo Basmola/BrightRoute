@@ -44,6 +44,9 @@ public class CourseController {
                     course.setCourseDescription(courseDetails.getCourseDescription());
                     course.setCourseInstructor(courseDetails.getCourseInstructor());
                     course.setLevelId(courseDetails.getLevelId());
+                    if (courseDetails.getCourseImageCover() != null) {
+                        course.setCourseImageCover(courseDetails.getCourseImageCover());
+                    }
                     Course updatedCourse = courseService.saveCourse(course);
                     return ResponseEntity.ok(updatedCourse);
                 })
@@ -58,5 +61,13 @@ public class CourseController {
         } else {
             return ResponseEntity.notFound().build();
         }
+    }
+
+    // NEW: Get lectures for a specific course
+    @GetMapping("/{courseId}/lectures")
+    public List<com.brightroute.brightroute.model.Lecture> getLecturesByCourseId(@PathVariable Integer courseId) {
+        return courseService.findCourseById(courseId)
+                .map(com.brightroute.brightroute.model.Course::getLectures)
+                .orElse(java.util.Collections.emptyList());
     }
 }

@@ -26,6 +26,9 @@ public class UserService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @Autowired
+    private SystemLogService systemLogService;
+
     // ----------------------------------------------------
     // -------- 1. UNIFIED REGISTRATION METHOD (FINAL FIX) --------
     // ----------------------------------------------------
@@ -46,6 +49,7 @@ public class UserService {
         user.setPasswordHash(passwordEncoder.encode(dto.getPassword()));
         user.setRole(dto.getRole());
         user.setAccountStatus(dto.getAccountStatus());
+        user.setUserImage(dto.getUserImage());
 
         Student studentProfile = new Student();
 
@@ -72,6 +76,18 @@ public class UserService {
         // --- 3. SAVE ONLY THE PARENT ENTITY (User) ---
         // CascadeType.ALL on User handles the Student insertion automatically.
         User savedUser = userRepository.save(user);
+        // 
+
+        // 🚨 CRITICAL FIX RESTORED: Explicitly save student if role is STUDENT
+        // Since we removed the bi-directional relationship from User side to avoid recursion/locking issues,
+        // we must manually save the Student entity here.
+        if (dto.getRole() == Role.STUDENT) {
+            studentProfile.setUser(savedUser); // Link to saved user (ID will be mapped)
+            studentRepository.save(studentProfile);
+        }
+
+        // Log Registration
+        systemLogService.logAction("REGISTRATION", savedUser.getId(), "User registered successfully with role: " + savedUser.getRole());
 
         return savedUser;
     }
@@ -91,6 +107,10 @@ public class UserService {
         if (!passwordEncoder.matches(rawPassword, user.getPasswordHash())) {
             throw new RuntimeException("Invalid credentials.");
         }
+
+        // Log Login
+        systemLogService.logAction("LOGIN", user.getId(), "User logged in successfully");
+
         return user;
     }
 
@@ -159,5 +179,90 @@ public class UserService {
 
     public void logout(Integer userId) {
         System.out.println("User ID " + userId + " logged out.");
+    }
+
+    // ----------------------------------------------------
+    // -------- 3. FULL PROFILE MANAGEMENT (DTO BASED) ----
+    // ----------------------------------------------------
+
+    public UserStudentRegistrationDto getProfile(Integer userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        // Try to find student profile (might not exist for ADMINs)
+        Student student = studentRepository.findById(userId).orElse(null);
+
+        UserStudentRegistrationDto dto = new UserStudentRegistrationDto();
+
+        // Map User fields
+        dto.setFirstName(user.getFirstName());
+        dto.setLastName(user.getLastName());
+        dto.setEmail(user.getEmail());
+        dto.setPhoneNumber(user.getPhoneNumber());
+        dto.setRole(user.getRole());
+        dto.setRole(user.getRole());
+        dto.setAccountStatus(user.getAccountStatus());
+        dto.setUserImage(user.getUserImage());
+        // Password is not sent back for security
+
+        // Map Student fields if available
+        if (student != null) {
+            dto.setNationalId(student.getNationalId());
+            dto.setParentNumber(student.getParentNumber());
+            dto.setIdType(student.getIdType());
+            dto.setLevelOfEducation(student.getLevelOfEducation());
+            // Images are byte arrays, sending them might be heavy but requested
+            dto.setNationalIdFront(student.getNationalIdFront());
+            dto.setBirthCertificate(student.getBirthCertificate());
+        }
+
+        return dto;
+    }
+
+    @Transactional
+    public User updateFullProfile(Integer userId, UserStudentRegistrationDto dto) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        // Update User fields
+        if (dto.getFirstName() != null)
+            user.setFirstName(dto.getFirstName());
+        if (dto.getLastName() != null)
+            user.setLastName(dto.getLastName());
+        if (dto.getPhoneNumber() != null)
+            user.setPhoneNumber(dto.getPhoneNumber());
+        // Email usually shouldn't be changed or needs verification, skipping for now or
+        // allow if needed
+        // if (dto.getEmail() != null) user.setEmail(dto.getEmail());
+
+        User savedUser = userRepository.save(user);
+
+        // Update Student fields if role is STUDENT
+        if (user.getRole() == Role.STUDENT) {
+            Student student = studentRepository.findById(userId)
+                    .orElse(new Student()); // Should exist, but handle case
+
+            if (student.getUser() == null) {
+                student.setUser(user); // Ensure link if creating new (though ID should match)
+            }
+
+            if (dto.getNationalId() != null)
+                student.setNationalId(dto.getNationalId());
+            if (dto.getParentNumber() != null)
+                student.setParentNumber(dto.getParentNumber());
+            if (dto.getIdType() != null)
+                student.setIdType(dto.getIdType());
+            if (dto.getLevelOfEducation() != null)
+                student.setLevelOfEducation(dto.getLevelOfEducation());
+            // Handle images if provided
+            if (dto.getNationalIdFront() != null)
+                student.setNationalIdFront(dto.getNationalIdFront());
+            if (dto.getBirthCertificate() != null)
+                student.setBirthCertificate(dto.getBirthCertificate());
+
+            studentRepository.save(student);
+        }
+
+        return savedUser;
     }
 }

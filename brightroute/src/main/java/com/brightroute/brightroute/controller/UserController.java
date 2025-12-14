@@ -103,6 +103,17 @@ public class UserController {
     }
 
     // NEW ENDPOINTS
+    @GetMapping("/profile/{id}")
+    public ResponseEntity<UserStudentRegistrationDto> getProfile(@PathVariable Integer id) {
+        return ResponseEntity.ok(userService.getProfile(id));
+    }
+
+    @PutMapping("/profile/{id}")
+    public ResponseEntity<User> updateFullProfile(
+            @PathVariable Integer id,
+            @RequestBody UserStudentRegistrationDto dto) {
+        return ResponseEntity.ok(userService.updateFullProfile(id, dto));
+    }
 
     @GetMapping
     public List<User> getAllUsers() {
